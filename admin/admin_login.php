@@ -5,28 +5,22 @@ session_start();
 
 if(isset($_POST['submit'])){
 
-   // Sửa tên trường từ 'name' thành 'TenAD' để khớp với form
-   $TenAD = $_POST['TenAD'];
-   $TenAD = filter_var($TenAD, FILTER_SANITIZE_STRING);
-   
-   // Sửa tên trường từ 'pass' thành 'Pass' để khớp với form
-   $Pass = sha1($_POST['Pass']);
-   $Pass = filter_var($Pass, FILTER_SANITIZE_STRING);
+   $name = $_POST['TenAD'];
+   $name = filter_var($name, FILTER_SANITIZE_STRING);
+   $pass = sha1($_POST['Pass']);
+   $pass = filter_var($pass, FILTER_SANITIZE_STRING);
 
-   $select_admin = $conn->prepare("SELECT MaAD, TenAD FROM quantri WHERE TenAD = ? AND Pass = ?");
-   $select_admin->execute([$TenAD, $Pass]);
+   $select_admin = $conn->prepare("SELECT * FROM `quantri` WHERE TenAD = ? AND Pass = ?");
+   $select_admin->execute([$name, $pass]);
    
    if($select_admin->rowCount() > 0){
       $fetch_admin_id = $select_admin->fetch(PDO::FETCH_ASSOC);
-      $_SESSION['MaAD'] = $fetch_admin_id['MaAD'];
-      error_log("Login successful, admin_id: ".$_SESSION['admin_id']);
+      $_SESSION['admin_id'] = $fetch_admin_id['MaAD'];
       header('location:dashboard.php');
-      exit(); // Thêm exit() sau header để đảm bảo chuyển hướng
    }else{
-      error_log("Login failed for TenAD: $TenAD");
       $message[] = 'Tài khoản hoặc mật khẩu không đúng!';
-      
    }
+
 }
 ?>
 
@@ -48,15 +42,16 @@ if(isset($_POST['submit'])){
 
 <?php
 if(isset($message)){
-   foreach($message as $message){
+   foreach($message as $msg){
       echo '
       <div class="message">
-         <span>'.$message.'</span>
+         <span>'.$msg.'</span>
          <i class="fas fa-times" onclick="this.parentElement.remove();"></i>
       </div>
       ';
    }
 }
+
 ?>
 <section class="form-container">
    <form action="" method="POST">

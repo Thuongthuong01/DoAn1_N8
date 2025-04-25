@@ -24,7 +24,7 @@ if(!isset($admin_id)){
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 
    <!-- custom css file link  -->
-   <link rel="stylesheet" href=".../css/admin_style.css">
+   <link rel="stylesheet" href="../css/admin_style.css">
 
 </head>
 <body>
@@ -41,12 +41,12 @@ if(!isset($admin_id)){
 
    <div class="box">
       <h3>Xin chào!</h3>
-      <p><?= $fetch_profile['name']; ?></p>
+      <p><?= $fetch_profile['TenAD']; ?></p>
       <a href="update_profile.php" class="btn">Cập nhật tài khoản</a>
    </div>
 <div class="box">
    <?php
-      $select_all_orders = $conn->prepare("SELECT COUNT(*) FROM `orders`");
+      $select_all_orders = $conn->prepare("SELECT COUNT(*) FROM `hoadonthue`");
       $select_all_orders->execute();
       $total_orders = $select_all_orders->fetchColumn();
    ?>
@@ -57,7 +57,7 @@ if(!isset($admin_id)){
 
    <div class="box">
    <?php
-      $select_pending = $conn->prepare("SELECT COUNT(*) FROM `orders` WHERE payment_status = 'Đang chờ'");
+      $select_pending = $conn->prepare("SELECT COUNT(*) FROM `hoadonthue` WHERE payment_status = 'Đang chờ'");
       $select_pending->execute();
       $count_pending = $select_pending->fetchColumn();
    ?>

@@ -78,7 +78,7 @@ if(isset($_POST['update'])){
 
    <?php
       $update_id = $_GET['update'];
-      $show_products = $conn->prepare("SELECT * FROM `products` WHERE id = ?");
+      $show_products = $conn->prepare("SELECT * FROM `bangdia` WHERE id = ?");
       $show_products->execute([$update_id]);
       if($show_products->rowCount() > 0){
          while($fetch_products = $show_products->fetch(PDO::FETCH_ASSOC)){  
