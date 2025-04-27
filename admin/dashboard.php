@@ -31,14 +31,13 @@ if(!isset($admin_id)){
 
 <?php include '../components/admin_header.php' ?>
 
-<!-- admin dashboard section starts  -->
 
+<!-- phần nội dung chính -->
 <section class="dashboard">
 
    <h1 class="heading">Trang chủ quản trị</h1>
-
    <div class="box-container">
-
+   
    <div class="box">
       <h3>Xin chào!</h3>
       <p><?= $fetch_profile['TenAD']; ?></p>
@@ -125,9 +124,6 @@ if(!isset($admin_id)){
    </div>
 
 </section>
-
-<!-- admin dashboard section ends -->
-
 
 <!-- custom js file link  -->
 <script src="../js/admin_script.js"></script>

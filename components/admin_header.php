@@ -15,7 +15,7 @@ if(isset($message)){
 
    <section class="flex">
 
-      <a href="dashboard.php" > <img src="..\images\logo.png" alt=""  width=" 230" ></a>
+      <a href="dashboard.php" > <img src="..\images\logo.png" alt=""  width=" 210" ></a>
 
       <div class="icons">
          <div id="menu-btn" class="fas fa-bars"></div>
@@ -55,11 +55,11 @@ if(isset($message)){
       </div>
       <ul class="menu">   
          <li class="menu-item"><a href="dashboard.php"><span>Trang chủ</span></a></li>  
-         <li class="menu-item"><a href="products.php" class="toggle-menu"><span>Quản lý sản phẩm</span></a></li> 
-         <li class="menu-item"><a href="placed_orders.php" class="toggle-menu"><span>Quản lý đơn hàng</span></a></li> 
+         <li class="menu-item"><a href="products.php"><span>Quản lý sản phẩm</span></a></li> 
+         <li class="menu-item"><a href="placed_orders.php"><span>Quản lý đơn hàng</span></a></li> 
          <li class="menu-item"><a href="users_accounts.php"><span>Quản lý người dùng</span></a></li> 
-         <li class="menu-item"><a href="admin_accounts.php"></i><span>Quản lý quản trị viên</span></a></li> 
-         <li class="menu-item"><a href="#"></i><span>Quản lý doanh thu</span></a></li> 
-         <li class="menu-item"><a href="#"></i><span>Quản lý kho</span></a></li> 
+         <li class="menu-item"><a href="admin_accounts.php"><span>Quản lý quản trị viên</span></a></li> 
+         <li class="menu-item"><a href="#"><span>Quản lý doanh thu</span></a></li> 
+         <li class="menu-item"><a href="#"><span>Quản lý kho</span></a></li> 
       </ul>
    </nav>

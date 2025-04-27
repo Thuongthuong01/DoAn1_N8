@@ -41,7 +41,7 @@
 }
 
 html {
-  font-size: 62.5%;
+  font-size: 60%;
   overflow-x: hidden;
 }
 
@@ -51,7 +51,8 @@ body {
 }
 
 section {
-  max-width: 1200px;
+  /* flex-grow: 1; */
+  max-width: 1000px;
   margin: 0 auto;
   padding: 2rem;
 }
@@ -312,12 +313,12 @@ section {
 }
 
 .sidebar {
-  width: 80px;
+  width: 245px;
   background-color: #fff;
   padding: 1rem;
   position: fixed;
   box-shadow: 3px 0 20px rgba(0, 0, 0, 0.5);
-  margin-top: 135px;
+  margin-top: 125px;
   height: 110vh;
   top: 50%;
   transform: translateY(-50%);
@@ -325,19 +326,19 @@ section {
   transition: var(--main-transitrion);
   z-index: 999;
 }
-.sidebar:hover {
+/* .sidebar:hover {
   width: 200px;
-}
+} */
 .sidebar ul {
   padding-bottom: 20px;
   list-style: none;
-  text-align: center;
+  text-align: left;
 }
 .sidebar .logo {
   color: #000000;
   text-transform: uppercase;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 20px;
   display: block;
   text-align: center;
   /* padding-bottom: 20px; */
@@ -348,9 +349,9 @@ section {
   padding-left: 10px;
   transition: var(--main-transitrion);
 }
-.sidebar:hover ul li {
+/* .sidebar:hover ul li {
   padding-left: 0px;
-}
+} */
 .sidebar ul li a {
   text-align: center;
   padding: 13px;
@@ -359,7 +360,7 @@ section {
   border-radius: 15px;
   transition: 0.3 all ease-in-out;
   font-size: 17px;
-  width: 200px;
+  width: 100%; /* đảm bảo luôn hiện đầy đủ*/
   color: #e8d611;
   font-weight: 400;
   text-decoration: none;
@@ -367,43 +368,45 @@ section {
 }
 .sidebar ul li a span {
   color: #000000;
+  font-size: 18px;
+  text-align: left;
 }
-.sidebar:hover a {
+/* .sidebar:hover a {
   width: 100%;
-}
+} */
 .sidebar ul li a:hover {
   background-color: #e7de3c;
   color: var(--main-color);
 }
-.sidebar ul li a i {
+/* .sidebar ul li a i {
   font-size: 22px;
-}
+} */
 
-.sidebar .menu .menu-item .submenu {
+/* .sidebar .menu .menu-item .submenu {
   display: none;
   list-style: none;
   padding-left: 20px;
   background: #f4f4f4;
   border-left: 3px solid #ccc;
   padding-top: 10px;
-}
+} */
 
-.sidebar .menu .menu-item .submenu.active {
-  display: block; /* Show when active (toggled) */
-}
+/* .sidebar .menu .menu-item .submenu.active {
+  display: block;  Show when active (toggled) 
+} */
 /* Tùy chọn: style submenu đẹp hơn */
-.sidebar .menu .menu-item .submenu li a {
+/* .sidebar .menu .menu-item .submenu li a {
   display: block;
   padding: 8px 10px;
   color: #333;
   font-size: 16px;
   font-weight: normal;
-}
+} */
 
-.sidebar .menu .menu-item .submenu li a:hover {
+/* .sidebar .menu .menu-item .submenu li a:hover {
   background-color: var(--black);
   color: var(--white);
-}
+} */
 
 .main-content {
   margin-left: 240px; /* để không bị đè bởi sidebar */

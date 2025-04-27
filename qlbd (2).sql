@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 25, 2025 at 04:50 AM
+-- Generation Time: Apr 27, 2025 at 01:18 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -28,7 +28,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `bangdia` (
-  `MaBD` int(9) NOT NULL,
+  `MaBD` varchar(9) NOT NULL,
   `TenBD` varchar(50) NOT NULL,
   `Theloai` varchar(10) NOT NULL,
   `Dongia` varchar(10) NOT NULL,
@@ -42,16 +42,16 @@ CREATE TABLE `bangdia` (
 --
 
 INSERT INTO `bangdia` (`MaBD`, `TenBD`, `Theloai`, `Dongia`, `NSX`, `Tinhtrang`, `image`) VALUES
-(7, 'Ponyo - Cô bé người cá, 2008 ', 'Phim', '45000', 'Toshio Suzuki', 'mới', '2.png'),
-(8, 'Doraemon - Xứ sở thần tiên ( version 4)  ', 'Phim', '56000', 'Fujiko F. Fujio', 'đã bán', '1.png'),
-(9, 'Your Name ( Tên Cậu Là Gì ? )', 'Phim', '70000', 'Makoto Shinkai ', 'đang sửa c', '4.png'),
-(10, 'Vùng Đất Linh Hồn ', 'Phim', '50000', 'Toshio Suzuki', 'mới', '6.png'),
-(11, 'Cô gái người sói (Wolf Children)', 'Phim', '40000', 'Yuichiro Saito', 'mới', '7.png'),
-(12, 'Album music BTS - 2021  ', 'Âm nhạc', '120000', 'Bighit Entertainment', 'mới', '10.png'),
-(13, '&#34;Thriller&#34; – Michael Jackson (1982)', 'Âm nhạc', '210000', 'Michael Jackson', 'đã thuê', '11.png'),
-(14, '&#34;1989&#34; – Taylor Swift (2014)', 'Âm nhạc', '110000', 'Taylor Swift', 'đã thuê', '12.png'),
-(15, 'The Miseducation of Lauryn Hill  (1998)', 'Âm nhạc', '99000', 'Lauryn Hil', 'mới', '14.png'),
-(16, 'Birthday Music - 2025', 'Âm nhạc', '50000', 'Báo thiếu nhi Việt Nam', 'mới', '13.png');
+('10', 'Vùng Đất Linh Hồn ', 'Phim', '50000', 'Toshio Suzuki', 'mới', '6.png'),
+('11', 'Cô gái người sói (Wolf Children)', 'Phim', '40000', 'Yuichiro Saito', 'mới', '7.png'),
+('12', 'Album music BTS - 2021  ', 'Âm nhạc', '120000', 'Bighit Entertainment', 'mới', '10.png'),
+('13', '&#34;Thriller&#34; – Michael Jackson (1982)', 'Âm nhạc', '210000', 'Michael Jackson', 'đã thuê', '11.png'),
+('14', '&#34;1989&#34; – Taylor Swift (2014)', 'Âm nhạc', '110000', 'Taylor Swift', 'đã thuê', '12.png'),
+('15', 'The Miseducation of Lauryn Hill  (1998)', 'Âm nhạc', '99000', 'Lauryn Hil', 'mới', '14.png'),
+('16', 'Birthday Music - 2025', 'Âm nhạc', '50000', 'Báo thiếu nhi Việt Nam', 'mới', '13.png'),
+('7', 'Ponyo - Cô bé người cá, 2008 ', 'Phim', '45000', 'Toshio Suzuki', 'mới', '2.png'),
+('9', 'Your Name ( Tên Cậu Là Gì ? )', 'Phim', '70000', 'Makoto Shinkai ', 'đang sửa c', '4.png'),
+('bd1', '	Doraemon - Xứ sở thần tiên ( version 5)', 'Phim', '230000', 'Fujiko F. Fujio', 'mới', '1.png');
 
 -- --------------------------------------------------------
 
@@ -60,8 +60,8 @@ INSERT INTO `bangdia` (`MaBD`, `TenBD`, `Theloai`, `Dongia`, `NSX`, `Tinhtrang`,
 --
 
 CREATE TABLE `chitetphieunhap` (
-  `Maphieu` int(9) NOT NULL,
-  `MaBD` varchar(9) NOT NULL,
+  `MaPhieu` varchar(9) NOT NULL,
+  `MaBD` varchar(9) DEFAULT NULL,
   `soluong` varchar(30) NOT NULL,
   `tongtien` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -70,12 +70,12 @@ CREATE TABLE `chitetphieunhap` (
 -- Dumping data for table `chitetphieunhap`
 --
 
-INSERT INTO `chitetphieunhap` (`Maphieu`, `MaBD`, `soluong`, `tongtien`) VALUES
-(1, 'bd1', '4', '2.0000'),
-(2, 'bd2', '5', '34.0000'),
-(3, 'bd3', '45', '45.0000'),
-(4, 'bd4', '24', '23.0000'),
-(5, 'bd5', '43', '12.0000');
+INSERT INTO `chitetphieunhap` (`MaPhieu`, `MaBD`, `soluong`, `tongtien`) VALUES
+('1', 'bd1', '4', '2.0000'),
+('2', 'bd2', '5', '34.0000'),
+('3', 'bd3', '45', '45.0000'),
+('4', 'bd4', '24', '23.0000'),
+('5', 'bd5', '43', '12.0000');
 
 -- --------------------------------------------------------
 
@@ -84,8 +84,8 @@ INSERT INTO `chitetphieunhap` (`Maphieu`, `MaBD`, `soluong`, `tongtien`) VALUES
 --
 
 CREATE TABLE `chitiethoadon` (
-  `MaHD` int(9) NOT NULL,
-  `MaBD` varchar(50) NOT NULL,
+  `MaHD` varchar(9) NOT NULL,
+  `MaBD` varchar(9) NOT NULL,
   `soluong` varchar(30) NOT NULL,
   `dongia` varchar(10) NOT NULL,
   `tongtien` varchar(10) NOT NULL
@@ -96,11 +96,11 @@ CREATE TABLE `chitiethoadon` (
 --
 
 INSERT INTO `chitiethoadon` (`MaHD`, `MaBD`, `soluong`, `dongia`, `tongtien`) VALUES
-(1, 'bd1', '2', '4.0000', '34.0000'),
-(2, 'bd2', '34', '3.0000', '343.0000'),
-(3, 'bd3', '23', '2.0000', '323.000'),
-(4, 'bd4', '23', '6.0000', '56.0000'),
-(5, 'bd5', '12', '4.0000', '343.0000');
+('1', 'bd1', '2', '4.0000', '34.0000'),
+('2', 'bd2', '34', '3.0000', '343.0000'),
+('3', 'bd3', '23', '2.0000', '323.000'),
+('4', 'bd4', '23', '6.0000', '56.0000'),
+('5', 'bd5', '12', '4.0000', '343.0000');
 
 -- --------------------------------------------------------
 
@@ -183,16 +183,16 @@ INSERT INTO `nhacc` (`MaNCC`, `TenNCC`, `SDT`, `DiaChi`) VALUES
 --
 
 CREATE TABLE `phieunhap` (
-  `MAPHIEUNHAP` varchar(10) NOT NULL,
-  `MANV` varchar(10) DEFAULT NULL,
-  `NGAYNHAP` date DEFAULT NULL
+  `MaPhieu` varchar(9) NOT NULL,
+  `MaNCC` varchar(9) DEFAULT NULL,
+  `NgayLap` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `phieunhap`
 --
 
-INSERT INTO `phieunhap` (`MAPHIEUNHAP`, `MANV`, `NGAYNHAP`) VALUES
+INSERT INTO `phieunhap` (`MaPhieu`, `MaNCC`, `NgayLap`) VALUES
 ('phieu1', 'ncc1', '2025-06-07'),
 ('phieu2', 'ncc2', '2024-07-08'),
 ('phieu3', 'ncc3', '2025-03-06'),
@@ -225,22 +225,21 @@ INSERT INTO `quantri` (`MaAD`, `TenAD`, `Pass`) VALUES
 --
 
 CREATE TABLE `thetv` (
-  `MATHE` varchar(10) NOT NULL,
-  `MAKH` varchar(10) DEFAULT NULL,
-  `NGAYDK` date DEFAULT NULL,
-  `NGAYHETHAN` date DEFAULT NULL
+  `MaThe` varchar(9) NOT NULL,
+  `MaKH` varchar(9) DEFAULT NULL,
+  `NgayDK` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `thetv`
 --
 
-INSERT INTO `thetv` (`MATHE`, `MAKH`, `NGAYDK`, `NGAYHETHAN`) VALUES
-('the1', 'kh1', '2024-12-07', NULL),
-('the2', 'kh2', '2023-05-06', NULL),
-('the3', 'kh3', '2025-03-04', NULL),
-('the4', 'kh4', '2024-07-05', NULL),
-('the5', 'kh5', '2024-02-04', NULL);
+INSERT INTO `thetv` (`MaThe`, `MaKH`, `NgayDK`) VALUES
+('the1', 'kh1', '2024-12-07'),
+('the2', 'kh2', '2023-05-06'),
+('the3', 'kh3', '2025-03-04'),
+('the4', 'kh4', '2024-07-05'),
+('the5', 'kh5', '2024-02-04');
 
 --
 -- Indexes for dumped tables
@@ -256,7 +255,7 @@ ALTER TABLE `bangdia`
 -- Indexes for table `chitetphieunhap`
 --
 ALTER TABLE `chitetphieunhap`
-  ADD PRIMARY KEY (`Maphieu`);
+  ADD PRIMARY KEY (`MaPhieu`);
 
 --
 -- Indexes for table `chitiethoadon`
@@ -286,7 +285,7 @@ ALTER TABLE `nhacc`
 -- Indexes for table `phieunhap`
 --
 ALTER TABLE `phieunhap`
-  ADD PRIMARY KEY (`MAPHIEUNHAP`);
+  ADD PRIMARY KEY (`MaPhieu`);
 
 --
 -- Indexes for table `quantri`
@@ -298,30 +297,12 @@ ALTER TABLE `quantri`
 -- Indexes for table `thetv`
 --
 ALTER TABLE `thetv`
-  ADD PRIMARY KEY (`MATHE`),
-  ADD KEY `MAKH` (`MAKH`);
+  ADD PRIMARY KEY (`MaThe`),
+  ADD KEY `fk_thetv_makh` (`MaKH`);
 
 --
 -- AUTO_INCREMENT for dumped tables
 --
-
---
--- AUTO_INCREMENT for table `bangdia`
---
-ALTER TABLE `bangdia`
-  MODIFY `MaBD` int(9) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
-
---
--- AUTO_INCREMENT for table `chitetphieunhap`
---
-ALTER TABLE `chitetphieunhap`
-  MODIFY `Maphieu` int(9) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT for table `chitiethoadon`
---
-ALTER TABLE `chitiethoadon`
-  MODIFY `MaHD` int(9) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `hoadonthue`
@@ -343,7 +324,7 @@ ALTER TABLE `quantri`
 -- Constraints for table `thetv`
 --
 ALTER TABLE `thetv`
-  ADD CONSTRAINT `thetv_ibfk_1` FOREIGN KEY (`MAKH`) REFERENCES `khachhang` (`MaKH`);
+  ADD CONSTRAINT `fk_thetv_makh` FOREIGN KEY (`MaKH`) REFERENCES `khachhang` (`MaKH`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
