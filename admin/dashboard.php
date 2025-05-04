@@ -31,18 +31,20 @@ if(!isset($admin_id)){
 
 <?php include '../components/admin_header.php' ?>
 
-
 <!-- phần nội dung chính -->
 <section class="dashboard">
 
    <h1 class="heading">Trang chủ quản trị</h1>
    <div class="box-container">
    
-   <div class="box">
-      <h3>Xin chào!</h3>
-      <p><?= $fetch_profile['TenAD']; ?></p>
-      <a href="update_profile.php" class="btn">Cập nhật tài khoản</a>
-   </div>
+<!-- hộp 1 : doanh thu -->
+<div class="box-container">
+<div class="box">
+<h3><?= number_format($month_revenue ?? 0, 0, ',', '.'); ?> VNĐ</h3>
+<p>Doanh thu tháng <?= $current_month_name . '/' . $current_year; ?></p>   <a href="../admin/revenue.php" class="btn">Xem chi tiết</a>
+</div>
+
+<!-- hộp 2 : tổng đơn hàng -->
 <div class="box">
    <?php
       $select_all_orders = $conn->prepare("SELECT COUNT(*) FROM `hoadonthue`");
@@ -54,7 +56,30 @@ if(!isset($admin_id)){
    <a href="placed_orders.php" class="btn">Xem đơn hàng</a>
 </div>
 
+<!-- hộp 3 : tổng sản phẩm -->
    <div class="box">
+      <?php
+         $select_products = $conn->prepare("SELECT * FROM `bangdia`");
+         $select_products->execute();
+         $numbers_of_products = $select_products->rowCount();
+      ?>
+      <h3><?= $numbers_of_products; ?></h3>
+      <p>Tổng số sản phẩm</p>
+      <a href="products.php" class="btn">Xem sản phẩm</a>
+   </div>
+<!-- hộp 4 : tổng thành viên  -->
+   <div class="box">
+      <?php
+         $select_users = $conn->prepare("SELECT * FROM `khachhang`");
+         $select_users->execute();
+         $numbers_of_users = $select_users->rowCount();
+      ?>
+      <h3><?= $numbers_of_users; ?></h3>
+      <p>Tài khoản người dùng</p>
+      <a href="users_accounts.php" class="btn">Xem người dùng</a>
+   </div>
+
+<!-- <div class="box">
    <?php
       $select_pending = $conn->prepare("SELECT COUNT(*) FROM `hoadonthue` WHERE payment_status = 'Đang chờ'");
       $select_pending->execute();
@@ -63,8 +88,7 @@ if(!isset($admin_id)){
    <h3><?= $count_pending; ?></h3>
    <p>Đơn hàng chờ xử lý</p>
    <a href="pending_orders.php" class="btn">Xem đơn hàng</a>
-</div>
-
+</div>  
 <div class="box">
    <?php
       $select_completed = $conn->prepare("SELECT COUNT(*) FROM `orders` WHERE payment_status = 'Hoàn thành'");
@@ -75,31 +99,7 @@ if(!isset($admin_id)){
    <p>Đơn hàng hoàn thành</p>
    <a href="completed_orders.php" class="btn">Xem đơn hàng</a>
 </div>
-
-
-   <div class="box">
-      <?php
-         $select_products = $conn->prepare("SELECT * FROM `products`");
-         $select_products->execute();
-         $numbers_of_products = $select_products->rowCount();
-      ?>
-      <h3><?= $numbers_of_products; ?></h3>
-      <p>Tổng số sản phẩm</p>
-      <a href="products.php" class="btn">Xem sản phẩm</a>
-   </div>
-
-   <div class="box">
-      <?php
-         $select_users = $conn->prepare("SELECT * FROM `users`");
-         $select_users->execute();
-         $numbers_of_users = $select_users->rowCount();
-      ?>
-      <h3><?= $numbers_of_users; ?></h3>
-      <p>Tài khoản người dùng</p>
-      <a href="users_accounts.php" class="btn">Xem người dùng</a>
-   </div>
-
-   <div class="box">
+<div class="box">
       <?php
          $select_admins = $conn->prepare("SELECT * FROM `admin`");
          $select_admins->execute();
@@ -108,21 +108,11 @@ if(!isset($admin_id)){
       <h3><?= $numbers_of_admins; ?></h3>
       <p>Quản trị viên</p>
       <a href="admin_accounts.php" class="btn">Xem quản trị viên</a>
-   </div>
+   </div> 
+-->
 
-   <div class="box">
-      <?php
-         $select_messages = $conn->prepare("SELECT * FROM `messages`");
-         $select_messages->execute();
-         $numbers_of_messages = $select_messages->rowCount();
-      ?>
-      <h3><?= $numbers_of_messages; ?></h3>
-      <p>Phản hồi về cửa hàng</p>
-      <a href="messages.php" class="btn">Xem tin nhắn</a>
-   </div>
-
-   </div>
-
+   </div>  
+   
 </section>
 
 <!-- custom js file link  -->

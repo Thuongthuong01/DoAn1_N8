@@ -67,7 +67,7 @@ if (isset($_GET['delete'])) {
    <meta charset="UTF-8">
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Sản phẩm</title>
+   <title>Quản lý sản phẩm</title>
 
    <!-- font awesome cdn link  -->
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
@@ -80,7 +80,7 @@ if (isset($_GET['delete'])) {
 
 <?php include '../components/admin_header.php' ?>
 
-<!-- add products section starts  -->
+<!-- thêm sản phẩm -->
 <section class="add-products">
    <form action="" method="POST" enctype="multipart/form-data">
       <h3>Thêm sản phẩm</h3>
@@ -94,7 +94,13 @@ if (isset($_GET['delete'])) {
          <option value="Khác">Khác</option>
       </select>
       <input type="text" name="NSX" placeholder="Nhà sản xuất" class="box" required>
-      <input type="text" name="Tinhtrang" placeholder="Tình trạng" class="box" required>
+      <!-- <input type="text" name="Tinhtrang" placeholder="Tình trạng" class="box" required> -->
+      <select name="Tinhtrang" class="box" required>
+         <option value="" disabled selected>Tình trạng --</option>
+         <option value="Âm nhạc">Trống</option>
+         <option value="Phim">Đã cho thuê</option>
+         <option value="Khác">Đang bảo trì</option>
+      </select>
       <input type="file" name="image" class="box" accept="image/jpg, image/jpeg, image/png, image/webp" required>
       <input type="submit" value="Thêm sản phẩm" name="add_product" class="btn">
    </form>
@@ -113,7 +119,7 @@ if (isset($_GET['delete'])) {
 
 <!-- HIỂN THỊ BẢN THÔNG TIN SẢN PHẨM   -->
 <section class="show-products" style="padding-top: 0;">
-   <h1>Danh sách sản phẩm </h1>
+<h1 class="heading">Danh sách sản phẩm</h1>
    <table class="product-table">
       <thead>
          <tr>
@@ -124,6 +130,8 @@ if (isset($_GET['delete'])) {
             <th>Đơn giá</th>
             <th>NSX</th>
             <th>Tình trạng</th>
+            <th>Chức năng</th>
+
          </tr>
       </thead>
       <tbody>

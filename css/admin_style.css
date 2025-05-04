@@ -274,10 +274,10 @@ section {
 #menu-btn {
   display: none;
 }
-
+/* 
 .dashboard .box-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(27rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
   gap: 1.5rem;
   align-items: flex-start;
 }
@@ -310,10 +310,84 @@ section {
   border: var(--border);
   margin: 1rem 0;
   color: var(--light-color);
+} 
+  */
+
+.dashboard .box-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-left: 20px;
+  padding: 2rem;
 }
 
+.dashboard .box-container .box {
+  position: relative;
+  flex: 1 1 100px;
+  background-color: #f1f1f1;
+  border-radius: 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  color: white;
+  text-align: left;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.dashboard .box-container .box:hover {
+  transform: translateY(-5px);
+}
+
+/* Ô màu bên trái */
+.dashboard .box-container .box::before {
+  content: "";
+  position: absolute;
+  left: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2rem;
+  height: 2rem;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Màu nền */
+.dashboard .box-container .box:nth-child(1) {
+  background-color: #3498db;
+}
+
+.dashboard .box-container .box:nth-child(2) {
+  background-color: #f39c12;
+}
+.dashboard .box-container .box:nth-child(3) {
+  background-color: #1abc9c;
+}
+.dashboard .box-container .box:nth-child(4) {
+  background-color: #e74c3c;
+}
+.dashboard .box-container .box h3 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #000;
+}
+.dashboard .box-container .box p {
+  font-size: 1.2rem;
+  color: #fff;
+}
+.dashboard .box-container .box .btn {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #fff;
+  color: #000;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+/* danh mục trái */
 .sidebar {
-  width: 245px;
+  width: 250px;
   background-color: #fff;
   padding: 1rem;
   position: fixed;
@@ -323,90 +397,60 @@ section {
   top: 50%;
   transform: translateY(-50%);
   overflow: hidden;
-  transition: var(--main-transitrion);
+  transition: 0.3s ease;
   z-index: 999;
 }
-/* .sidebar:hover {
-  width: 200px;
-} */
-.sidebar ul {
-  padding-bottom: 20px;
-  list-style: none;
-  text-align: left;
-}
+
 .sidebar .logo {
-  color: #000000;
+  color: #000;
   text-transform: uppercase;
   font-weight: bold;
   font-size: 20px;
-  display: block;
-  text-align: center;
-  /* padding-bottom: 20px; */
-  margin-bottom: 20px;
-  margin-top: 20px;
+  margin: 20px 0;
+  text-align: left;
+  text-indent: 23px;
 }
+
+.sidebar ul {
+  list-style: none;
+  padding: 0 0 20px 0;
+}
+
 .sidebar ul li {
   padding-left: 10px;
-  transition: var(--main-transitrion);
+  transition: 0.3s;
 }
-/* .sidebar:hover ul li {
-  padding-left: 0px;
-} */
+
 .sidebar ul li a {
-  text-align: center;
-  padding: 13px;
   display: flex;
+  align-items: center;
   gap: 30px;
+  padding: 13px;
   border-radius: 15px;
-  transition: 0.3 all ease-in-out;
   font-size: 17px;
-  width: 100%; /* đảm bảo luôn hiện đầy đủ*/
+  width: 100%;
   color: #e8d611;
-  font-weight: 400;
   text-decoration: none;
-  position: relative;
+  transition: background-color 0.3s ease-in-out;
 }
+
 .sidebar ul li a span {
-  color: #000000;
+  color: #000;
   font-size: 18px;
   text-align: left;
 }
-/* .sidebar:hover a {
-  width: 100%;
-} */
+
 .sidebar ul li a:hover {
-  background-color: #e7de3c;
-  color: var(--main-color);
+  background-color: #e8d611;
+  color: #000;
 }
-/* .sidebar ul li a i {
-  font-size: 22px;
-} */
 
-/* .sidebar .menu .menu-item .submenu {
-  display: none;
-  list-style: none;
-  padding-left: 20px;
-  background: #f4f4f4;
-  border-left: 3px solid #ccc;
-  padding-top: 10px;
-} */
-
-/* .sidebar .menu .menu-item .submenu.active {
-  display: block;  Show when active (toggled) 
-} */
-/* Tùy chọn: style submenu đẹp hơn */
-/* .sidebar .menu .menu-item .submenu li a {
-  display: block;
-  padding: 8px 10px;
-  color: #333;
-  font-size: 16px;
-  font-weight: normal;
-} */
-
-/* .sidebar .menu .menu-item .submenu li a:hover {
-  background-color: var(--black);
-  color: var(--white);
-} */
+.sidebar ul li a.active {
+  background-color: #e8d611;
+  color: black !important;
+  font-weight: bold;
+  border-radius: 15px;
+}
 
 .main-content {
   margin-left: 240px; /* để không bị đè bởi sidebar */
