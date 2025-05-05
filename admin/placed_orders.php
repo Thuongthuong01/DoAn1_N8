@@ -50,7 +50,7 @@ if(isset($_GET['delete'])){
 
 <!-- placed orders section starts  -->
 
-<section class="placed-orders-admin">
+<section class="main-content placed-orders-admin">
 
    <!-- <h1 class="heading">Đơn hàng</h1> -->
    <section class="add-products">
@@ -81,14 +81,66 @@ if(isset($_GET['delete'])){
    <?php endif; ?>
 </section>
 
-<h1 class="heading">Danh sách đơn hàng</h1>
+<section class="main-content1 show-products" style="padding-top: 0;">
+<h1 class="heading">Danh sách sản phẩm</h1>
+   <table class="product-table">
+<?php
+// Truy vấn đơn hàng (hoadonthue + chitiethoadon nếu muốn có tổng tiền)
+$select_orders = $conn->prepare("
+   SELECT hdt.MaHD, hdt.MaKH, hdt.Ngaythue, hdt.NgaytraDK, hdt.NgaytraTT,
+          SUM(CAST(ct.tongtien AS DECIMAL(10,2))) AS tongtien
+   FROM hoadonthue hdt
+   LEFT JOIN chitiethoadon ct ON hdt.MaHD = ct.MaHD
+   GROUP BY hdt.MaHD
+   ORDER BY hdt.Ngaythue DESC
+");
+$select_orders->execute();
+$orders = $select_orders->fetchAll(PDO::FETCH_ASSOC);
+?>
+
+
+ 
+      
+         <thead>
+            <tr>
+               <th>Mã HĐ</th>
+               <th>Mã KH</th>
+               <th>Ngày thuê</th>
+               <th>Hạn trả</th>
+               <th>Ngày trả thực tế</th>
+               <th>Tổng tiền</th>
+               <th>Hành động</th>
+            </tr>
+         </thead>
+         <tbody>
+            <?php if (count($orders) > 0): ?>
+               <?php foreach ($orders as $order): ?>
+                  <tr>
+                     <td><?= $order['MaHD']; ?></td>
+                     <td><?= $order['MaKH']; ?></td>
+                     <td><?= $order['Ngaythue']; ?></td>
+                     <td><?= $order['NgaytraDK']; ?></td>
+                     <td><?= $order['NgaytraTT']; ?></td>
+                     <td><?= number_format($order['tongtien'], 0, ',', '.') ?> VNĐ</td>
+                     <td>
+                        <a href="?delete=<?= $order['MaHD']; ?>" onclick="return confirm('Bạn có chắc muốn xóa đơn hàng này?');" class="delete-btn">Xóa</a>
+                     </td>
+                  </tr>
+               <?php endforeach; ?>
+            <?php else: ?>
+               <tr><td colspan="7">Không có đơn hàng nào.</td></tr>
+            <?php endif; ?>
+         </tbody>
+      
+   </table>
+</section>
 
 
 
 
 
 <!-- custom js file link  -->
-<script src="../js/admin_script.js"></script>
+<script src="../js/script.js"></script>
 
 </body>
 </html>

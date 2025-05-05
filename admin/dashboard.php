@@ -4,11 +4,26 @@ include '../components/connect.php';
 
 session_start();
 
-$admin_id = $_SESSION['admin_id'];
-
-if(!isset($admin_id)){
-   header('location:admin_login.php');
+if (!isset($_SESSION["user_id"])) {
+   header("Location:admin_login");
+   exit();
 }
+
+$current_month = date('m');
+$current_year = date('Y');
+
+// Lấy tên tháng (hiển thị)
+$current_month_name = $current_month;
+
+// Truy vấn doanh thu từ chitiethoadon JOIN hoadonthue
+$month_revenue_query = $conn->prepare("
+    SELECT SUM( CAST(cthd.tongtien AS DECIMAL(10,2)) ) AS total 
+    FROM chitiethoadon cthd
+    JOIN hoadonthue hdt ON cthd.MaHD = hdt.MaHD
+    WHERE MONTH(hdt.Ngaythue) = ? AND YEAR(hdt.Ngaythue) = ?
+");
+$month_revenue_query->execute([$current_month, $current_year]);
+$month_revenue = $month_revenue_query->fetchColumn() ?? 0;
 
 ?> 
 
@@ -116,7 +131,7 @@ if(!isset($admin_id)){
 </section>
 
 <!-- custom js file link  -->
-<script src="../js/admin_script.js"></script>
+<script src="../js/script.js"></script>
 
 </body>
 </html>

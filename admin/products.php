@@ -81,7 +81,7 @@ if (isset($_GET['delete'])) {
 <?php include '../components/admin_header.php' ?>
 
 <!-- thêm sản phẩm -->
-<section class="add-products">
+<section class="main-content add-products">
    <form action="" method="POST" enctype="multipart/form-data">
       <h3>Thêm sản phẩm</h3>
       <input type="text" required placeholder="Nhập mã băng đĩa" name="MaBD" maxlength="9" class="box">
@@ -118,7 +118,7 @@ if (isset($_GET['delete'])) {
 
 
 <!-- HIỂN THỊ BẢN THÔNG TIN SẢN PHẨM   -->
-<section class="show-products" style="padding-top: 0;">
+<section class="main-content show-products" style="padding-top: 0;">
 <h1 class="heading">Danh sách sản phẩm</h1>
    <table class="product-table">
       <thead>

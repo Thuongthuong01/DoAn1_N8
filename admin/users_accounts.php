@@ -51,15 +51,15 @@ if(isset($_GET['delete'])){
    <div class="box-container">
 
    <?php
-      $select_account = $conn->prepare("SELECT * FROM `users`");
+      $select_account = $conn->prepare("SELECT * FROM `khachhang`");
       $select_account->execute();
       if($select_account->rowCount() > 0){
          while($fetch_accounts = $select_account->fetch(PDO::FETCH_ASSOC)){  
    ?>
    <div class="box">
-      <p> Id : <span><?= $fetch_accounts['id']; ?></span> </p>
-      <p> Tài khoản : <span><?= $fetch_accounts['name']; ?></span> </p>
-      <a href="users_accounts.php?delete=<?= $fetch_accounts['id']; ?>" class="delete-btn" onclick="return confirm('Xoá tài khoản?');">Xoá</a>
+      <p> Id : <span><?= $fetch_accounts['MaKH']; ?></span> </p>
+      <p> Tài khoản : <span><?= $fetch_accounts['TenKH']; ?></span> </p>
+      <a href="users_accounts.php?delete=<?= $fetch_accounts['MaKH']; ?>" class="delete-btn" onclick="return confirm('Xoá tài khoản?');">Xoá</a>
    </div>
    <?php
       }

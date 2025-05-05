@@ -52,18 +52,18 @@ if(isset($_GET['delete'])){
    </div>
 
    <?php
-      $select_account = $conn->prepare("SELECT * FROM `admin`");
+      $select_account = $conn->prepare("SELECT * FROM `quantri`");
       $select_account->execute();
       if($select_account->rowCount() > 0){
          while($fetch_accounts = $select_account->fetch(PDO::FETCH_ASSOC)){  
    ?>
    <div class="box">
-      <p> Id : <span><?= $fetch_accounts['id']; ?></span> </p>
-      <p> Tài khoản : <span><?= $fetch_accounts['name']; ?></span> </p>
+      <p> Id : <span><?= $fetch_accounts['MaAD']; ?></span> </p>
+      <p> Tài khoản : <span><?= $fetch_accounts['TenAD']; ?></span> </p>
       <div class="flex-btn">
-         <a href="admin_accounts.php?delete=<?= $fetch_accounts['id']; ?>" class="delete-btn" onclick="return confirm('Xoá tài khoản?');">Xoá</a>
+         <a href="admin_accounts.php?delete=<?= $fetch_accounts['MaAD']; ?>" class="delete-btn" onclick="return confirm('Xoá tài khoản?');">Xoá</a>
          <?php
-            if($fetch_accounts['id'] == $admin_id){
+            if($fetch_accounts['MaAD'] == $admin_id){
                echo '<a href="update_profile.php" class="option-btn">Chỉnh sửa</a>';
             }
          ?>
