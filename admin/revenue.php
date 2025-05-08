@@ -27,7 +27,7 @@ if (!isset($_SESSION['admin_id'])) {
     <meta charset="UTF-8">
     <title>Quản lý doanh thu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-s
+
     <link rel="stylesheet" href="../css/admin_style.css">
     <!-- <style>
         .revenue-table {
@@ -86,6 +86,9 @@ s
         </tbody>
     </table>
 </section> -->
-
+<section class= "revenue">
+<h1 class="heading">Quản Lý Doanh Thu Theo Tháng</h1>
+<h2>Tháng 5</h2>
+</section>
 </body>
 </html>

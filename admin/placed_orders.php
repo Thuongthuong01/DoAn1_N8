@@ -55,7 +55,7 @@ if(isset($_GET['delete'])){
    <!-- <h1 class="heading">Đơn hàng</h1> -->
    <section class="add-products">
    <form action="" method="POST" enctype="multipart/form-data">
-      <h3>Thêm đơn hàng</h3>
+      <h3>Tạo đơn hàng</h3>
 
       <input type="text" required placeholder="Nhập mã khách hàng" name="MaKH" maxlength="9" class="box">
 
@@ -82,7 +82,7 @@ if(isset($_GET['delete'])){
 </section>
 
 <section class="main-content1 show-products" style="padding-top: 0;">
-<h1 class="heading">Danh sách sản phẩm</h1>
+<h1 class="heading">Danh sách đơn hàng</h1>
    <table class="product-table">
 <?php
 // Truy vấn đơn hàng (hoadonthue + chitiethoadon nếu muốn có tổng tiền)

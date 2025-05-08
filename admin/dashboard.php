@@ -48,12 +48,9 @@ $month_revenue = $month_revenue_query->fetchColumn() ?? 0;
 
 <!-- phần nội dung chính -->
 <section class="dashboard">
-
    <h1 class="heading">Trang chủ quản trị</h1>
-   <div class="box-container">
-   
-<!-- hộp 1 : doanh thu -->
 <div class="box-container">
+<!-- hộp 1 : doanh thu -->   
 <div class="box">
 <h3><?= number_format($month_revenue ?? 0, 0, ',', '.'); ?> VNĐ</h3>
 <p>Doanh thu tháng <?= $current_month_name . '/' . $current_year; ?></p>   <a href="../admin/revenue.php" class="btn">Xem chi tiết</a>
@@ -125,9 +122,9 @@ $month_revenue = $month_revenue_query->fetchColumn() ?? 0;
       <a href="admin_accounts.php" class="btn">Xem quản trị viên</a>
    </div> 
 -->
+</div>  
 
-   </div>  
-   
+<!-- <h1 class="heading">Trang chủ quản trị</h1> -->   
 </section>
 
 <!-- custom js file link  -->

@@ -26,8 +26,11 @@ if(!isset($admin_id)){
 </head>
 <body>
 <?php include '../components/admin_header.php' ?>
-<h1 class="heading">Quản lý kho</h1>
-<h1> trong đây sẽ có  : thông tin nhà cung cấp, thông tin sản phẩm đã nhập trong tháng  </h1>
+<section class="warehouse">
+   <h1 class="heading">Quản lý kho</h1>
+<h1> Trong đây sẽ có  : thông tin nhà cung cấp, thông tin sản phẩm đã nhập trong tháng  </h1>
+
+</section>
 
 </body>
 </html>

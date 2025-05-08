@@ -84,7 +84,7 @@ if(isset($_POST['submit'])){
 <section class="form-container">
 
    <form action="" method="POST">
-      <h3>Cập nhật tài khoản</h3>
+      <h3>Cập nhật tài khoản quản trị viên</h3>
       <input type="text" name="name" maxlength="20" class="box" oninput="this.value = this.value.replace(/\s/g, '')" placeholder="<?= $fetch_profile['name']; ?>">
       <input type="password" name="old_pass" maxlength="20" placeholder="Nhập mật khẩu cũ" class="box" oninput="this.value = this.value.replace(/\s/g, '')">
       <input type="password" name="new_pass" maxlength="20" placeholder="Nhập mật khẩu mới" class="box" oninput="this.value = this.value.replace(/\s/g, '')">

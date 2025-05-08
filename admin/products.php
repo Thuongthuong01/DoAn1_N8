@@ -97,21 +97,22 @@ if (isset($_GET['delete'])) {
       <!-- <input type="text" name="Tinhtrang" placeholder="Tình trạng" class="box" required> -->
       <select name="Tinhtrang" class="box" required>
          <option value="" disabled selected>Tình trạng --</option>
-         <option value="Âm nhạc">Trống</option>
-         <option value="Phim">Đã cho thuê</option>
-         <option value="Khác">Đang bảo trì</option>
+         <option value="Trống">Trống</option>
+         <option value="Đã cho thuê">Đã cho thuê</option>
+         <option value="Đang bảo trì">Đang bảo trì</option>
       </select>
       <input type="file" name="image" class="box" accept="image/jpg, image/jpeg, image/png, image/webp" required>
       <input type="submit" value="Thêm sản phẩm" name="add_product" class="btn">
    </form>
    <!-- Hiển thị thông báo -->
+
 <?php if (!empty($message) && is_array($message)): ?>
-   <div class="message <?php echo (strpos($message[0], 'thành công') !== false) ? 'success' : 'error'; ?>">
-      <?php foreach ($message as $msg): ?>
-         <span><?php echo $msg; ?></span>
-         <i onclick="this.parentElement.style.display='none';">&times;</i>
-      <?php endforeach; ?>
-   </div>
+   <?php foreach ($message as $msg): ?>
+      <div class="message" style="background-color: <?= (strpos($msg, 'Đã thêm') !== false) ? '#d4edda' : '#f8d7da'; ?>; color: <?= (strpos($msg, 'Đã thêm') !== false) ? '#155724' : '#721c24'; ?>; border: 1px solid <?= (strpos($msg, 'Đã thêm') !== false) ? '#c3e6cb' : '#f5c6cb'; ?>; padding: 10px; margin: 10px 0; border-radius: 5px;">
+         <span><?= $msg; ?></span>
+         <i onclick="this.parentElement.style.display='none';" style="cursor:pointer; float:right;">&times;</i>
+      </div>
+   <?php endforeach; ?>
 <?php endif; ?>
 </section>
 
@@ -146,9 +147,9 @@ if (isset($_GET['delete'])) {
             <td><img src="../uploaded_img/<?= $fetch_products['image']; ?>" alt="" width="70" height="70"></td>
             <td><?= $fetch_products['TenBD']; ?></td>
             <td><?= $fetch_products['Theloai']; ?></td>
-            <td><?= number_format($fetch_products['Dongia'], 0, ",", "."); ?> vnđ</td>
+            <td><?= number_format($fetch_products['Dongia'], 0, ",", "."); ?> VNĐ</td>
             <td><?= $fetch_products['NSX']; ?></td>
-            <td><?= $fetch_products['Tinhtrang']; ?></td>
+            <td style="white-space: normal; word-wrap: break-word; max-width: 200px;"><?= $fetch_products['Tinhtrang']; ?></td>
 
             <td>
                <a href="update_product.php?update=<?= $fetch_products['MaBD']; ?>" class="btn btn-update">Cập nhật</a>

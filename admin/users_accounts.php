@@ -47,8 +47,13 @@ if(isset($_GET['delete'])){
 <section class="accounts">
 
    <h1 class="heading">Tài khoản người dùng</h1>
+ 
 
    <div class="box-container">
+   <div class="box">
+      <p>Đăng ký tài khoản mới</p>
+      <a href="register_user.php" class="option-btn">Đăng ký</a>
+   </div>
 
    <?php
       $select_account = $conn->prepare("SELECT * FROM `khachhang`");
@@ -57,9 +62,15 @@ if(isset($_GET['delete'])){
          while($fetch_accounts = $select_account->fetch(PDO::FETCH_ASSOC)){  
    ?>
    <div class="box">
-      <p> Id : <span><?= $fetch_accounts['MaKH']; ?></span> </p>
+      <p> ID : <span><?= $fetch_accounts['MaKH']; ?></span> </p>
       <p> Tài khoản : <span><?= $fetch_accounts['TenKH']; ?></span> </p>
-      <a href="users_accounts.php?delete=<?= $fetch_accounts['MaKH']; ?>" class="delete-btn" onclick="return confirm('Xoá tài khoản?');">Xoá</a>
+      <p> SĐT : <span><?= $fetch_accounts['SDT']; ?></span> </p>
+      <p> Địa chỉ : <span><?= $fetch_accounts['Diachi']; ?></span> </p>
+      <p> Email : <span><?= $fetch_accounts['Email']; ?></span> </p>
+      <div class="flex-btn">
+         <a href="update_profile_user.php?id=<?= $fetch_accounts['MaKH']; ?>" class="option-btn">Cập nhật</a>
+         <a href="users_accounts.php?delete=<?= $fetch_accounts['MaKH']; ?>" class="delete-btn" onclick="return confirm('Bạn có chắc muốn xoá tài khoản này?');">Xoá</a>
+      </div>
    </div>
    <?php
       }

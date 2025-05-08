@@ -71,11 +71,11 @@ $current_page = basename($_SERVER['PHP_SELF']); // lấy tên file hiện tại,
 
     <a href="dashboard.php" class="<?= $current_page == 'dashboard.php' ? 'active' : '' ?>"><i class="fa-solid fa-house"></i><span> Trang chủ</span></a>
         <a href="products.php" class="<?= $current_page == 'products.php' ? 'active' : '' ?>"><i class="fa-solid fa-compact-disc"></i><span> Sản phẩm</span></a>
-        <a href="placed_orders.php" class="<?= $current_page == 'placed_orders.php' ? 'active' : '' ?>"><i class="fa-solid fa-shop"></i><span> Đơn hàng</span></a>
-        <a href="users_accounts.php" class="<?= $current_page == 'users_accounts.php' ? 'active' : '' ?>"><i class="fa-solid fa-users"></i><span> Khách hàng</span></a>
-      <a href="admin_accounts.php" class="<?= $current_page == 'admin_accounts.php' ? 'active' : '' ?>"><i class="fa-solid fa-headset"></i><span> Quản trị viên</span></a>
+        <a href="placed_orders.php" class="<?= $current_page == 'placed_orders.php' ? 'active' : '' ?>"><i class="fas fa-box"></i><span> Đơn hàng</span></a>
+        <a href="users_accounts.php" class="<?= $current_page == 'users_accounts.php' ? 'active' : '' ?>"><i class="fas fa-user"></i><span> Khách hàng</span></a>
+      <a href="admin_accounts.php" class="<?= $current_page == 'admin_accounts.php' ? 'active' : '' ?>"><i class="fas fa-headset"></i><span> Quản trị viên</span></a>
       <a href="revenue.php" class="<?= $current_page == 'revenue.php' ? 'active' : '' ?>"><i class="fa-solid fa-chart-line"></i><span> Doanh thu</span></a>
-      <a href="warehouse.php" class="<?= $current_page == 'reviews.php' ? 'active' : '' ?>"><span>Quản lý kho</span></a>
+      <a href="warehouse.php" class="<?= $current_page == 'reviews.php' ? 'active' : '' ?>"><i class="fas fa-warehouse"></i><span> Kho</span></a>
 
     </nav>
    
