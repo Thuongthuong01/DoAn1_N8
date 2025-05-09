@@ -7,7 +7,7 @@ if(!isset($admin_id)){
    header('location:admin_login.php');
 }
 
-// Lấy thông tin khách hàng từ ID
+//Lấy thông tin khách hàng từ ID
 if(isset($_GET['id'])){
     $user_id = $_GET['id'];
     $select_user = $conn->prepare("SELECT * FROM `khachhang` WHERE MaKH = ?");
@@ -28,7 +28,7 @@ if(isset($_POST['update'])){
         Diachi = ?, 
         Email = ? 
         WHERE MaKH = ?");
-    $update_user->execute([$name, $phone, $address, $email, $user_id]);
+    $update_user->execute([ $name, $phone, $address, $email ,$user_id]);
     
     $message[] = 'Cập nhật thông tin thành công!';
 }
@@ -54,7 +54,7 @@ if(isset($_POST['update'])){
 
    <form action="" method="POST">
       <h3>Cập nhật tài khoản khách hàng</h3>
-      <input type="hidden" name="id" value="<?= $user['MaKH']; ?>">
+      <!-- <input type="hidden" name="id" value="<?= $user['MaKH']; ?>"> -->
       <div class="box">
          <span >Tên khách hàng:</span>
          <input type="text" name="name" value="<?= $user['TenKH']; ?>" required>
@@ -69,7 +69,7 @@ if(isset($_POST['update'])){
          <span>Địa chỉ:</span>
          <input type="text" name="address" value="<?= $user['Diachi']; ?>" required>
       </div>
-      
+
       <div class="box">
          <span>Email:</span>
          <input type="email" name="email" value="<?= $user['Email']; ?>" required>

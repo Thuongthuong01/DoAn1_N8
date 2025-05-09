@@ -43,7 +43,7 @@ if(isset($_GET['delete'])){
 <?php include '../components/admin_header.php' ?>
 
 <!-- user accounts section starts  -->
-
+<!-- 
 <section class="accounts">
 
    <h1 class="heading">Tài khoản người dùng</h1>
@@ -81,11 +81,61 @@ if(isset($_GET['delete'])){
 
    </div>
 
-</section>
+</section> -->
 
 <!-- user accounts section ends -->
 
+<section class="accounts">
 
+   <h1 class="heading">Tài khoản khách hàng</h1>
+ 
+
+   <div class="box-container">
+   <div class="box">
+      <p>Đăng ký tài khoản mới</p>
+      <a href="register_user.php" class="option-btn">Đăng ký</a>
+   </div>
+   </section>
+<section class="main-content show-products" style="padding-top: 0;">
+<h1 class="heading">Danh sách khách hàng</h1>
+   <table class="product-table">
+      <thead>
+         <tr>
+            <th>Mã KH</th>
+            <th>Tên KH</th>
+            <th>SĐT</th>
+            <th>Địa Chỉ</th>
+            <th>Email</th>
+            <th>Chức năng</th>
+         </tr>
+      </thead>
+      <tbody>
+      <?php
+      $select_account = $conn->prepare("SELECT * FROM `khachhang`");
+      $select_account->execute();
+      if($select_account->rowCount() > 0){
+         while($fetch_accounts = $select_account->fetch(PDO::FETCH_ASSOC)){  
+   ?>
+         <tr>
+            <td><?= $fetch_accounts['MaKH']; ?></td>
+            <td><?= $fetch_accounts['TenKH']; ?></td>
+            <td><?= $fetch_accounts['SDT']; ?></td>
+            <td><?= $fetch_accounts['Diachi']; ?></td>
+            <td><?= $fetch_accounts['Email']; ?></td>
+            <td>
+               <a href="update_profile_user.php?update=<?= $fetch_accounts['MaKH']; ?>" class="btn btn-update">Cập nhật</a>
+               <a href="user_accounts.php?delete=<?= $fetch_accounts['MaKH']; ?>" class="btn btn-delete" onclick="return confirm('Xoá sản phẩm?');">Xoá</a>
+            </td>
+         </tr>
+         <?php
+               }
+            } else {
+               echo '<tr><td colspan="8" class="empty">Chưa có sản phẩm nào được thêm vào!</td></tr>';
+            }
+         ?>
+      </tbody>
+   </table>
+</section>
 
 
 

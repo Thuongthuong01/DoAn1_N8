@@ -39,7 +39,7 @@ if(isset($_GET['delete'])){
 <?php include '../components/admin_header.php' ?>
 
 <!-- admins accounts section starts  -->
-
+<!-- 
 <section class="accounts">
 
    <h1 class="heading">Danh sách tài khoản</h1>
@@ -79,11 +79,58 @@ if(isset($_GET['delete'])){
    ?>
 
    </div>
+</section> -->
 
+
+<section class="accounts">
+
+   <h1 class="heading">Tài khoản quản trị viên</h1>
+
+   <div class="box-container">
+
+   <div class="box">
+      <p>Đăng ký tài khoản mới</p>
+      <a href="register_admin.php" class="option-btn">Đăng ký</a>
+   </div>
 </section>
-
-<!-- admins accounts section ends -->
-
+<section class="main-content show-products" style="padding-top: 0;">
+<h1 class="heading">Danh sách quản trị</h1>
+   <table class="product-table">
+      <thead>
+         <tr>
+            <th>ID</th>
+            <th>Tên tài khoản</th>
+            <th>SĐT</th>
+            <th>Email</th>
+            <th>Chức năng</th>
+         </tr>
+      </thead>
+      <tbody>
+      <?php
+            $show_admins = $conn->prepare("SELECT * FROM quantri");
+            $show_admins->execute();
+            if ($show_admins->rowCount() > 0) {
+               while ($fetch_admin = $show_admins->fetch(PDO::FETCH_ASSOC)) {
+         ?>
+         <tr>
+            <td><?= $fetch_admin['MaAD']; ?></td>
+            <td><?= $fetch_admin['TenAD']; ?></td>
+            <td><?= $fetch_admin['SDT']; ?></td>
+            <td><?= $fetch_admin['Email']; ?></td>
+            <td>
+               <a href="update_profile.php?update=<?= $fetch_admin['MaAD']; ?>" class="btn btn-update">Cập nhật</a>
+               <a href="quantri.php?delete=<?= $fetch_admin['MaAD']; ?>" class="btn btn-delete" onclick="return confirm('Xoá sản phẩm?');">Xoá</a>
+            </td>
+         </tr>
+         <?php
+               }
+            } else {
+               echo '<tr><td colspan="8" class="empty">Chưa có sản phẩm nào được thêm vào!</td></tr>';
+            }
+         ?>
+      </tbody>
+   </table>
+</section>
 
 
 
