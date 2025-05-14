@@ -1,12 +1,13 @@
 <?php
+
 include '../components/connect.php';
+
 session_start();
 
-$admin_id = $_SESSION['admin_id'];
-if(!isset($admin_id)){
-   header('location:admin_login.php');
+if (!isset($_SESSION["user_id"])) {
+   header("Location:admin_login");
+   exit();
 }
-
 //Lấy thông tin khách hàng từ ID
 if(isset($_GET['id'])){
     $user_id = $_GET['id'];
@@ -16,22 +17,39 @@ if(isset($_GET['id'])){
 }
 
 // Xử lý cập nhật
-if(isset($_POST['update'])){
-    $name = $_POST['name'];
-    $phone = $_POST['phone'];
-    $address = $_POST['address'];
-    $email = $_POST['email'];
+// if(isset($_POST['update'])){
+//     $name = $_POST['name'];
+//     $phone = $_POST['phone'];
+//     $address = $_POST['address'];
+//     $email = $_POST['email'];
     
-    $update_user = $conn->prepare("UPDATE `khachhang` SET 
-        TenKH = ?, 
-        SDT = ?, 
-        Diachi = ?, 
-        Email = ? 
-        WHERE MaKH = ?");
-    $update_user->execute([ $name, $phone, $address, $email ,$user_id]);
+//     $update_user = $conn->prepare("UPDATE `khachhang` SET 
+//         TenKH = ?, 
+//         SDT = ?, 
+//         Diachi = ?, 
+//         Email = ? 
+//         WHERE MaKH = ?");
+//     $update_user->execute([ $name, $phone, $address, $email ,$user_id]);
     
-    $message[] = 'Cập nhật thông tin thành công!';
+//     $message[] = 'Cập nhật thông tin thành công!';
+// }
+if (isset($_GET['id'])) {
+    $user_id = $_GET['id'];
+    $select_user = $conn->prepare("SELECT * FROM khachhang WHERE MaKH = ?");
+    $select_user->execute([$user_id]);
+    $user = $select_user->fetch(PDO::FETCH_ASSOC);
+
+    if ($user) {
+        $name = $user['TenKH'];
+        $sdt = $user['SDT'];
+        $diachi = $user['DiaChi'];
+        $email = $user['Email'];
+    } else {
+        echo "Không tìm thấy khách hàng có mã $user_id";
+        // Có thể chuyển hướng về trang danh sách
+    }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -50,33 +68,67 @@ if(isset($_POST['update'])){
 <body>
    
 <?php include '../components/admin_header.php' ?>
-<section class="form-container">
+<!-- <section class="form-container">
 
    <form action="" method="POST">
       <h3>Cập nhật tài khoản khách hàng</h3>
-      <!-- <input type="hidden" name="id" value="<?= $user['MaKH']; ?>"> -->
+      <input type="hidden" name="id" value="<?= $user['MaKH']; ?>"> 
       <div class="box">
          <span >Tên khách hàng:</span>
-         <input type="text" name="name" value="<?= $user['TenKH']; ?>" required>
+         <input type="text" name="name" value="<?= $name['TenKH']; ?>" required>
       </div>
       
       <div class="box">
          <span>Số điện thoại:</span>
-         <input type="text" name="phone" value="<?= $user['SDT']; ?>" required>
+         <input type="text" name="phone" value="<?= $phone['SDT']; ?>" required>
       </div>
       
       <div class="box">
          <span>Địa chỉ:</span>
-         <input type="text" name="address" value="<?= $user['Diachi']; ?>" required>
+         <input type="text" name="address" value="<?= $address['Diachi']; ?>" required>
       </div>
 
       <div class="box">
          <span>Email:</span>
-         <input type="email" name="email" value="<?= $user['Email']; ?>" required>
+         <input type="email" name="email" value="<?= $email['Email']; ?>" required>
       </div>
       <input type="submit" value="Lưu thay đổi" name="update" class="btn">
       <a href="users_accounts.php" class="option-btn">Quay lại</a>
    </form>
+</section> -->
+
+<section class="form-container">
+
+   <form action="" method="POST">
+      <h3>Cập nhật tài khoản khách hàng</h3>
+      <!-- Nếu cần giữ mã KH để xử lý cập nhật -->
+      <input type="hidden" name="MaKH" value="<?= htmlspecialchars($user['MaKH'] ?? '') ?>">
+
+      <div class="box">
+         <span>Tên khách hàng:</span>
+         <input type="text" name="TenKH" value="<?= htmlspecialchars($user['TenKH'] ?? '') ?>" required>
+      </div>
+      
+      <div class="box">
+         <span>Số điện thoại:</span>
+         <input type="text" name="SDT" value="<?= htmlspecialchars($user['SDT'] ?? '') ?>" required>
+      </div>
+      
+      <div class="box">
+         <span>Địa chỉ:</span>
+         <input type="text" name="DiaChi" value="<?= htmlspecialchars($user['DiaChi'] ?? '') ?>" required>
+      </div>
+
+      <div class="box">
+         <span>Email:</span>
+         <input type="email" name="Email" value="<?= htmlspecialchars($user['Email'] ?? '') ?>" required>
+      </div>
+
+      <input type="submit" value="Lưu thay đổi" name="update" class="btn">
+      <a href="users_accounts.php" class="option-btn">Quay lại</a>
+   </form>
+
+</section>
 
 <script src="../js/admin_script.js"></script>
 </body>

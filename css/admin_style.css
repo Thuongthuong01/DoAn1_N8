@@ -411,27 +411,6 @@ section {
 
 /* danh mục trái */
 
-/* .side-bar .close-side-bar{
-  text-align: right;
-  padding-top: 2rem;
-  display: none;
-
-}
-.side-bar .close-side-bar i{
-  height: 3.5rem;
-  width: 3.5rem;
-  line-height: 3.4rem;
-  font-size: 1.5rem;
-  background-color: var(--red);
-  color: var(--white);
-  cursor: pointer;
-  border-radius: .5rem;
-  text-align: center;
-}
-.side-bar .close-side-bar i:hover{
-  background-color: #2c3e50;
-} */
-
 .side-bar {
   position: fixed;
   top: 0;
@@ -443,28 +422,12 @@ section {
   z-index: 1200;
   text-align: center;
   margin-top: 8.6rem;
+  /* padding: 1.5rem 1rem; */
 }
 
-.side-bar .profile {
-  padding: 1.5rem 1rem;
-  text-align: center;
-}
-
-.side-bar .profile img {
-  height: 10rem;
-  width: 10rem;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 0.5rem;
-}
-
-.side-bar .profile h3 {
+.side-bar h3 {
   font-size: 2rem;
   color: var(--black);
-}
-.side-bar .profile span {
-  color: var(--light-color);
-  font-size: 1.5rem;
 }
 
 .side-bar .navbar a {
@@ -483,25 +446,31 @@ section {
 .side-bar span {
   font-size: 1.5rem;
   text-align: center;
-}
-.side-bar .flex-btn {
-  display: block;
-  padding: 10px 20px;
-}
-
-.side-bar .navbar a span {
   color: var(--light-color);
 }
+
 .side-bar .navbar a:hover {
   background-color: var(--light-bg);
 }
 .side-bar .navbar a:hover i {
   margin-right: 2rem;
 }
-
 .side-bar.active {
   left: -31rem;
 }
+/* item  - không chạy đc */
+.dropdown .dropdown-menu {
+  display: none;
+  flex-direction: column;
+  padding-left: 20px;
+}
+
+.dropdown.open .dropdown-menu {
+  display: flex;
+}
+
+/* end item */
+
 @keyframes float {
   0%,
   100% {
@@ -513,7 +482,7 @@ section {
 }
 
 .main-content {
-  margin-left: 250px; /* chỉnh tùy theo chiều rộng sidebar */
+  margin-left: 10px; /* chỉnh tùy theo chiều rộng sidebar */
   padding: 20px;
 }
 .main-content1 {
@@ -588,11 +557,6 @@ section {
 .show-products .product-table .btn-update {
   background: #f7ed2b;
   color: #000;
-}
-
-.show-products .product-table .btn-delete {
-  background-color: #f44336;
-  color: white;
 }
 
 .product-table .empty {
@@ -676,7 +640,8 @@ section {
   border: var(--border);
   border-radius: 0.5rem;
 }
-.placed-orders-admin .box-container .order-table {
+/* 
+.placed-orders-admin .order-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 2rem;
@@ -702,22 +667,23 @@ section {
 }
 .placed-orders-admin .box-container .order-table .btn {
   padding: 5px 8px;
-  /* margin: 5px; */
+  /* margin: 5px; 
   border-radius: 5px;
   text-decoration: none;
-  /* font-weight: bold; */
+  /* font-weight: bold; 
   font-size: 13px;
   text-align: center;
 }
 .placed-orders-admin .box-container .order-table .delete-btn {
   padding: 5px 8px;
-  /* margin: 5px; */
+  /* margin: 5px; 
   border-radius: 5px;
   text-decoration: none;
   font-weight: bold;
   font-size: 13px;
   text-align: center;
-}
+} */
+
 .accounts {
   margin-left: 250px;
 }
@@ -878,5 +844,8 @@ section {
 }
 
 .warehouse {
+  margin-left: 250px;
+}
+.product-table {
   margin-left: 250px;
 }

@@ -1,17 +1,17 @@
 <?php
 
+
 include '../components/connect.php';
 
 session_start();
 
-$admin_id = $_SESSION['admin_id'];
+if (!isset($_SESSION["user_id"])) {
+   header("Location:admin_login");
+   exit();
+}
 
-if(!isset($admin_id)){
-   header('location:admin_login.php');
-};
 
 if(isset($_POST['submit'])){
-
    $name = $_POST['name'];
    $name = filter_var($name, FILTER_SANITIZE_STRING);
    $pass = sha1($_POST['pass']);

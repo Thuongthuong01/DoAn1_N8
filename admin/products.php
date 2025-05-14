@@ -4,10 +4,9 @@ include '../components/connect.php';
 
 session_start();
 
-$admin_id = $_SESSION['admin_id'];
-
-if (!isset($admin_id)) {
-   header('location:admin_login.php');
+if (!isset($_SESSION["user_id"])) {
+   header("Location:admin_login");
+   exit();
 }
 
 if (isset($_POST['add_product'])) {
@@ -47,6 +46,7 @@ if (isset($_POST['add_product'])) {
       }
    }
 }
+
 
 if (isset($_GET['delete'])) {
    $delete_id = $_GET['delete'];
@@ -152,7 +152,7 @@ if (isset($_GET['delete'])) {
             <td style="white-space: normal; word-wrap: break-word; max-width: 200px;"><?= $fetch_products['Tinhtrang']; ?></td>
 
             <td>
-               <a href="update_product.php?update=<?= $fetch_products['MaBD']; ?>" class="btn btn-update">Cập nhật</a>
+               <a href="update_product.php?update=<?= $fetch_products['MaBD']; ?>" class="btn btn-update">Sửa</a>
                <a href="products.php?delete=<?= $fetch_products['MaBD']; ?>" class="btn btn-delete" onclick="return confirm('Xoá sản phẩm?');">Xoá</a>
             </td>
          </tr>

@@ -1,76 +1,86 @@
 <?php
-
 include '../components/connect.php';
-
 session_start();
 
-$admin_id = $_SESSION['admin_id'];
-
-if(!isset($admin_id)){
-   header('location:admin_login.php');
-};
-
-if(isset($_POST['update_payment'])){
-
-   $order_id = $_POST['order_id'];
-   $payment_status = $_POST['payment_status'];
-   $update_status = $conn->prepare("UPDATE `orders` SET payment_status = ? WHERE id = ?");
-   $update_status->execute([$payment_status, $order_id]);
-   $message[] = 'Trạng thái đơn hàng đã cập nhật!';
-
+if (!isset($_SESSION["user_id"])) {
+   header("Location:admin_login");
+   exit();
 }
 
-if(isset($_GET['delete'])){
-   $delete_id = $_GET['delete'];
-   $delete_order = $conn->prepare("DELETE FROM `orders` WHERE id = ?");
-   $delete_order->execute([$delete_id]);
-   header('location:placed_orders.php');
+$message = [];
+
+// Thêm đơn hàng thuê mới vào bảng PhieuThue
+if (isset($_POST['add_phieuthue'])) {
+   $maBD = $_POST['MaBD'];
+   $maKH = $_POST['MaKH'];
+   $ngayThue = $_POST['Ngaythue'];
+   $hanTra = $_POST['Hantra'];
+   $soLuong = $_POST['Soluong'];
+
+   try {
+      // Tính số ngày thuê
+      $ngayThueDate = new DateTime($ngayThue);
+      $hanTraDate = new DateTime($hanTra);
+      $soNgayThue = $ngayThueDate->diff($hanTraDate)->days;
+
+      // Lấy đơn giá từ bảng bangdia
+      $stmt = $conn->prepare("SELECT Dongia FROM bangdia WHERE MaBD = ?");
+      $stmt->execute([$maBD]);
+      $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+      if ($result) {
+         $giaThue = $result['Dongia'];
+
+         // Tính tổng tiền = số ngày thuê * đơn giá * số lượng
+         $tongTien = $soNgayThue * $giaThue * $soLuong;
+
+         // Thêm vào bảng phieuthue
+         $insert = $conn->prepare("INSERT INTO `phieuthue` (MaBD, MaKH, NgayThue, NgayTraDK, SoLuong, TongTien) VALUES (?, ?, ?, ?, ?, ?)");
+         $insert->execute([$maBD, $maKH, $ngayThue, $hanTra, $soLuong, $tongTien]);
+         $message[] = "Thêm phiếu thuê thành công!";
+      } else {
+         $message[] = "Không tìm thấy băng đĩa có mã '$maBD'.";
+      }
+   } catch (PDOException $e) {
+      $message[] = "Lỗi khi thêm phiếu thuê: " . $e->getMessage();
+   }
+}
+// Xoá đơn hàng thuê
+   if (isset($_GET['delete'])) {
+      $delete_id = $_GET['delete'];
+      $delete_order = $conn->prepare("DELETE FROM `PhieuThue` WHERE MaThue = ?");
+      $delete_order->execute([$delete_id]);
+      header('location:placed_orders.php');
+      exit();
 }
 
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
    <meta charset="UTF-8">
-   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Quản lý đơn hàng</title>
-
-   <!-- font awesome cdn link  -->
+   <title>Quản lý thuê đĩa</title>
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-
-   <!-- custom css file link  -->
    <link rel="stylesheet" href="../css/admin_style.css">
-
 </head>
 <body>
 
 <?php include '../components/admin_header.php' ?>
 
-<!-- placed orders section starts  -->
-
 <section class="main-content placed-orders-admin">
-
-   <!-- <h1 class="heading">Đơn hàng</h1> -->
    <section class="add-products">
-   <form action="" method="POST" enctype="multipart/form-data">
-      <h3>Tạo đơn hàng</h3>
+      <form action="" method="POST" enctype="multipart/form-data">
+         <h3>Phiếu thuê đĩa</h3>
+         <input type="text" required placeholder="Nhập mã khách hàng" name="MaKH" maxlength="9" class="box">
+         <input type="text" required placeholder="Nhập mã băng đĩa" name="MaBD" maxlength="9" class="box">
+         <input type="date" required name="Ngaythue" class="box">
+         <input type="date" required name="Hantra" class="box">
+         <input type="number" min="1" max="100" required placeholder="Số lượng thuê" name="Soluong" class="box">
+         <input type="submit" value="Thêm phiếu thuê" name="add_phieuthue" class="btn">
+      </form>
 
-      <input type="text" required placeholder="Nhập mã khách hàng" name="MaKH" maxlength="9" class="box">
-
-      <input type="text" required placeholder="Nhập mã băng đĩa" name="MaBD" maxlength="9" class="box">
-
-      <input type="date" required placeholder="Ngày thuê" name="Ngaythue" class="box">
-
-      <input type="date" required placeholder="Hạn trả" name="Hantra" class="box">
-
-      <input type="number" min="1" max="100" required placeholder="Số lượng thuê" name="Soluong" class="box">
-
-      <input type="submit" value="Thêm phiếu thuê" name="add_phieuthue" class="btn">
-   </form>
-
-   <!-- Hiển thị thông báo -->
+     <!-- Hiển thị thông báo -->
    <?php if (!empty($message) && is_array($message)): ?>
    <div class="message <?php echo (strpos($message[0], 'thành công') !== false) ? 'success' : 'error'; ?>">
       <?php foreach ($message as $msg): ?>
@@ -79,68 +89,70 @@ if(isset($_GET['delete'])){
       <?php endforeach; ?>
    </div>
    <?php endif; ?>
+   </section>
+
 </section>
 
-<section class="main-content1 show-products" style="padding-top: 0;">
-<h1 class="heading">Danh sách đơn hàng</h1>
-   <table class="product-table">
-<?php
-// Truy vấn đơn hàng (hoadonthue + chitiethoadon nếu muốn có tổng tiền)
-$select_orders = $conn->prepare("
-   SELECT hdt.MaHD, hdt.MaKH, hdt.Ngaythue, hdt.NgaytraDK, hdt.NgaytraTT,
-          SUM(CAST(ct.tongtien AS DECIMAL(10,2))) AS tongtien
-   FROM hoadonthue hdt
-   LEFT JOIN chitiethoadon ct ON hdt.MaHD = ct.MaHD
-   GROUP BY hdt.MaHD
-   ORDER BY hdt.Ngaythue DESC
-");
-$select_orders->execute();
-$orders = $select_orders->fetchAll(PDO::FETCH_ASSOC);
-?>
 
+<section class="main-content show-products" >
+      <h1 class="heading">Danh sách phiếu thuê</h1>
+      <table class="product-table">
+      <thead>
+         <tr>
+            <th>Mã Thuê</th>
+            <th>Khách Hàng</th>
+            <th>SĐT</th>
+            <th>Băng Đĩa</th>
+            <th>Đơn giá</th>
+            <th>Ngày Thuê</th>
+            <th>Hạn Trả</th>
+            <th>Số Lượng</th>
+            <th>Tổng Tiền</th>
+            <th>Chức năng</th>
+         </tr>
+      </thead>
+      <tbody>
+         <?php
+         $stmt = $conn->prepare("
+            SELECT 
+               pt.MaThue, pt.NgayThue, pt.NgayTraDK, pt.SoLuong, pt.TongTien,
+               kh.TenKH, kh.SDT, kh.Email,
+               bd.TenBD, bd.TheLoai, bd.Dongia
+            FROM phieuthue pt
+            JOIN khachhang kh ON pt.MaKH = kh.MaKH
+            JOIN bangdia bd ON pt.MaBD = bd.MaBD
+            ORDER BY pt.NgayThue DESC
+         ");
+         $stmt->execute();
+         $phieuthues = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
- 
-      
-         <thead>
-            <tr>
-               <th>Mã HĐ</th>
-               <th>Mã KH</th>
-               <th>Ngày thuê</th>
-               <th>Hạn trả</th>
-               <th>Ngày trả thực tế</th>
-               <th>Tổng tiền</th>
-               <th>Hành động</th>
-            </tr>
-         </thead>
-         <tbody>
-            <?php if (count($orders) > 0): ?>
-               <?php foreach ($orders as $order): ?>
-                  <tr>
-                     <td><?= $order['MaHD']; ?></td>
-                     <td><?= $order['MaKH']; ?></td>
-                     <td><?= $order['Ngaythue']; ?></td>
-                     <td><?= $order['NgaytraDK']; ?></td>
-                     <td><?= $order['NgaytraTT']; ?></td>
-                     <td><?= number_format($order['tongtien'], 0, ',', '.') ?> VNĐ</td>
-                     <td>
-                        <a href="?delete=<?= $order['MaHD']; ?>" onclick="return confirm('Bạn có chắc muốn xóa đơn hàng này?');" class="delete-btn">Xóa</a>
-                     </td>
-                  </tr>
-               <?php endforeach; ?>
-            <?php else: ?>
-               <tr><td colspan="7">Không có đơn hàng nào.</td></tr>
-            <?php endif; ?>
-         </tbody>
-      
+         if (count($phieuthues) > 0):
+            foreach ($phieuthues as $phieu):
+         ?>
+               <tr>
+                  <td><?= $phieu['MaThue']; ?></td>
+                  <td><?= $phieu['TenKH']; ?></td>
+                  <td><?= $phieu['SDT']; ?></td>
+                  <td><?= $phieu['TenBD']; ?></td>
+                  <td><?= number_format($phieu['Dongia'], 0, ',', '.') ?> VNĐ</td>
+                  <td><?= $phieu['NgayThue']; ?></td>
+                  <td><?= $phieu['NgayTraDK']; ?></td>
+                  <td><?= $phieu['SoLuong']; ?></td>
+                  <td><?= number_format($phieu['TongTien'], 0, ',', '.') ?> VNĐ</td>
+                  <td>
+                     <a href="update_order.php?update=<?= $phieu['MaThue']; ?>" class="btn btn-update">Sửa</a>
+                     <a href="?delete=<?= $phieu['MaThue']; ?>" onclick="return confirm('Bạn có chắc muốn xóa phiếu thuê này?');" class="btn btn-delete">Xóa</a>
+                  </td>
+               </tr>
+         <?php
+            endforeach;
+         else:
+            echo '<tr><td colspan="12">Không có phiếu thuê nào.</td></tr>';
+         endif;
+         ?>
+      </tbody>
    </table>
 </section>
-
-
-
-
-
-<!-- custom js file link  -->
-<script src="../js/script.js"></script>
-
+<script src="../js/admin_script.js"></script>
 </body>
 </html>

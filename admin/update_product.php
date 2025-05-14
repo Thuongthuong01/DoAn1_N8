@@ -4,50 +4,52 @@ include '../components/connect.php';
 
 session_start();
 
-$admin_id = $_SESSION['admin_id'];
-
-if(!isset($admin_id)){
-   header('location:admin_login.php');
-};
-
+if (!isset($_SESSION["user_id"])) {
+   header("Location:admin_login");
+   exit();
+}
 if(isset($_POST['update'])){
 
-   $pid = $_POST['pid'];
-   $pid = filter_var($pid, FILTER_SANITIZE_STRING);
-   $name = $_POST['name'];
-   $name = filter_var($name, FILTER_SANITIZE_STRING);
-   $price = $_POST['price'];
-   $price = filter_var($price, FILTER_SANITIZE_STRING);
-   $category = $_POST['category'];
-   $category = filter_var($category, FILTER_SANITIZE_STRING);
-   $details = $_POST['details'];
-   $details = filter_var($details, FILTER_SANITIZE_STRING);
+   $MaBD = $_POST['MaBD'];
+   $MaBD = filter_var($MaBD, FILTER_SANITIZE_STRING);
+   $TenBD = $_POST['TenBD'];
+   $TenBD = filter_var($TenBD, FILTER_SANITIZE_STRING);
+   $Dongia = $_POST['Dongia'];
+   $Dongia = filter_var($Dongia, FILTER_SANITIZE_STRING);
+   $Theloai = $_POST['Theloai'];
+   $Theloai = filter_var($Theloai, FILTER_SANITIZE_STRING);
+   $NSX = $_POST['NSX'];
+   $NSX = filter_var($NSX, FILTER_SANITIZE_STRING);
+   $Tinhtrang = $_POST['Tinhtrang'];
+   $Tinhtrang = filter_var($Tinhtrang, FILTER_SANITIZE_STRING);
 
-   $update_product = $conn->prepare("UPDATE `products` SET name = ?, category = ?, price = ?,details = ? WHERE id = ?");
-   $update_product->execute([$name, $category, $price,$details, $pid]);
+   $update_product = $conn->prepare("UPDATE `bangdia` SET TenBD = ?, Dongia = ?, Theloai = ?, NSX = ?, Tinhtrang = ? WHERE MaBD = ?");
+   $update_product->execute([$TenBD, $Dongia, $Theloai, $NSX, $Tinhtrang, $MaBD]);
 
-   $message[] = 'Sản phẩm đã được cập nhật!';
 
    $old_image = $_POST['old_image'];
-   $image = $_FILES['image']['name'];
+   $image = $_FILES['img']['name'];
    $image = filter_var($image, FILTER_SANITIZE_STRING);
-   $image_size = $_FILES['image']['size'];
-   $image_tmp_name = $_FILES['image']['tmp_name'];
+   $image_size = $_FILES['img']['size'];
+   $image_tmp_name = $_FILES['img']['tmp_name'];
    $image_folder = '../uploaded_img/'.$image;
 
    if(!empty($image)){
       if($image_size > 2000000){
          $message[] = 'Kích thước ảnh quá lớn!';
       }else{
-         $update_image = $conn->prepare("UPDATE `products` SET image = ? WHERE id = ?");
-         $update_image->execute([$image, $pid]);
+         $update_image = $conn->prepare("UPDATE `bangdia` SET image = ? WHERE MaBD = ?");
+         $update_image->execute([$image, $MaBD]);
          move_uploaded_file($image_tmp_name, $image_folder);
-         unlink('../uploaded_img/'.$old_image);
+         if(file_exists('../uploaded_img/'.$old_image)){
+            unlink('../uploaded_img/'.$old_image);
+         }
          $message[] = 'Hình ảnh đã được cập nhật!';
       }
    }
 
 }
+
 
 ?>
 
@@ -57,7 +59,7 @@ if(isset($_POST['update'])){
    <meta charset="UTF-8">
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>update product</title>
+   <title>Cập nhật sản phẩm</title>
 
    <!-- font awesome cdn link  -->
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
@@ -78,39 +80,54 @@ if(isset($_POST['update'])){
 
    <?php
       $update_id = $_GET['update'];
-      $show_products = $conn->prepare("SELECT * FROM `bangdia` WHERE id = ?");
+      $show_products = $conn->prepare("SELECT * FROM `bangdia` WHERE MaBD = ?");
       $show_products->execute([$update_id]);
       if($show_products->rowCount() > 0){
          while($fetch_products = $show_products->fetch(PDO::FETCH_ASSOC)){  
    ?>
    <form action="" method="POST" enctype="multipart/form-data">
-      <input type="hidden" name="pid" value="<?= $fetch_products['id']; ?>">
-      <input type="hidden" name="old_image" value="<?= $fetch_products['image']; ?>">
-      <img src="../uploaded_img/<?= $fetch_products['image']; ?>" alt="">
-      <span>Tên sản phẩm</span>
-      <input type="text" required placeholder="enter product name" name="name" maxlength="100" class="box" value="<?= $fetch_products['name']; ?>">
-      <span>Giá</span>
-      <div style="display: flex; align-items: center;">
-         <input type="number" min="0" max="9999999999" required placeholder="Nhập giá sản phẩm" name="price" onkeypress="if(this.value.length == 10) return false;" class="box" value="<?= $fetch_products['price']; ?>" style="flex: 1;">
-         <span style="margin-left: 10px;">VNĐ</span>
-      </div>
-      <span>Mô tả sản phẩm</span>
-      <textarea name="details" class="box" rows="5" placeholder="Nhập mô tả sản phẩm"><?= $fetch_products['details']; ?></textarea>
-      <span>Phân loại</span>
-      <select name="category" class="box" required>
-         <option selected value="<?= $fetch_products['category']; ?>"><?= $fetch_products['category']; ?></option>
-         <!-- <option value="main dish">main dish</option> -->
-         <option value="Đồ ăn">Đồ ăn </option>
-         <option value="Đồ uống">Đồ uống</option>
-         <option value="Tráng miệng">Tráng miệng</option>
-      </select>
-      <span>Hình ảnh</span>
-      <input type="file" name="image" class="box" accept="image/jpg, image/jpeg, image/png, image/webp">
-      <div class="flex-btn">
-         <input type="submit" value="Cập nhật" class="btn" name="update">
-         <a href="products.php" class="option-btn">Quay lại</a>
-      </div>
-   </form>
+<!-- <span>Hình ảnh</span> -->
+   <input type="hidden" name="MaBD" value="<?= $fetch_products['MaBD']; ?>">
+   
+   <input type="hidden" name="old_image" value="<?= $fetch_products['image']; ?>">
+   
+    <img src="../uploaded_img/<?= $fetch_products['image']; ?>" alt="Ảnh băng đĩa"   >  
+   <br>
+   <span>Mã băng đĩa</span>
+   <input type="text" name="MaBD" value="<?= $fetch_products['MaBD']; ?>" class="box" readonly>
+
+   <span>Tên băng đĩa</span>
+   <input type="text" name="TenBD" value="<?= $fetch_products['TenBD']; ?>" class="box" required>
+
+   <span>Đơn giá</span>
+   <input type="number" name="Dongia" value="<?= $fetch_products['Dongia']; ?>" class="box" required>
+
+   <span>Thể loại</span>
+   <select name="Theloai" class="box" required>
+      <option value="Âm nhạc" <?= ($fetch_products['Theloai'] == 'Âm nhạc') ? 'selected' : ''; ?>>Âm nhạc</option>
+      <option value="Phim" <?= ($fetch_products['Theloai'] == 'Phim') ? 'selected' : ''; ?>>Phim</option>
+      <option value="Khác" <?= ($fetch_products['Theloai'] == 'Khác') ? 'selected' : ''; ?>>Khác</option>
+   </select>
+
+   <span>Nhà sản xuất</span>
+   <input type="text" name="NSX" value="<?= $fetch_products['NSX']; ?>" class="box" required>
+
+   <span>Tình trạng</span>
+   <select name="Tinhtrang" class="box" required>
+      <option value="Trống" <?= ($fetch_products['Tinhtrang'] == 'Trống') ? 'selected' : ''; ?>>Trống</option>
+      <option value="Đã cho thuê" <?= ($fetch_products['Tinhtrang'] == 'Đã cho thuê') ? 'selected' : ''; ?>>Đã cho thuê</option>
+      <option value="Đang bảo trì" <?= ($fetch_products['Tinhtrang'] == 'Đang bảo trì') ? 'selected' : ''; ?>>Đang bảo trì</option>
+   </select>
+
+   <span>Hình ảnh</span>
+   <input type="file" name="img" class="box" accept="image/*">
+
+   <div class="flex-btn">
+      <input type="submit" name="update" value="Cập nhật" class="btn">
+      <a href="products.php" class="option-btn">Quay lại</a>
+   </div>
+</form>
+
    <?php
          }
       }else{
