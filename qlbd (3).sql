@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 14, 2025 at 06:42 AM
+-- Generation Time: May 16, 2025 at 04:43 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -51,77 +51,44 @@ INSERT INTO `bangdia` (`MaBD`, `TenBD`, `Theloai`, `Dongia`, `NSX`, `Tinhtrang`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `chitetphieunhap`
+-- Table structure for table `chitietphieunhap`
 --
 
-CREATE TABLE `chitetphieunhap` (
-  `MaPhieu` varchar(9) NOT NULL,
+CREATE TABLE `chitietphieunhap` (
+  `ID` int(11) NOT NULL,
+  `MaPhieu` varchar(9) DEFAULT NULL,
   `MaBD` varchar(9) DEFAULT NULL,
-  `soluong` varchar(30) NOT NULL,
-  `tongtien` varchar(30) NOT NULL
+  `GiaGoc` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `chitetphieunhap`
+-- Dumping data for table `chitietphieunhap`
 --
 
-INSERT INTO `chitetphieunhap` (`MaPhieu`, `MaBD`, `soluong`, `tongtien`) VALUES
-('1', 'bd1', '4', '2.0000'),
-('2', 'bd2', '5', '34.0000'),
-('3', 'bd3', '45', '45.0000'),
-('4', 'bd4', '24', '23.0000'),
-('5', 'bd5', '43', '12.0000');
+INSERT INTO `chitietphieunhap` (`ID`, `MaPhieu`, `MaBD`, `GiaGoc`) VALUES
+(1, 'phieu1', 'bd123', NULL),
+(2, 'phieu1', 'bd788', NULL),
+(3, 'phieu6', 'ad123', 2000),
+(4, 'phieu6', 'bd788', 9770),
+(5, 'phieu6', '12121', 7000),
+(6, 'phieu7', 'ad123', 3000),
+(7, 'phieu7', 'bd788', 70000),
+(8, 'phieu13', 'ad124', 60000),
+(9, 'phieu13', 'bd6666', 70000),
+(10, 'phieu2', 'ad12356', 60000),
+(11, 'phieu2', 'bd78888', 7000);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `chitiethoadon`
+-- Table structure for table `chitietphieuthue`
 --
 
-CREATE TABLE `chitiethoadon` (
-  `MaHD` varchar(9) NOT NULL,
+CREATE TABLE `chitietphieuthue` (
+  `MaThue` int(11) NOT NULL,
   `MaBD` varchar(9) NOT NULL,
-  `soluong` varchar(30) NOT NULL,
-  `dongia` varchar(10) NOT NULL,
-  `tongtien` varchar(10) NOT NULL
+  `DonGia` decimal(10,0) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `chitiethoadon`
---
-
-INSERT INTO `chitiethoadon` (`MaHD`, `MaBD`, `soluong`, `dongia`, `tongtien`) VALUES
-('1', 'bd1', '2', '40000', '340000'),
-('2', 'bd2', '34', '30000', '343000'),
-('3', 'bd3', '23', '20000', '323000'),
-('4', 'bd4', '23', '60000', '560000'),
-('5', 'bd5', '12', '40000', '400000');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `hoadonthue`
---
-
-CREATE TABLE `hoadonthue` (
-  `MaHD` varchar(9) NOT NULL,
-  `Ngaythue` date NOT NULL,
-  `NgaytraDK` date NOT NULL,
-  `NgaytraTT` date NOT NULL,
-  `MaKH` varchar(9) NOT NULL,
-  `MaBD` varchar(9) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `hoadonthue`
---
-
-INSERT INTO `hoadonthue` (`MaHD`, `Ngaythue`, `NgaytraDK`, `NgaytraTT`, `MaKH`, `MaBD`) VALUES
-('1', '2024-12-07', '2024-12-08', '2024-12-09', 'kh1', '0'),
-('2', '2024-12-08', '2024-12-09', '2024-12-09', 'kh2', '0'),
-('3', '2024-11-08', '2024-11-10', '2024-11-11', 'kh3', '0'),
-('4', '2025-02-07', '2025-02-09', '2025-02-09', 'kh4', '0'),
-('5', '2025-03-07', '2025-03-09', '2025-03-11', 'kh5', '0');
 
 -- --------------------------------------------------------
 
@@ -182,19 +149,20 @@ INSERT INTO `nhacc` (`MaNCC`, `TenNCC`, `SDT`, `DiaChi`) VALUES
 CREATE TABLE `phieunhap` (
   `MaPhieu` varchar(9) NOT NULL,
   `MaNCC` varchar(9) DEFAULT NULL,
-  `NgayLap` date DEFAULT NULL
+  `NgayNhap` date DEFAULT NULL,
+  `SoLuong` int(9) NOT NULL,
+  `TongTien` int(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `phieunhap`
 --
 
-INSERT INTO `phieunhap` (`MaPhieu`, `MaNCC`, `NgayLap`) VALUES
-('phieu1', 'ncc1', '2025-06-07'),
-('phieu2', 'ncc2', '2024-07-08'),
-('phieu3', 'ncc3', '2025-03-06'),
-('phieu4', 'ncc4', '2023-07-06'),
-('phieu5', 'ncc5', '2025-03-03');
+INSERT INTO `phieunhap` (`MaPhieu`, `MaNCC`, `NgayNhap`, `SoLuong`, `TongTien`) VALUES
+('phieu13', 'ncc2', '2025-05-08', 2, 130000),
+('phieu2', 'ncc4', '2025-05-03', 2, 56000),
+('phieu6', 'ncc2', '2025-05-03', 3, 18770),
+('phieu7', 'ncc3', '2025-05-06', 2, 73000);
 
 -- --------------------------------------------------------
 
@@ -277,22 +245,17 @@ ALTER TABLE `bangdia`
   ADD PRIMARY KEY (`MaBD`);
 
 --
--- Indexes for table `chitetphieunhap`
+-- Indexes for table `chitietphieunhap`
 --
-ALTER TABLE `chitetphieunhap`
-  ADD PRIMARY KEY (`MaPhieu`);
+ALTER TABLE `chitietphieunhap`
+  ADD PRIMARY KEY (`ID`);
 
 --
--- Indexes for table `chitiethoadon`
+-- Indexes for table `chitietphieuthue`
 --
-ALTER TABLE `chitiethoadon`
-  ADD PRIMARY KEY (`MaHD`);
-
---
--- Indexes for table `hoadonthue`
---
-ALTER TABLE `hoadonthue`
-  ADD PRIMARY KEY (`MaHD`);
+ALTER TABLE `chitietphieuthue`
+  ADD PRIMARY KEY (`MaThue`,`MaBD`),
+  ADD KEY `MaBD` (`MaBD`);
 
 --
 -- Indexes for table `khachhang`
@@ -337,6 +300,12 @@ ALTER TABLE `quantri`
 --
 
 --
+-- AUTO_INCREMENT for table `chitietphieunhap`
+--
+ALTER TABLE `chitietphieunhap`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
 -- AUTO_INCREMENT for table `phieuthue`
 --
 ALTER TABLE `phieuthue`
@@ -351,6 +320,13 @@ ALTER TABLE `phieutra`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `chitietphieuthue`
+--
+ALTER TABLE `chitietphieuthue`
+  ADD CONSTRAINT `chitietphieuthue_ibfk_1` FOREIGN KEY (`MaThue`) REFERENCES `phieuthue` (`MaThue`) ON DELETE CASCADE,
+  ADD CONSTRAINT `chitietphieuthue_ibfk_2` FOREIGN KEY (`MaBD`) REFERENCES `bangdia` (`MaBD`);
 
 --
 -- Constraints for table `phieutra`
