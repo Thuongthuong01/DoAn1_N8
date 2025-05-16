@@ -70,7 +70,6 @@ if(isset($_POST['submit'])){
 <section class="form-container">
 <form action="" method="post">
    <h3>Đăng ký khách hàng mới</h3>
-   
    <div class="box">
       <span>Tên khách hàng:</span>
       <input type="text" name="tenKH" minlength="5" required placeholder="Nhập tên ">
@@ -92,6 +91,7 @@ if(isset($_POST['submit'])){
    </div>
    
    <input type="submit" name="submit" value="Đăng ký" class="btn">
+   <a href="users_accounts.php" class="option-btn">Quay lại</a>
 </form>
 </section>
 </body>

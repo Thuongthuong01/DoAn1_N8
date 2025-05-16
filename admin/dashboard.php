@@ -15,15 +15,15 @@ $current_year = date('Y');
 // Lấy tên tháng (hiển thị)
 $current_month_name = $current_month;
 
-// Truy vấn doanh thu từ chitiethoadon JOIN hoadonthue
-$month_revenue_query = $conn->prepare("
-    SELECT SUM( CAST(cthd.tongtien AS DECIMAL(10,2)) ) AS total 
-    FROM chitiethoadon cthd
-    JOIN hoadonthue hdt ON cthd.MaHD = hdt.MaHD
-    WHERE MONTH(hdt.Ngaythue) = ? AND YEAR(hdt.Ngaythue) = ?
-");
-$month_revenue_query->execute([$current_month, $current_year]);
-$month_revenue = $month_revenue_query->fetchColumn() ?? 0;
+// Truy vấn doanh thu từ chitiethoadon JOIN phieuthue
+// $month_revenue_query = $conn->prepare("
+//     SELECT SUM( CAST(cthd.tongtien AS DECIMAL(10,2)) ) AS total 
+//     FROM chitiethoadon cthd
+//     JOIN phieuthue hdt ON cthd.MaHD = hdt.MaHD
+//     WHERE MONTH(hdt.Ngaythue) = ? AND YEAR(hdt.Ngaythue) = ?
+// ");
+// $month_revenue_query->execute([$current_month, $current_year]);
+// $month_revenue = $month_revenue_query->fetchColumn() ?? 0;
 
 ?> 
 
@@ -59,7 +59,7 @@ $month_revenue = $month_revenue_query->fetchColumn() ?? 0;
 <!-- hộp 2 : tổng đơn hàng -->
 <div class="box">
    <?php
-      $select_all_orders = $conn->prepare("SELECT COUNT(*) FROM `hoadonthue`");
+      $select_all_orders = $conn->prepare("SELECT COUNT(*) FROM `phieuthue`");
       $select_all_orders->execute();
       $total_orders = $select_all_orders->fetchColumn();
    ?>
@@ -93,7 +93,7 @@ $month_revenue = $month_revenue_query->fetchColumn() ?? 0;
 
 <!-- <div class="box">
    <?php
-      $select_pending = $conn->prepare("SELECT COUNT(*) FROM `hoadonthue` WHERE payment_status = 'Đang chờ'");
+      $select_pending = $conn->prepare("SELECT COUNT(*) FROM `phieuthue` WHERE payment_status = 'Đang chờ'");
       $select_pending->execute();
       $count_pending = $select_pending->fetchColumn();
    ?>

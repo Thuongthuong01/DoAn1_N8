@@ -432,7 +432,7 @@ section {
 
 .side-bar .navbar a {
   display: block;
-  padding: 2rem;
+  padding: 1.7rem;
   margin: 0.5rem 0;
   font-size: 1.8rem;
   text-align: left;
@@ -458,17 +458,30 @@ section {
 .side-bar.active {
   left: -31rem;
 }
-/* item  - không chạy đc */
+/* item */
 .dropdown .dropdown-menu {
-  display: none;
-  flex-direction: column;
-  padding-left: 20px;
+  display: none !important;
+  flex-direction: column !important;
+  padding-left: 40px !important;
+  font-size: 1.4rem !important;
+  background-color: #ffffff !important;
+  margin-left: 10px !important;
+  width: fit-content !important;
 }
 
 .dropdown.open .dropdown-menu {
-  display: flex;
+  display: flex !important;
 }
 
+.dropdown .dropdown-menu a {
+  font-size: 1.2rem !important;
+  padding: 4px 10px !important;
+  line-height: 1.4 !important;
+}
+.dropdown .dropdown-menu a:hover {
+  transform: translateX(10px);
+  transition: transform 0.2s ease;
+}
 /* end item */
 
 @keyframes float {
@@ -482,7 +495,7 @@ section {
 }
 
 .main-content {
-  margin-left: 10px; /* chỉnh tùy theo chiều rộng sidebar */
+  margin-left: 250px; /*chỉnh tùy theo chiều rộng sidebar */
   padding: 20px;
 }
 .main-content1 {
@@ -546,7 +559,7 @@ section {
 
 .show-products .product-table .btn {
   padding: 5px 8px;
-  /* margin: 5px; */
+  /* margin: 5px;  */
   border-radius: 5px;
   text-decoration: none;
   font-weight: bold;
@@ -555,7 +568,7 @@ section {
 }
 
 .show-products .product-table .btn-update {
-  background: #f7ed2b;
+  background: var(--orange);
   color: #000;
 }
 
@@ -709,6 +722,7 @@ section {
   padding: 0.5rem 0;
   font-size: 1.8rem;
   color: var(--black);
+  text-align: center;
 }
 
 .accounts .box-container .box p span {
@@ -844,8 +858,5 @@ section {
 }
 
 .warehouse {
-  margin-left: 250px;
-}
-.product-table {
   margin-left: 250px;
 }

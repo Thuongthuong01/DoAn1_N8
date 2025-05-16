@@ -118,7 +118,7 @@ if(isset($_GET['delete'])){
             <td><?= $fetch_admin['SDT']; ?></td>
             <td><?= $fetch_admin['Email']; ?></td>
             <td>
-               <a href="update_profile.php?update=<?= $fetch_admin['MaAD']; ?>" class="btn btn-update">Cập nhật</a>
+               <a href="update_profile_admin.php?update=<?= $fetch_admin['MaAD']; ?>" class="btn btn-update">Cập nhật</a>
                <a href="quantri.php?delete=<?= $fetch_admin['MaAD']; ?>" class="btn btn-delete" onclick="return confirm('Xoá sản phẩm?');">Xoá</a>
             </td>
          </tr>

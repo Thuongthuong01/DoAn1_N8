@@ -40,12 +40,11 @@ if (isset($_SESSION['user_id'])) {
         </div>
         <div class="profile">
         <?php if (isset($_SESSION["user_id"])) { ?>
-            <img src="../uploads/SHOL0253.JPG" alt="">
+            <img src="../images/user1.png" alt="">
             <h3>Xin chào, <?= htmlspecialchars($admin_name); ?></h3>
             <span>Quản trị viên</span>
             <a href="admin_accounts.php" class="btn">Thông tin cá nhân</a>
             <a href="../components/admin_logout.php" class="option-btn"> Đăng xuất</a>
-        
          <?php } ?> 
         </div>
     </section>
@@ -64,7 +63,7 @@ $current_page = basename($_SERVER['PHP_SELF']); // lấy tên file hiện tại,
     <a href="dashboard.php" class="<?= $current_page == 'dashboard.php' ? 'active' : '' ?>"><i class="fa-solid fa-house"></i><span> Trang chủ</span></a>
     <a href="products.php" class="<?= $current_page == 'products.php' ? 'active' : '' ?>"><i class="fa-solid fa-compact-disc"></i><span> Sản phẩm</span></a>
     <div class="dropdown">
-        <a href="javascript:void(0);" class="dropdown-toggle"><i class="fas fa-box"></i><span> Đơn hàng <i class="fas fa-caret-down"></i></span></a>
+        <a href="javascript:void(0);" class="dropdown-toggle"><i class="fas fa-box"></i><span> Đơn hàng</span></a>
         <div class="dropdown-menu">
             <a href="placed_orders.php">Đơn hàng thuê</a>
             <a href="return_orders.php">Đơn hàng trả</a>
@@ -73,8 +72,9 @@ $current_page = basename($_SERVER['PHP_SELF']); // lấy tên file hiện tại,
     <a href="users_accounts.php" class="<?= $current_page == 'users_accounts.php' ? 'active' : '' ?>"><i class="fas fa-user"></i><span> Khách hàng</span></a>
     <a href="admin_accounts.php" class="<?= $current_page == 'admin_accounts.php' ? 'active' : '' ?>"><i class="fas fa-headset"></i><span> Quản trị viên</span></a>
     <a href="revenue.php" class="<?= $current_page == 'revenue.php' ? 'active' : '' ?>"><i class="fa-solid fa-chart-line"></i><span> Doanh thu</span></a>
-    <a href="warehouse.php" class="<?= $current_page == 'reviews.php' ? 'active' : '' ?>"><i class="fas fa-warehouse"></i><span> Kho</span></a>
-    </nav>
+    <a href="supplier.php" class="<?= $current_page == 'supplier.php' ? 'active' : '' ?>"><i class="fas fa-truck-moving"></i><span> Nhà cung cấp</span></a>
+    <a href="warehouse.php" class="<?= $current_page == 'reviews.php' ? 'active' : '' ?>"><i class="fas fa-warehouse"></i><span> Kho Hàng</span></a>
+</nav>
    
     <?php } ?>
     
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
    });
 });
 </script>
-
+<script src="../js/admin_script.js"></script>
 <!-- <section class="quick-select">
     <h1 class="heading">Quick option</h1>
 </section> -->

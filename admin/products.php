@@ -32,17 +32,17 @@ if (isset($_POST['add_product'])) {
 
    // Kiểm tra trùng mã băng đĩa
    if ($select_products->rowCount() > 0) {
-      $message[] = 'Trùng mã băng đĩa ! Vui lòng nhập lại ! ';
+      $message[] = '❌ Trùng mã băng đĩa ! Vui lòng nhập lại ! ';
    } else {
       // Kiểm tra kích thước ảnh
       if ($image_size > 2000000) {
-         $message[] = 'Kích thước hình ảnh quá lớn !';
+         $message[] = '❌ Kích thước hình ảnh quá lớn !';
       } else {
          // Di chuyển ảnh và chèn vào cơ sở dữ liệu
          move_uploaded_file($image_tmp_name, $image_folder);
          $insert_product = $conn->prepare("INSERT INTO `bangdia` (MaBD, TenBD, Theloai, Dongia, NSX, Tinhtrang, image) VALUES (?, ?, ?, ?, ?, ?, ?)");
          $insert_product->execute([$MaBD, $TenBD, $Theloai, $Dongia, $NSX, $Tinhtrang, $image]);
-         $message[] = 'Đã thêm sản phẩm mới!';
+         $message[] = '✅ Đã thêm sản phẩm mới!';
       }
    }
 }
@@ -128,7 +128,7 @@ if (isset($_GET['delete'])) {
             <th>Ảnh</th>
             <th>Tên Băng Đĩa</th>
             <th>Thể loại</th>
-            <th>Đơn giá</th>
+            <th>Đơn giá thuê</th>
             <th>NSX</th>
             <th>Tình trạng</th>
             <th>Chức năng</th>
