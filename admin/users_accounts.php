@@ -138,7 +138,7 @@ if(isset($_GET['delete'])){
             <td><?= $fetch_accounts['Diachi']; ?></td>
             <td><?= $fetch_accounts['Email']; ?></td>
             <td>
-               <a href="lichsu.php?MaKH=<?= $fetch_accounts['MaKH']; ?>" class="btn btn-history">Xem</a>
+               <a href="rental_history.php?MaKH=<?= $fetch_accounts['MaKH']; ?>" class="btn btn-history">Xem</a>
             </td>
             <td>
                <a href="update_profile_user.php?update=<?= $fetch_accounts['MaKH']; ?>" class="btn btn-update">Cập nhật</a>
