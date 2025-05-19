@@ -27,10 +27,11 @@ if (isset($_SESSION['user_id'])) {
 
     <section class="flex">
         <a href="dashboard.php" > <img src="..\images\logo.png" alt=""  width=" 210" ></a>
-        <form action="" method="post" class="search-form">
-            <input type="text" name="search-box" placeholder="tìm kiếm..." required maxlength="100">
-            <button type="submit" class="fas fa-search" name="search-box"></button>
-        </form>
+        <form action="search.php" method="post" class="search-form">
+    <input type="text" name="search-box" placeholder="Tìm kiếm..." required maxlength="100">
+    <button type="submit" class="fas fa-search" name="search-btn"></button>
+</form>
+
         <h3>Xin chào, <?= htmlspecialchars($admin_name); ?></h3>
         <div class="icons">
             <div id="search-btn" class="fas fa-search"></div>
