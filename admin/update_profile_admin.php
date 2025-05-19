@@ -11,7 +11,7 @@ if (!isset($_SESSION["user_id"])) {
 
 if(isset($_POST['submit'])){
 
-   $name = $_POST['name'];
+   $name = $_POST['TenAD'];
    $name = filter_var($name, FILTER_SANITIZE_STRING);
 
    if(!empty($name)){
@@ -20,7 +20,7 @@ if(isset($_POST['submit'])){
       if($select_name->rowCount() > 0){
          $message[] = 'Tên người dùng đã được sử dụng!';
       }else{
-         $update_name = $conn->prepare("UPDATE `admin` SET name = ? WHERE id = ?");
+         $update_name = $conn->prepare("UPDATE quantri SET name = ? WHERE id = ?");
          $update_name->execute([$name, $admin_id]);
       }
    }
@@ -83,7 +83,7 @@ if(isset($_POST['submit'])){
 
    <form action="" method="POST">
       <h3>Cập nhật tài khoản quản trị viên</h3>
-      <input type="text" name="name" maxlength="20" class="box" oninput="this.value = this.value.replace(/\s/g, '')" placeholder="<?= $fetch_profile['name']; ?>">
+      <input type="text" name="name" maxlength="20" class="box" oninput="this.value = this.value.replace(/\s/g, '')" value="<?= isset($fetch_profile['TenAD']) ? htmlspecialchars($fetch_profile['TenAD']) : '' ?>">
       <input type="password" name="old_pass" maxlength="20" placeholder="Nhập mật khẩu cũ" class="box" oninput="this.value = this.value.replace(/\s/g, '')">
       <input type="password" name="new_pass" maxlength="20" placeholder="Nhập mật khẩu mới" class="box" oninput="this.value = this.value.replace(/\s/g, '')">
       <input type="password" name="confirm_pass" maxlength="20" placeholder="Nhập lại mật khẩu mới" class="box" oninput="this.value = this.value.replace(/\s/g, '')">

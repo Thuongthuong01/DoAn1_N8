@@ -8,13 +8,22 @@ if (!isset($_SESSION["user_id"])) {
    header("Location:admin_login");
    exit();
 }
+$user_id = $_SESSION['user_id'];
+$tenAD = '';
+
+$stmt = $conn->prepare("SELECT TenAD FROM quantri WHERE MaAD = ?");
+$stmt->execute([$user_id]);
+if ($stmt->rowCount() > 0) {
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $tenAD = $row['TenAD'];
+}
 if (isset($_POST['submit'])) {
    $maPhieu = $_POST['MaPhieu'];
    $maNCC = $_POST['MaNCC'];
    $ngayNhap = $_POST['NgayNhap'];
    $soLuong = $_POST['SoLuong'];
    $tongTien = $_POST['TongTien'];
-
+   $maAD = $_SESSION['user_id'];
    $errors = [];
 
    // Kiểm tra MaNCC có tồn tại không
@@ -32,19 +41,32 @@ if (isset($_POST['submit'])) {
    }
 
    // Kiểm tra mã băng đĩa trùng trong CSDL
-   for ($i = 1; $i <= $soLuong; $i++) {
-      $maBD = $_POST["MaBD_$i"];
-      $stmt = $conn->prepare("SELECT * FROM chitietphieunhap WHERE MaBD = ?");
-      $stmt->execute([$maBD]);
-      if ($stmt->rowCount() > 0) {
-         $errors[] = "❌ Mã băng đĩa '$maBD' đã tồn tại trong hệ thống!";
-      }
+   // Kiểm tra mã băng đĩa đã tồn tại trong bảng bangdia chưa
+$maBDValues = [];
+
+for ($i = 1; $i <= $soLuong; $i++) {
+   $maBD = $_POST["MaBD_$i"];
+
+   if (in_array($maBD, $maBDValues)) {
+      $errors[] = "❌ Mã băng đĩa '$maBD' bị nhập trùng trong cùng một phiếu!";
+   } else {
+      $maBDValues[] = $maBD;
    }
+
+   // Không cần kiểm tra trùng trong bangdia khi nhập phiếu
+// Nhưng cần kiểm tra xem MaBD có tồn tại trong bảng chitietphieunhap không khi thêm băng đĩa (trong phần khác của hệ thống)
+
+}
+
+
 
    // Nếu không có lỗi thì mới insert
    if (empty($errors)) {
-      $insert = $conn->prepare("INSERT INTO phieunhap (MaPhieu, MaNCC, NgayNhap, SoLuong, TongTien) VALUES (?, ?, ?, ?, ?)");
-      $insert->execute([$maPhieu, $maNCC, $ngayNhap, $soLuong, $tongTien]);
+       // Lấy mã quản trị viên đang đăng nhập
+
+$insert = $conn->prepare("INSERT INTO phieunhap (MaPhieu, MaNCC, NgayNhap, SoLuong, TongTien, MaAD) VALUES (?, ?, ?, ?, ?, ?)");
+$insert->execute([$maPhieu, $maNCC, $ngayNhap, $soLuong, $tongTien, $maAD]);
+
 
       for ($i = 1; $i <= $soLuong; $i++) {
          $maBD = $_POST["MaBD_$i"];
@@ -138,35 +160,34 @@ if (isset($_POST['submit'])) {
 <body>
 <?php include '../components/admin_header.php' ?>
 
-<section class="form-container">
+<section class="form-container" style="margin-right:2.2rem;">
    <form method="post">
       <h3>Phiếu nhập băng đĩa</h3>
+      <!-- phần cuối form -->
+<div style="margin-top: 10px; font-size: 1.4rem; color:rgb(132, 130, 130);">
+    <strong>Người nhập phiếu:</strong> <?= htmlspecialchars($tenAD) ?>
+</div>
 
-      <div class="box">
-        <span>Mã Phiếu :</span>
-         <!-- <input type="text" name="MaPhieu" required placeholder="Nhập mã phiếu"> -->
-        <input type="text" name="MaPhieu" required placeholder="Nhập mã phiếu" 
+      <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
+        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Mã phiếu:</span>
+        <input type="text"class="box" name="MaPhieu" required placeholder="" 
         value="<?= htmlspecialchars($_POST['MaPhieu'] ?? '') ?>">
-
         </div>
-
-      <div class="box">
-         <span>Mã NCC :</span>
-         <!-- <input type="text" name="MaNCC" required placeholder="Nhập mã nhà cung cấp"> -->
-        <input type="text" name="MaNCC" required placeholder="Nhập mã nhà cung cấp" 
+      <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
+        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Mã nhà cung cấp:</span>
+        <input type="text" class="box"name="MaNCC" required placeholder="" 
        value="<?= htmlspecialchars($_POST['MaNCC'] ?? '') ?>">
         </div>
-
-      <div class="box">
-         <span>Ngày nhập :</span>
+<div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
+        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Ngày nhập:</span>
          <!-- <input type="date" name="NgayNhap" required> -->
-        <input type="date" name="NgayNhap" required 
+        <input type="date"class="box" name="NgayNhap" required 
        value="<?= htmlspecialchars($_POST['NgayNhap'] ?? '') ?>">
       </div>
 
-      <div class="box">
-         <span>Số lượng :</span>
-         <input type="number" name="SoLuong" id="SoLuong" min="1" max="30" required placeholder="Nhập số lượng (1-30)" oninput="generateFields()">
+      <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
+        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Số lượng:</span>
+         <input type="number" class="box"name="SoLuong" id="SoLuong" min="1" max="30" required placeholder="" oninput="generateFields()">
         <!-- <input type="number" name="SoLuong" id="SoLuong" min="1" max="30" required 
        placeholder="Nhập số lượng (1-30)" 
        value="<?= htmlspecialchars($_POST['SoLuong'] ?? '') ?>" 
@@ -187,9 +208,9 @@ if (isset($_POST['submit'])) {
     ?>
 </div>
 
-      <div class="box">
-         <span>Tổng tiền :</span>
-         <input type="number" name="TongTien" required placeholder="Tổng đơn giá ">
+     <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
+        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Tổng tiền:</span>
+         <input type="number"class="box" name="TongTien" required placeholder=" ">
         <!-- <input type="number" name="TongTien" required 
         placeholder="Tổng đơn giá " 
         value="<?= htmlspecialchars($_POST['TongTien'] ?? '') ?>"> -->

@@ -59,13 +59,25 @@ if (isset($_GET['delete_ncc'])) {
 <body>
 <?php include '../components/admin_header.php' ?>
 
-<section class="main-content add-products">
+<section class="form-container" style="margin-right:2.2rem;">
    <form action="" method="POST">
       <h3>Thêm nhà cung cấp</h3>
-      <input type="text" required placeholder="Nhập mã nhà cung cấp" name="MaNCC" maxlength="10" class="box">
-      <input type="text" required placeholder="Nhập tên nhà cung cấp" name="TenNCC" maxlength="100" class="box">
-      <input type="text" required placeholder="Nhập số điện thoại" name="SDT" maxlength="15" class="box">
-      <input type="text" required placeholder="Nhập địa chỉ" name="DiaChi" maxlength="255" class="box">
+      <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
+        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Mã nhà cung cấp:</span>
+      <input type="text" required placeholder="" name="MaNCC" maxlength="10" class="box">
+</div>
+   <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
+        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Tên nhà cung cấp:</span>
+      <input type="text" required placeholder="" name="TenNCC" maxlength="100" class="box">
+</div>
+<div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
+        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Số điện thoại:</span>
+      <input type="text" required placeholder="" name="SDT" maxlength="15" class="box">
+</div>
+<div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
+        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Địa chỉ:</span>
+      <input type="text" required placeholder="" name="DiaChi" maxlength="255" class="box">
+</div>
       <input type="submit" value="Thêm nhà cung cấp" name="add_supplier" class="btn">
    </form>
 

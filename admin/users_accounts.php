@@ -36,7 +36,21 @@ if(isset($_GET['delete'])){
 
    <!-- custom css file link  -->
    <link rel="stylesheet" href="../css/admin_style.css">
+<style>
+   .btn-history {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 3px;
+    text-decoration: none;
+    font-weight: 600;
+}
 
+.btn-history:hover {
+    opacity: 0.85;
+}
+
+   </style>
 </head>
 <body>
 
@@ -106,6 +120,7 @@ if(isset($_GET['delete'])){
             <th>SĐT</th>
             <th>Địa Chỉ</th>
             <th>Email</th>
+            <th>Lịch sử thuê</th>
             <th>Chức năng</th>
          </tr>
       </thead>
@@ -119,18 +134,21 @@ if(isset($_GET['delete'])){
          <tr>
             <td><?= $fetch_accounts['MaKH']; ?></td>
             <td><?= $fetch_accounts['TenKH']; ?></td>
-            <td><?= $fetch_accounts['SDT']; ?></td>
+            <td><?= htmlspecialchars($fetch_accounts['SDT']); ?></td>
             <td><?= $fetch_accounts['Diachi']; ?></td>
             <td><?= $fetch_accounts['Email']; ?></td>
             <td>
+               <a href="lichsu.php?MaKH=<?= $fetch_accounts['MaKH']; ?>" class="btn btn-history">Xem</a>
+            </td>
+            <td>
                <a href="update_profile_user.php?update=<?= $fetch_accounts['MaKH']; ?>" class="btn btn-update">Cập nhật</a>
-               <a href="user_accounts.php?delete=<?= $fetch_accounts['MaKH']; ?>" class="btn btn-delete" onclick="return confirm('Xoá sản phẩm?');">Xoá</a>
+               <a href="users_accounts.php?delete=<?= $fetch_accounts['MaKH']; ?>" class="btn btn-delete" onclick="return confirm('Xoá khách hàng?');">Xoá</a>
             </td>
          </tr>
          <?php
                }
             } else {
-               echo '<tr><td colspan="8" class="empty">Chưa có sản phẩm nào được thêm vào!</td></tr>';
+               echo '<tr><td colspan="8" class="empty">Chưa có khách hàng nào!</td></tr>';
             }
          ?>
       </tbody>

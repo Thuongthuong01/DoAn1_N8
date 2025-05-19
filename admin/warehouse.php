@@ -12,10 +12,18 @@ if (!isset($_SESSION["user_id"])) {
 
 if (isset($_GET['delete_phieunhap'])) {
    $delete_id = $_GET['delete_phieunhap'];
+
+   // Xoá chi tiết phiếu nhập trước
+   $delete_ct = $conn->prepare("DELETE FROM chitietphieunhap WHERE MaPhieu = ?");
+   $delete_ct->execute([$delete_id]);
+
+   // Sau đó mới xoá phiếu nhập
    $delete_phieunhap = $conn->prepare("DELETE FROM phieunhap WHERE MaPhieu = ?");
-   $delete_phieunhap ->execute([$delete_id]);
+   $delete_phieunhap->execute([$delete_id]);
+
    $message[] = "✅ Đã xoá phiếu nhập thành công !";
 }
+
 
 ?> 
 <!DOCTYPE html>

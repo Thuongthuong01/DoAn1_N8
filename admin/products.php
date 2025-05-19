@@ -16,7 +16,7 @@ if (isset($_POST['add_product'])) {
    $Theloai = filter_var($_POST['Theloai'], FILTER_SANITIZE_STRING);
    $NSX = filter_var($_POST['NSX'], FILTER_SANITIZE_STRING);
    $Tinhtrang = filter_var($_POST['Tinhtrang'], FILTER_SANITIZE_STRING);
-
+   $ChatLuong = filter_var($_POST['ChatLuong'], FILTER_SANITIZE_STRING);
    $image = filter_var($_FILES['image']['name'], FILTER_SANITIZE_STRING);
    $image_size = $_FILES['image']['size'];
    $image_tmp_name = $_FILES['image']['tmp_name'];
@@ -24,14 +24,16 @@ if (isset($_POST['add_product'])) {
 
    $select_products = $conn->prepare("SELECT * FROM `bangdia` WHERE MaBD = ?");
    $select_products->execute([$MaBD]);
-
+   $check_ctpn = $conn->prepare("SELECT 1 FROM chitietphieunhap WHERE MaBD = ?");
+$check_ctpn->execute([$MaBD]);
    // Kiểm tra và đảm bảo message là mảng
    if (!isset($message) || !is_array($message)) {
       $message = [];
    }
 
-   // Kiểm tra trùng mã băng đĩa
-   if ($select_products->rowCount() > 0) {
+   if ($check_ctpn->rowCount() == 0) {
+   $message[] = '❌ Mã băng đĩa không tồn tại trong phiếu nhập. Bạn phải nhập phiếu trước khi thêm sản phẩm!';
+} else if ($select_products->rowCount() > 0) {
       $message[] = '❌ Trùng mã băng đĩa ! Vui lòng nhập lại ! ';
    } else {
       // Kiểm tra kích thước ảnh
@@ -40,8 +42,8 @@ if (isset($_POST['add_product'])) {
       } else {
          // Di chuyển ảnh và chèn vào cơ sở dữ liệu
          move_uploaded_file($image_tmp_name, $image_folder);
-         $insert_product = $conn->prepare("INSERT INTO `bangdia` (MaBD, TenBD, Theloai, Dongia, NSX, Tinhtrang, image) VALUES (?, ?, ?, ?, ?, ?, ?)");
-         $insert_product->execute([$MaBD, $TenBD, $Theloai, $Dongia, $NSX, $Tinhtrang, $image]);
+         $insert_product = $conn->prepare("INSERT INTO `bangdia` (MaBD, TenBD, Theloai, Dongia, NSX, Tinhtrang, ChatLuong, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+$insert_product->execute([$MaBD, $TenBD, $Theloai, $Dongia, $NSX, $Tinhtrang, $ChatLuong, $image]);
          $message[] = '✅ Đã thêm sản phẩm mới!';
       }
    }
@@ -79,29 +81,79 @@ if (isset($_GET['delete'])) {
 <body>
 
 <?php include '../components/admin_header.php' ?>
+<?php
+   // Lấy các MaBD từ chitietphieunhap chưa có trong bangdia
+$get_available_maBD = $conn->query("
+   SELECT DISTINCT MaBD
+   FROM chitietphieunhap
+   WHERE MaBD NOT IN (SELECT MaBD FROM bangdia)
+");
+$availableMaBDs = $get_available_maBD->fetchAll(PDO::FETCH_COLUMN);
+
+?>
+<?php if (empty($availableMaBDs)): ?>
+   <div class="message" style="font-size:1.5rem;background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 10px; margin-top: 10px; border-radius: 5px;margin-right:1rem">
+      ⚠️ Hiện không còn mã băng đĩa nào từ phiếu nhập chưa được thêm vào!
+   </div>
+<?php endif; ?>
 
 <!-- thêm sản phẩm -->
-<section class="main-content add-products">
+<section class="form-container" style="margin-right:2.2rem;">
    <form action="" method="POST" enctype="multipart/form-data">
       <h3>Thêm sản phẩm</h3>
-      <input type="text" required placeholder="Nhập mã băng đĩa" name="MaBD" maxlength="9" class="box">
-      <input type="text" required placeholder="Nhập tên băng đĩa" name="TenBD" maxlength="100" class="box">
-      <input type="number" min="0" max="9999999999" required placeholder="Nhập đơn giá" name="Dongia" onkeypress="if(this.value.length == 10) return false;" class="box">
+      <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
+        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Mã băng đĩa:</span>
+<select name="MaBD" class="box" required>
+   <option value="" disabled selected>-- Chọn mã --</option>
+   <?php foreach ($availableMaBDs as $maBD): ?>
+      <option value="<?= htmlspecialchars($maBD) ?>"><?= htmlspecialchars($maBD) ?></option>
+   <?php endforeach; ?>
+</select>
+   </div>
+<div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
+        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Tên băng đĩa:</span>
+      <input type="text" required placeholder="" name="TenBD" maxlength="100" class="box">
+   </div>
+   <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
+        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Đơn giá thuê:</span>
+      <input type="number" min="0" max="9999999999" required placeholder="" name="Dongia" onkeypress="if(this.value.length == 10) return false;" class="box">
+   </div>
+   <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
+        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Thể loại:</span>
       <select name="Theloai" class="box" required>
-         <option value="" disabled selected>Thể loại --</option>
+         <option value="" disabled selected>--Chọn thể loại --</option>
          <option value="Âm nhạc">Âm nhạc</option>
          <option value="Phim">Phim</option>
          <option value="Khác">Khác</option>
       </select>
-      <input type="text" name="NSX" placeholder="Nhà sản xuất" class="box" required>
-      <!-- <input type="text" name="Tinhtrang" placeholder="Tình trạng" class="box" required> -->
+   </div>
+   <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
+        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Nhà sản xuất:</span>
+      <input type="text" name="NSX" placeholder="" class="box" required>
+   </div>
+      <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
+        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Tình trạng:</span>
       <select name="Tinhtrang" class="box" required>
-         <option value="" disabled selected>Tình trạng --</option>
+         <option value="" disabled selected>-- Chọn tình trạng --</option>
          <option value="Trống">Trống</option>
          <option value="Đã cho thuê">Đã cho thuê</option>
          <option value="Đang bảo trì">Đang bảo trì</option>
       </select>
+   </div>
+   <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
+        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Chất lượng:</span>
+      <select name="ChatLuong" class="box" required>
+   <option value="" disabled selected>-- Chọn chất lượng --</option>
+      <option value="Tốt">Tốt</option>
+      <option value="Trầy xước">Trầy xước</option>
+      <option value="Hỏng nặng">Hỏng nặng</option>      
+      <option value="Mất">Mất</option>
+</select>
+   </div>
+<div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
+        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Ảnh:</span>
       <input type="file" name="image" class="box" accept="image/jpg, image/jpeg, image/png, image/webp" required>
+   </div>
       <input type="submit" value="Thêm sản phẩm" name="add_product" class="btn">
    </form>
    <!-- Hiển thị thông báo -->
@@ -120,7 +172,7 @@ if (isset($_GET['delete'])) {
 
 <!-- HIỂN THỊ BẢN THÔNG TIN SẢN PHẨM   -->
 <section class="main-content show-products" style="padding-top: 0;">
-<h1 class="heading">Danh sách sản phẩm</h1>
+<h1 class="heading">Danh sách băng đĩa</h1>
    <table class="product-table">
       <thead>
          <tr>
@@ -131,6 +183,7 @@ if (isset($_GET['delete'])) {
             <th>Đơn giá thuê</th>
             <th>NSX</th>
             <th>Tình trạng</th>
+            <th>Chất lượng</th>
             <th>Chức năng</th>
 
          </tr>
@@ -150,7 +203,7 @@ if (isset($_GET['delete'])) {
             <td><?= number_format($fetch_products['Dongia'], 0, ",", "."); ?> VNĐ</td>
             <td><?= $fetch_products['NSX']; ?></td>
             <td style="white-space: normal; word-wrap: break-word; max-width: 200px;"><?= $fetch_products['Tinhtrang']; ?></td>
-
+            <td><?= $fetch_products['ChatLuong']; ?></td>
             <td>
                <a href="update_product.php?update=<?= $fetch_products['MaBD']; ?>" class="btn btn-update">Sửa</a>
                <a href="products.php?delete=<?= $fetch_products['MaBD']; ?>" class="btn btn-delete" onclick="return confirm('Xoá sản phẩm?');">Xoá</a>

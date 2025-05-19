@@ -23,30 +23,41 @@ if(isset($_POST['update'])){
    $Tinhtrang = $_POST['Tinhtrang'];
    $Tinhtrang = filter_var($Tinhtrang, FILTER_SANITIZE_STRING);
 
+   // Kiểm tra MaBD có trong chitietphieunhap không
+$stmt_check = $conn->prepare("SELECT 1 FROM chitietphieunhap WHERE MaBD = ?");
+$stmt_check->execute([$MaBD]);
+
+if ($stmt_check->rowCount() == 0) {
+   $message[] = "❌ Mã băng đĩa '$MaBD' chưa được nhập kho! Không thể cập nhật.";
+} else {
+   // Cho phép cập nhật nếu mã tồn tại
    $update_product = $conn->prepare("UPDATE `bangdia` SET TenBD = ?, Dongia = ?, Theloai = ?, NSX = ?, Tinhtrang = ? WHERE MaBD = ?");
    $update_product->execute([$TenBD, $Dongia, $Theloai, $NSX, $Tinhtrang, $MaBD]);
-
 
    $old_image = $_POST['old_image'];
    $image = $_FILES['img']['name'];
    $image = filter_var($image, FILTER_SANITIZE_STRING);
    $image_size = $_FILES['img']['size'];
    $image_tmp_name = $_FILES['img']['tmp_name'];
-   $image_folder = '../uploaded_img/'.$image;
+   $image_folder = '../uploaded_img/' . $image;
 
-   if(!empty($image)){
-      if($image_size > 2000000){
+   if (!empty($image)) {
+      if ($image_size > 2000000) {
          $message[] = 'Kích thước ảnh quá lớn!';
-      }else{
+      } else {
          $update_image = $conn->prepare("UPDATE `bangdia` SET image = ? WHERE MaBD = ?");
          $update_image->execute([$image, $MaBD]);
          move_uploaded_file($image_tmp_name, $image_folder);
-         if(file_exists('../uploaded_img/'.$old_image)){
-            unlink('../uploaded_img/'.$old_image);
+         if (file_exists('../uploaded_img/' . $old_image)) {
+            unlink('../uploaded_img/' . $old_image);
          }
-         $message[] = 'Hình ảnh đã được cập nhật!';
+         $message[] = '✅ Hình ảnh đã được cập nhật!';
       }
    }
+
+   $message[] = '✅ Cập nhật thông tin băng đĩa thành công!';
+}
+
 
 }
 
