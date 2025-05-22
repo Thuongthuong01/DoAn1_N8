@@ -653,6 +653,18 @@ section {
   border: var(--border);
   border-radius: 0.5rem;
 }
+.order_table {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1px;
+}
+.order_table span {
+  min-width: 160px;
+  font-size: 1.8rem;
+  text-align: left;
+}
+
 /* 
 .placed-orders-admin .order-table {
   width: 100%;

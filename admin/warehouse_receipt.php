@@ -208,11 +208,13 @@ $insert->execute([$maPhieu, $maNCC, $ngayNhap, $soLuong, $tongTien, $maAD]);
     ?>
 </div>
 
+
      <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
         <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Tổng tiền:</span>
          <input type="number"class="box" name="TongTien" required placeholder=" ">
         <!-- <input type="number" name="TongTien" required 
         placeholder="Tổng đơn giá " 
+
         value="<?= htmlspecialchars($_POST['TongTien'] ?? '') ?>"> -->
         </div>
 

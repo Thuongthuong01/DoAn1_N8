@@ -77,7 +77,7 @@ if(isset($_POST['submit'])){
       <input type="password" name="cpass" maxlength="20" required placeholder="" class="box" oninput="this.value = this.value.replace(/\s/g, '')">
 </div>
       <input type="submit" value="Đăng ký ngay" name="submit" class="btn">
-      <a href="users_accounts.php" class="option-btn">Quay lại</a>
+      <a href="admin_accounts.php" class="option-btn">Quay lại</a>
 
    </form>
 
