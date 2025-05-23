@@ -101,7 +101,8 @@ switch ($loai) {
         th, td { border: 2px solid rgb(52, 50, 50); padding: 8px; text-align: left; }
         th { background-color:rgb(179, 178, 178); }
         .total { font-weight: bold; }
-        h1, p {text-align: center;}
+        h1 {text-align: center;}
+        p {text-align: left;width: 85%;margin:auto;padding:5px;}
         .btn-print { padding: 6px 12px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px; margin-top: 10px;margin-left:45%; cursor: pointer;font-size:1.2rem; }
         @media print {
   .btn-print {

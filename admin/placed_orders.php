@@ -47,7 +47,7 @@ if (isset($_POST['add_phieuthue'])) {
       foreach ($bangDiaList as $bd) {
          $maBD = $bd['maBD'];
          $soLuong = $bd['soLuong'];
-         $tenBD=$bd['tenBD'];
+         // $tenBD=$bd['tenBD'];
          $stmt = $conn->prepare("SELECT TenBD FROM bangdia WHERE MaBD = ?");
          $stmt->execute([$maBD]);
          $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -66,7 +66,7 @@ if (isset($_POST['add_phieuthue'])) {
          
 
          // Thêm vào bảng chi tiết
-         $insertCT->execute([$maThueMoi, $maBD,$tenBD, $soLuong, $donGia]);
+         $insertCT->execute([$maThueMoi, $maBD, $soLuong, $donGia]);
 
          // Cập nhật tình trạng băng đĩa
          $conn->prepare("UPDATE bangdia SET Tinhtrang = 'Đã thuê' WHERE MaBD = ?")->execute([$maBD]);
