@@ -22,7 +22,10 @@ if(isset($_POST['update'])){
    $NSX = filter_var($NSX, FILTER_SANITIZE_STRING);
    $Tinhtrang = $_POST['Tinhtrang'];
    $Tinhtrang = filter_var($Tinhtrang, FILTER_SANITIZE_STRING);
-
+if ($Tinhtrang == 'Trống') {
+   $update_chatluong = $conn->prepare("UPDATE `bangdia` SET ChatLuong = 'Tốt' WHERE MaBD = ?");
+   $update_chatluong->execute([$MaBD]);
+}
    // Kiểm tra MaBD có trong chitietphieunhap không
 $stmt_check = $conn->prepare("SELECT 1 FROM chitietphieunhap WHERE MaBD = ?");
 $stmt_check->execute([$MaBD]);
@@ -56,6 +59,8 @@ if ($stmt_check->rowCount() == 0) {
    }
 
    $message[] = '✅ Cập nhật thông tin băng đĩa thành công!';
+   header("Location: products.php");
+   exit();
 }
 
 
@@ -104,35 +109,42 @@ if ($stmt_check->rowCount() == 0) {
    
     <img src="../uploaded_img/<?= $fetch_products['image']; ?>" alt="Ảnh băng đĩa"   >  
    <br>
+   <div class="order_table">
    <span>Mã băng đĩa</span>
    <input type="text" name="MaBD" value="<?= $fetch_products['MaBD']; ?>" class="box" readonly>
-
+         </div>
+         <div class="order_table">
    <span>Tên băng đĩa</span>
    <input type="text" name="TenBD" value="<?= $fetch_products['TenBD']; ?>" class="box" required>
-
+         </div>
+         <div class="order_table">
    <span>Đơn giá</span>
-   <input type="number" name="Dongia" value="<?= $fetch_products['Dongia']; ?>" class="box" required>
-
+   <input type="number" name="Dongia" value="<?= $fetch_products['Dongia']; ?>" placeholder="<?= $fetch_products['Dongia']; ?>" class="box" required>
+         </div>
+         <div class="order_table">
    <span>Thể loại</span>
    <select name="Theloai" class="box" required>
       <option value="Âm nhạc" <?= ($fetch_products['Theloai'] == 'Âm nhạc') ? 'selected' : ''; ?>>Âm nhạc</option>
       <option value="Phim" <?= ($fetch_products['Theloai'] == 'Phim') ? 'selected' : ''; ?>>Phim</option>
       <option value="Khác" <?= ($fetch_products['Theloai'] == 'Khác') ? 'selected' : ''; ?>>Khác</option>
    </select>
-
+         </div>
+         <div class="order_table">
    <span>Nhà sản xuất</span>
    <input type="text" name="NSX" value="<?= $fetch_products['NSX']; ?>" class="box" required>
-
+         </div>
+         <div class="order_table">
    <span>Tình trạng</span>
    <select name="Tinhtrang" class="box" required>
       <option value="Trống" <?= ($fetch_products['Tinhtrang'] == 'Trống') ? 'selected' : ''; ?>>Trống</option>
       <option value="Đã cho thuê" <?= ($fetch_products['Tinhtrang'] == 'Đã cho thuê') ? 'selected' : ''; ?>>Đã cho thuê</option>
       <option value="Đang bảo trì" <?= ($fetch_products['Tinhtrang'] == 'Đang bảo trì') ? 'selected' : ''; ?>>Đang bảo trì</option>
    </select>
-
+         </div>
+         <div class="order_table">
    <span>Hình ảnh</span>
    <input type="file" name="img" class="box" accept="image/*">
-
+         </div>
    <div class="flex-btn">
       <input type="submit" name="update" value="Cập nhật" class="btn">
       <a href="products.php" class="option-btn">Quay lại</a>

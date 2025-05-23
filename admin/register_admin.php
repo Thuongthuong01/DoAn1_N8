@@ -60,25 +60,26 @@ if(isset($_POST['submit'])){
 
 <!-- register admin section starts  -->
 
-<section class="form-container" style="margin-right:2.2rem;">
+<section class="form-container" >
 
    <form action="" method="POST">
       <h3>Đăng ký</h3>
-      <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
-        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Tên tài khoản:</span>
+<div class="order_table">
+           <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Tên tài khoản:</span>
       <input type="text" name="name" maxlength="20" required placeholder="" class="box" oninput="this.value = this.value.replace(/\s/g, '')">
 </div>
-<div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
-        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Mật khẩu:</span>
+<div class="order_table">
+           <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Mật khẩu:</span>
       <input type="password" name="pass" maxlength="20" required placeholder="" class="box" oninput="this.value = this.value.replace(/\s/g, '')">
 </div>
-<div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
-        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Nhập lại mật khẩu:</span>
+<div class="order_table">
+           <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Nhập lại mật khẩu:</span>
       <input type="password" name="cpass" maxlength="20" required placeholder="" class="box" oninput="this.value = this.value.replace(/\s/g, '')">
 </div>
+<div class="flex-btn">
       <input type="submit" value="Đăng ký ngay" name="submit" class="btn">
       <a href="admin_accounts.php" class="option-btn">Quay lại</a>
-
+</div>
    </form>
 
 </section>

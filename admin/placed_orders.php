@@ -47,7 +47,10 @@ if (isset($_POST['add_phieuthue'])) {
       foreach ($bangDiaList as $bd) {
          $maBD = $bd['maBD'];
          $soLuong = $bd['soLuong'];
-
+         $tenBD=$bd['tenBD'];
+         $stmt = $conn->prepare("SELECT TenBD FROM bangdia WHERE MaBD = ?");
+         $stmt->execute([$maBD]);
+         $result = $stmt->fetch(PDO::FETCH_ASSOC);
          // Lấy đơn giá từ bảng bangdia
          $stmt = $conn->prepare("SELECT Dongia FROM bangdia WHERE MaBD = ?");
          $stmt->execute([$maBD]);
@@ -63,7 +66,7 @@ if (isset($_POST['add_phieuthue'])) {
          
 
          // Thêm vào bảng chi tiết
-         $insertCT->execute([$maThueMoi, $maBD, $soLuong, $donGia]);
+         $insertCT->execute([$maThueMoi, $maBD,$tenBD, $soLuong, $donGia]);
 
          // Cập nhật tình trạng băng đĩa
          $conn->prepare("UPDATE bangdia SET Tinhtrang = 'Đã thuê' WHERE MaBD = ?")->execute([$maBD]);
@@ -84,13 +87,13 @@ if (isset($_POST['add_phieuthue'])) {
       $conn->rollBack();
       $message[] = "Lỗi khi thêm phiếu thuê: " . $e->getMessage();
    }
-
+}
 // Xoá đơn hàng thuê
    if (isset($_GET['delete'])) {
     $delete_id = $_GET['delete'];
 
     // Bước 1: Lấy danh sách băng đĩa của phiếu thuê cần xoá
-    $stmt = $conn->prepare("SELECT MaBD FROM phieuthue WHERE MaThue = ?");
+$stmt = $conn->prepare("SELECT MaBD FROM chitietphieuthue WHERE MaThue = ?");
     $stmt->execute([$delete_id]);
     $bangDiaList = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
@@ -111,7 +114,7 @@ if (isset($_POST['add_phieuthue'])) {
     header('location:placed_orders.php');
     exit();
 }
-}
+
 
 ?>
 
@@ -127,8 +130,8 @@ if (isset($_POST['add_phieuthue'])) {
 
 <?php include '../components/admin_header.php' ?>
 
-<section class="form-container" style="margin-right:2.2rem;">
-   
+<!-- <section class="form-container" style="margin-right:2.2rem;"> -->
+   <section class="form-container">
    <form action="" method="POST" enctype="multipart/form-data">
          <h3>Phiếu thuê đĩa</h3>
          <div style="margin-top: 10px; font-size: 1.4rem; color:rgb(132, 130, 130);">
@@ -156,7 +159,7 @@ if (isset($_POST['add_phieuthue'])) {
 </div>
 <div class="order_table">
    <span>Số lượng thuê:</span>
-   <input type="number" id="inputSoLuong" class="box" placeholder="Số lượng" min="1" style="width: 120px;" oninput="taoONhapBangDia()">
+   <input type="number" id="inputSoLuong" class="box" placeholder="Số lượng" min="1"  oninput="taoONhapBangDia()">
 </div>
 
 <div id="InputMaBD" style="margin-top: 10px;"></div>
@@ -230,6 +233,8 @@ function taoONhapBangDia() {
       const label = document.createElement("label");
       label.textContent = `Mã băng đĩa ${i + 1}:`;
       label.style.display = "block";
+      label.style.fontSize="1.6rem";
+      label.style.marginRight="10rem";
 
       const input = document.createElement("input");
       input.type = "text";
@@ -238,13 +243,16 @@ function taoONhapBangDia() {
       input.name = "maBDs[]";
       input.placeholder = `Nhập hoặc chọn mã băng đĩa ${i + 1}`;
       input.style.display = "block";
+      input.style.width="70%";
+      input.style.marginLeft="auto";
 
       const priceSpan = document.createElement("span");
       priceSpan.className = "dongia";
       priceSpan.style.display = "block";
       priceSpan.style.marginTop = "5px";
-      priceSpan.style.fontSize = "1.2rem";
+      priceSpan.style.fontSize = "1.6rem";
       priceSpan.style.color = "#333";
+      priceSpan.style.marginLeft="17rem";
 
       // Sự kiện nhập mã đĩa
       input.addEventListener("input", function () {
@@ -252,7 +260,7 @@ function taoONhapBangDia() {
          const option = document.querySelector(`#maBD_list option[value="${maBD}"]`);
          if (option) {
             const donGia = option.getAttribute("data-price");
-            priceSpan.textContent = `Đơn giá: ${Number(donGia).toLocaleString()} đ`;
+            priceSpan.textContent = `Đơn giá: ${Number(donGia).toLocaleString()} VNĐ`;
          } else {
             priceSpan.textContent = "Không tìm thấy đơn giá.";
          }
@@ -285,6 +293,7 @@ function capNhatDanhSachBangDia() {
          const donGia = getDonGia(maBD);
          bangDiaArray.push({
             maBD,
+            // tenBD,
             soLuong: 1,
             donGia
          });
@@ -357,7 +366,7 @@ function removeBangDia(index) {
             <th>Mã Thuê</th>
             <th>Khách Hàng (Mã KH)</th>
             <th>SĐT</th>
-            <th>Băng Đĩa</th>
+            <th>Băng Đĩa (Mã BD)</th>
             <!-- <th>Số lượng thuê</th> -->
             <th>Tổng Đơn giá</th>
             <th>Ngày Thuê</th>
@@ -376,7 +385,7 @@ SELECT
   kh.SDT,
   qt.TenAD,
   GROUP_CONCAT(
-    CONCAT(bd.TenBD, ' (', ct.SoLuong, ')')
+    CONCAT(bd.TenBD, ' (', ct.MaBD, ')')
     SEPARATOR ',<br> '
   ) AS DanhSachBangDia,
   SUM(ct.SoLuong * ct.DonGia) AS TongDonGia,
@@ -415,10 +424,12 @@ ORDER BY pt.NgayThue DESC;
                      <td><?= number_format($phieu['TongDonGia'], 0, ',', '.') ?> VNĐ</td>
                      <td><?= $phieu['NgayThue']; ?></td>
                      <td><?= $phieu['NgayTraDK']; ?></td>
-                     <td><?= number_format($phieu['TongTien'], 0, ',', '.') ?> VNĐ</td>
+                     <td><?= number_format($phieu['TongTien'], 0, ',', '.') ?> 
+                  </td>
                      <td>
-                        <a href="update_order.php?update=<?= $phieu['MaThue']; ?>" class="btn btn-update">Sửa</a>
-                        <a href="?delete=<?= $phieu['MaThue']; ?>" onclick="return confirm('Bạn có chắc muốn xóa phiếu thuê này?');" class="btn btn-delete">Xóa</a>
+                        <!-- <a href="update_order.php?update=<?= $phieu['MaThue']; ?>" class="btn btn-update">Sửa</a> -->
+                        <a href="?delete=<?= $phieu['MaThue']; ?>" onclick="return confirm('Bạn có chắc muốn xóa phiếu thuê này?');" class="btn delete-btn">Xóa</a>
+                        <a href="print_invoice.php?loai=thue&id=<?= $phieu['MaThue']; ?>" target="_blank" class="btn btn-print">In hóa đơn</a>
                      </td>
                </tr>
          <?php

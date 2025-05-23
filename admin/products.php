@@ -98,11 +98,11 @@ $availableMaBDs = $get_available_maBD->fetchAll(PDO::FETCH_COLUMN);
 <?php endif; ?>
 
 <!-- thêm sản phẩm -->
-<section class="form-container" style="margin-right:2.2rem;">
+<section class="form-container" >
    <form action="" method="POST" enctype="multipart/form-data">
       <h3>Thêm sản phẩm</h3>
-      <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
-        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Mã băng đĩa:</span>
+<div class="order_table">
+   <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Mã băng đĩa:</span>
 <select name="MaBD" class="box" required>
    <option value="" disabled selected>-- Chọn mã --</option>
    <?php foreach ($availableMaBDs as $maBD): ?>
@@ -110,16 +110,16 @@ $availableMaBDs = $get_available_maBD->fetchAll(PDO::FETCH_COLUMN);
    <?php endforeach; ?>
 </select>
    </div>
-<div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
-        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Tên băng đĩa:</span>
+<div class="order_table">
+           <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Tên băng đĩa:</span>
       <input type="text" required placeholder="" name="TenBD" maxlength="100" class="box">
    </div>
-   <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
-        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Đơn giá thuê:</span>
+<div class="order_table">
+           <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Đơn giá thuê:</span>
       <input type="number" min="0" max="9999999999" required placeholder="" name="Dongia" onkeypress="if(this.value.length == 10) return false;" class="box">
    </div>
-   <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
-        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Thể loại:</span>
+<div class="order_table">
+           <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Thể loại:</span>
       <select name="Theloai" class="box" required>
          <option value="" disabled selected>--Chọn thể loại --</option>
          <option value="Âm nhạc">Âm nhạc</option>
@@ -127,12 +127,12 @@ $availableMaBDs = $get_available_maBD->fetchAll(PDO::FETCH_COLUMN);
          <option value="Khác">Khác</option>
       </select>
    </div>
-   <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
-        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Nhà sản xuất:</span>
+<div class="order_table">
+           <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Nhà sản xuất:</span>
       <input type="text" name="NSX" placeholder="" class="box" required>
    </div>
-      <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
-        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Tình trạng:</span>
+<div class="order_table">
+           <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Tình trạng:</span>
       <select name="Tinhtrang" class="box" required>
          <option value="" disabled selected>-- Chọn tình trạng --</option>
          <option value="Trống">Trống</option>
@@ -140,8 +140,8 @@ $availableMaBDs = $get_available_maBD->fetchAll(PDO::FETCH_COLUMN);
          <option value="Đang bảo trì">Đang bảo trì</option>
       </select>
    </div>
-   <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
-        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Chất lượng:</span>
+<div class="order_table">
+           <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Chất lượng:</span>
       <select name="ChatLuong" class="box" required>
    <option value="" disabled selected>-- Chọn chất lượng --</option>
       <option value="Tốt">Tốt</option>
@@ -150,8 +150,9 @@ $availableMaBDs = $get_available_maBD->fetchAll(PDO::FETCH_COLUMN);
       <option value="Mất">Mất</option>
 </select>
    </div>
-<div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
-        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Ảnh:</span>
+<div class="order_table">
+   
+<span style="min-width: 160px;font-size:1.8rem; text-align: left;">Ảnh:</span>
       <input type="file" name="image" class="box" accept="image/jpg, image/jpeg, image/png, image/webp" required>
    </div>
       <input type="submit" value="Thêm sản phẩm" name="add_product" class="btn">

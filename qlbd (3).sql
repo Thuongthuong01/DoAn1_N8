@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 19, 2025 lúc 09:44 PM
+-- Thời gian đã tạo: Th5 22, 2025 lúc 04:02 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
--- Phiên bản PHP: 8.1.25
+-- Phiên bản PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -44,7 +44,11 @@ CREATE TABLE `bangdia` (
 
 INSERT INTO `bangdia` (`MaBD`, `TenBD`, `Theloai`, `Dongia`, `NSX`, `Tinhtrang`, `ChatLuong`, `image`) VALUES
 ('1', 'shin', 'Phim', '1', '3wed', 'Đã thuê', NULL, 'SHOL0253.JPG'),
-('2', '6yyyy', 'Phim', '2000', '3wed', 'Đang bảo trì', 'Trầy xước', 'meme-meo-bua-yody-vn-29.webp');
+('2', '6yyyy', 'Phim', '2000', '3wed', 'Đã thuê', 'Trầy xước', 'meme-meo-bua-yody-vn-29.webp'),
+('3', 'Doraemon - Xứ sở thần tiên ( version 4)  ', 'Phim', '30000', 'Toshio Suzuki', 'Đang bảo trì', 'Hỏng nặng', '1.png'),
+('bd1', 'Ponyo - Cô bé người cá, 2008 ', 'Phim', '30000', 'Toshio Suzuki', 'Đang bảo trì', 'Hỏng nặng', '7.png'),
+('cully2', 'ca sĩ v bts ', 'Âm nhạc', '20000', 'taehyung', 'Đã thuê', 'Tốt', '9.png'),
+('oriversio', 'Vùng Đất Linh Hồn ', 'Phim', '40000', 'Yuichiro Saito', 'Đã thuê', 'Tốt', '7.png');
 
 -- --------------------------------------------------------
 
@@ -66,7 +70,11 @@ CREATE TABLE `chitietphieunhap` (
 INSERT INTO `chitietphieunhap` (`ID`, `MaPhieu`, `MaBD`, `GiaGoc`) VALUES
 (13, '1', '1', 1),
 (14, '2', '2', 2),
-(15, '2', '3', 2);
+(15, '2', '3', 2),
+(16, '3', 'dorae1', 50000),
+(17, '3', 'cully2', 60000),
+(18, '3', 'oriversio', 70000),
+(19, '4', 'bd1', 80000);
 
 -- --------------------------------------------------------
 
@@ -79,18 +87,21 @@ CREATE TABLE `chitietphieuthue` (
   `MaThue` int(11) DEFAULT NULL,
   `MaBD` varchar(10) DEFAULT NULL,
   `SoLuong` int(11) DEFAULT NULL,
-  `DonGia` bigint(20) DEFAULT NULL,
-  `ThanhTien` bigint(20) DEFAULT NULL
+  `DonGia` bigint(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `chitietphieuthue`
 --
 
-INSERT INTO `chitietphieuthue` (`MaCT`, `MaThue`, `MaBD`, `SoLuong`, `DonGia`, `ThanhTien`) VALUES
-(25, 18, '2', 1, 22, 88),
-(26, 19, '1', 2, 1, 16),
-(27, 20, '2', 3, 2000, 96000);
+INSERT INTO `chitietphieuthue` (`MaCT`, `MaThue`, `MaBD`, `SoLuong`, `DonGia`) VALUES
+(25, 18, '2', 1, 22),
+(26, 19, '1', 2, 1),
+(27, 20, '2', 3, 2000),
+(34, 32, '3', 1, 30000),
+(35, 32, 'bd1', 1, 30000),
+(36, 34, '2', 1, 2000),
+(37, 34, 'cully2', 1, 20000);
 
 -- --------------------------------------------------------
 
@@ -132,7 +143,8 @@ CREATE TABLE `nhacc` (
 --
 
 INSERT INTO `nhacc` (`MaNCC`, `TenNCC`, `SDT`, `DiaChi`) VALUES
-('ncc1', 'Thuong', 333333333, 'Hà Nội');
+('ncc1', 'Thuong', 333333333, 'Hà Nội'),
+('ncc2', 'Nhung', 347795984, 'Hà Nam');
 
 -- --------------------------------------------------------
 
@@ -155,7 +167,9 @@ CREATE TABLE `phieunhap` (
 
 INSERT INTO `phieunhap` (`MaPhieu`, `MaNCC`, `NgayNhap`, `SoLuong`, `TongTien`, `MaAD`) VALUES
 ('1', 'ncc1', '2025-05-15', 1, 1, NULL),
-('2', 'ncc1', '2025-05-08', 2, 4, NULL);
+('2', 'ncc1', '2025-05-08', 2, 4, NULL),
+('3', 'ncc1', '2025-05-07', 3, 180000, '2'),
+('4', 'ncc1', '2025-05-21', 3, 270000, '2');
 
 -- --------------------------------------------------------
 
@@ -177,9 +191,16 @@ CREATE TABLE `phieuthue` (
 --
 
 INSERT INTO `phieuthue` (`MaThue`, `MaKH`, `NgayThue`, `NgayTraDK`, `TongTien`, `MaAD`) VALUES
-(18, 'KH002', '2025-05-14', '2025-05-18', 50088, NULL),
-(19, 'KH001', '2025-05-14', '2025-05-22', 50016, '2'),
-(20, 'KH002', '2025-05-15', '2025-05-31', 146000, '2');
+(18, 'KH002', '2025-05-14', '2025-05-18', NULL, NULL),
+(19, 'KH001', '2025-05-14', '2025-05-22', NULL, '2'),
+(20, 'KH002', '2025-05-15', '2025-05-31', NULL, '2'),
+(24, 'KH001', '2025-12-12', '2025-12-15', NULL, '2'),
+(25, 'KH001', '2025-12-07', '2025-12-10', NULL, '2'),
+(26, 'KH001', '2025-12-07', '2025-12-10', 50000, '2'),
+(27, 'KH001', '2025-11-12', '2025-11-15', 50000, '2'),
+(28, 'KH001', '2025-11-12', '2025-11-15', 50000, '2'),
+(32, 'KH002', '2025-12-12', '2025-12-15', 230000, '2'),
+(34, 'KH001', '2025-05-22', '2025-05-25', 116000, '2');
 
 -- --------------------------------------------------------
 
@@ -205,7 +226,8 @@ CREATE TABLE `phieutra` (
 
 INSERT INTO `phieutra` (`MaTra`, `MaThue`, `MaKH`, `NgayTraTT`, `ChatLuong`, `TraMuon`, `TienPhat`, `TienTra`, `MaAD`) VALUES
 (12, 18, 'KH002', '2025-05-30', 'Tốt', 12, 1200.00, 48800.00, '2'),
-(13, 20, 'KH002', '2025-06-08', 'Trầy xước', 8, 1400.00, 48600.00, '2');
+(13, 20, 'KH002', '2025-06-08', 'Trầy xước', 8, 1400.00, 48600.00, '2'),
+(14, 32, 'KH002', '2025-12-16', 'Hỏng nặng', 1, 33000.00, 17000.00, '2');
 
 -- --------------------------------------------------------
 
@@ -305,25 +327,25 @@ ALTER TABLE `quantri`
 -- AUTO_INCREMENT cho bảng `chitietphieunhap`
 --
 ALTER TABLE `chitietphieunhap`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT cho bảng `chitietphieuthue`
 --
 ALTER TABLE `chitietphieuthue`
-  MODIFY `MaCT` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `MaCT` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT cho bảng `phieuthue`
 --
 ALTER TABLE `phieuthue`
-  MODIFY `MaThue` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `MaThue` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT cho bảng `phieutra`
 --
 ALTER TABLE `phieutra`
-  MODIFY `MaTra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `MaTra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Các ràng buộc cho các bảng đã đổ

@@ -580,7 +580,7 @@ section {
 
 .update-product form {
   margin: 0 auto;
-  max-width: 50rem;
+  max-width: 60rem;
   background-color: var(--white);
   border-radius: 0.5rem;
   box-shadow: var(--box-shadow);
@@ -592,6 +592,7 @@ section {
   height: 25rem;
   width: 100%;
   object-fit: contain;
+  
 }
 
 .update-product form .box {

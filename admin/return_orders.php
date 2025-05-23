@@ -308,8 +308,8 @@ if (isset($_GET['delete'])) {
                   <td><?= number_format($phieu['TienPhat'], 0, ',', '.'); ?> VNĐ</td>
                   <td><?= number_format($phieu['TienTra'] ?? 0, 0, ',', '.'); ?> VNĐ</td>
                   <td>
-                     <a href="update_return.php?update=<?= $phieu['MaTra']; ?>" class="btn btn-update">Sửa</a>
-                     <a href="?delete=<?= $phieu['MaTra']; ?>" onclick="return confirm('Bạn có chắc muốn xóa phiếu trả này?');" class="btn btn-delete">Xóa</a>
+                     <a href="?delete=<?= $phieu['MaTra']; ?>" onclick="return confirm('Bạn có chắc muốn xóa phiếu trả này?');" class="btn delete-btn">Xóa</a>
+                        <a href="print_invoice.php?loai=tra&id=<?= $phieu['MaTra']; ?>" target="_blank" class="btn btn-print">In hóa đơn</a>
                   </td>
                </tr>
          <?php

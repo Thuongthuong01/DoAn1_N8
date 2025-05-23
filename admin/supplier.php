@@ -59,23 +59,23 @@ if (isset($_GET['delete_ncc'])) {
 <body>
 <?php include '../components/admin_header.php' ?>
 
-<section class="form-container" style="margin-right:2.2rem;">
+<section class="form-container" >
    <form action="" method="POST">
       <h3>Thêm nhà cung cấp</h3>
-      <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
+<div class="order_table">
         <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Mã nhà cung cấp:</span>
       <input type="text" required placeholder="" name="MaNCC" maxlength="10" class="box">
 </div>
-   <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
-        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Tên nhà cung cấp:</span>
+<div class="order_table">
+           <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Tên nhà cung cấp:</span>
       <input type="text" required placeholder="" name="TenNCC" maxlength="100" class="box">
 </div>
-<div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
-        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Số điện thoại:</span>
+<div class="order_table">
+           <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Số điện thoại:</span>
       <input type="text" required placeholder="" name="SDT" maxlength="15" class="box">
 </div>
-<div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
-        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Địa chỉ:</span>
+<div class="order_table">
+           <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Địa chỉ:</span>
       <input type="text" required placeholder="" name="DiaChi" maxlength="255" class="box">
 </div>
       <input type="submit" value="Thêm nhà cung cấp" name="add_supplier" class="btn">
@@ -114,11 +114,11 @@ if (isset($_GET['delete_ncc'])) {
       <tr>
          <td><?= $ncc['MaNCC']; ?></td>
          <td><?= $ncc['TenNCC']; ?></td>
-         <td><?= $ncc['SDT']; ?></td>
+         <td><?= htmlspecialchars($ncc['SDT']); ?></td>
          <td><?= $ncc['DiaChi']; ?></td>
          <td>
-            <a href="update_supplier.php?update=<?= $ncc['MaNCC']; ?>" class="btn btn-update">Sửa</a>
-            <a href="?delete_ncc=<?= $ncc['MaNCC']; ?>" class="btn btn-delete" onclick="return confirm('Bạn có chắc muốn xóa nhà cung cấp này?');">Xóa</a>
+            <!-- <a href="update_supplier.php?update=<?= $ncc['MaNCC']; ?>" class="btn btn-update">Sửa</a> -->
+            <a href="?delete_ncc=<?= $ncc['MaNCC']; ?>" class="btn delete-btn" onclick="return confirm('Bạn có chắc muốn xóa nhà cung cấp này?');">Xóa</a>
          </td>
       </tr>
       <?php

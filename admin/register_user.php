@@ -67,29 +67,30 @@ if(isset($_POST['submit'])){
 <body>
 <?php include '../components/admin_header.php' ?>
 
-<section class="form-container" style="margin-right:2.2rem;">
+<section class="form-container" >
 <form action="" method="post">
    <h3>Đăng ký khách hàng mới</h3>
-   <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
-        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Tên khách hàng:</span>
+<div class="order_table">
+           <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Tên khách hàng:</span>
       <input type="text" name="tenKH" minlength="5" required placeholder=" " class ="box">
    </div>
-   <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
-        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Số điện thoại:</span>
+<div class="order_table">
+           <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Số điện thoại:</span>
       <input type="tel"class="box" name="sdt" pattern="[0-9]{10}" required placeholder="">
    </div>
    
-   <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
-        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Địa chỉ:</span>
+<div class="order_table">
+           <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Địa chỉ:</span>
       <input type="text"class="box" name="diachi" required placeholder="">
    </div>
-   <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
-        <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Email:</span>
+<div class="order_table">
+           <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Email:</span>
       <input type="email"class="box" name="email" required  placeholder="">
    </div>
-   
+   <div class="flex-btn">
    <input type="submit" name="submit" value="Đăng ký" class="btn">
    <a href="users_accounts.php" class="option-btn">Quay lại</a>
+</div>
 
 </form>
 </section>
