@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 22, 2025 lúc 04:02 PM
+-- Thời gian đã tạo: Th5 24, 2025 lúc 04:25 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -90,19 +90,6 @@ CREATE TABLE `chitietphieuthue` (
   `DonGia` bigint(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Đang đổ dữ liệu cho bảng `chitietphieuthue`
---
-
-INSERT INTO `chitietphieuthue` (`MaCT`, `MaThue`, `MaBD`, `SoLuong`, `DonGia`) VALUES
-(25, 18, '2', 1, 22),
-(26, 19, '1', 2, 1),
-(27, 20, '2', 3, 2000),
-(34, 32, '3', 1, 30000),
-(35, 32, 'bd1', 1, 30000),
-(36, 34, '2', 1, 2000),
-(37, 34, 'cully2', 1, 20000);
-
 -- --------------------------------------------------------
 
 --
@@ -122,8 +109,9 @@ CREATE TABLE `khachhang` (
 --
 
 INSERT INTO `khachhang` (`MaKH`, `TenKH`, `SDT`, `Diachi`, `Email`) VALUES
-('KH001', 'ưsdfghjk', '123456799', 'BG', 'tre22@gmail.com'),
-('KH002', 'yyyyy', '0333333333', 'BG', 'demo123@gmail.com');
+('KH003', 'Hồng Nhung', '0349999399', 'Hà Nội', 'ausbeautyvn@gmail.com'),
+('KH004', 'Hồng Ngọc', '0347788834', 'Hà Nam', 'hongngoc08@gmail.com'),
+('KH005', 'Thương Nguyễn', '0366778956', 'Bắc Giang', 'thuongnguyen15@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -186,22 +174,6 @@ CREATE TABLE `phieuthue` (
   `MaAD` varchar(9) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Đang đổ dữ liệu cho bảng `phieuthue`
---
-
-INSERT INTO `phieuthue` (`MaThue`, `MaKH`, `NgayThue`, `NgayTraDK`, `TongTien`, `MaAD`) VALUES
-(18, 'KH002', '2025-05-14', '2025-05-18', NULL, NULL),
-(19, 'KH001', '2025-05-14', '2025-05-22', NULL, '2'),
-(20, 'KH002', '2025-05-15', '2025-05-31', NULL, '2'),
-(24, 'KH001', '2025-12-12', '2025-12-15', NULL, '2'),
-(25, 'KH001', '2025-12-07', '2025-12-10', NULL, '2'),
-(26, 'KH001', '2025-12-07', '2025-12-10', 50000, '2'),
-(27, 'KH001', '2025-11-12', '2025-11-15', 50000, '2'),
-(28, 'KH001', '2025-11-12', '2025-11-15', 50000, '2'),
-(32, 'KH002', '2025-12-12', '2025-12-15', 230000, '2'),
-(34, 'KH001', '2025-05-22', '2025-05-25', 116000, '2');
-
 -- --------------------------------------------------------
 
 --
@@ -219,15 +191,6 @@ CREATE TABLE `phieutra` (
   `TienTra` decimal(15,2) NOT NULL DEFAULT 0.00,
   `MaAD` varchar(9) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `phieutra`
---
-
-INSERT INTO `phieutra` (`MaTra`, `MaThue`, `MaKH`, `NgayTraTT`, `ChatLuong`, `TraMuon`, `TienPhat`, `TienTra`, `MaAD`) VALUES
-(12, 18, 'KH002', '2025-05-30', 'Tốt', 12, 1200.00, 48800.00, '2'),
-(13, 20, 'KH002', '2025-06-08', 'Trầy xước', 8, 1400.00, 48600.00, '2'),
-(14, 32, 'KH002', '2025-12-16', 'Hỏng nặng', 1, 33000.00, 17000.00, '2');
 
 -- --------------------------------------------------------
 
@@ -248,7 +211,9 @@ CREATE TABLE `quantri` (
 --
 
 INSERT INTO `quantri` (`MaAD`, `TenAD`, `Pass`, `SDT`, `Email`) VALUES
-('2', 'admin', '40bd001563085fc35165329ea1ff5c5ecbdbbeef', 347795984, 'nhungmin0712@gmail.com');
+('1', 'HongNhung', '932fd8564738bf120bef9eb721feac947797c99f', 347795984, 'nhungmin0712@gmail.com'),
+('2', 'admin', '40bd001563085fc35165329ea1ff5c5ecbdbbeef', 347795984, 'nhungmin0712@gmail.com'),
+('3', 'Thuong', 'b08fff87998d20605f134b632cb8fa3398008116', 2147483647, 'thuongnguyen01@gmail.com');
 
 --
 -- Chỉ mục cho các bảng đã đổ
