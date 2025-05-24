@@ -12,12 +12,12 @@ if (!isset($_SESSION["user_id"])) {
 
 if(isset($_GET['delete'])){
    $delete_id = $_GET['delete'];
-   $delete_users = $conn->prepare("DELETE FROM `users` WHERE id = ?");
-   $delete_users->execute([$delete_id]);
-   $delete_order = $conn->prepare("DELETE FROM `orders` WHERE user_id = ?");
-   $delete_order->execute([$delete_id]);
-   $delete_cart = $conn->prepare("DELETE FROM `cart` WHERE user_id = ?");
+   $delete_cart = $conn->prepare("DELETE FROM `phieutra` WHERE MaKH = ?");
    $delete_cart->execute([$delete_id]);
+   $delete_order = $conn->prepare("DELETE FROM `phieuthue` WHERE MaKH = ?");
+   $delete_order->execute([$delete_id]);
+   $delete_users = $conn->prepare("DELETE FROM `khachhang` WHERE MaKH = ?");
+   $delete_users->execute([$delete_id]);
    header('location:users_accounts.php');
 }
 

@@ -9,22 +9,26 @@ if (!isset($_SESSION["user_id"])) {
    exit();
 }
 
-if(isset($_POST['submit'])){
+$admin_id = $_SESSION["user_id"]; // Lấy mã admin từ session
 
-   $name = $_POST['TenAD'];
-   $name = filter_var($name, FILTER_SANITIZE_STRING);
+if (isset($_POST['submit'])) {
 
-   if(!empty($name)){
-      $select_name = $conn->prepare("SELECT * FROM quantri WHERE MaAD = ?");
-      $select_name->execute([$name]);
-      if($select_name->rowCount() > 0){
+   // Lấy và lọc tên tài khoản
+   $name = filter_var($_POST['name'], FILTER_SANITIZE_STRING);
+
+   if (!empty($name)) {
+      // Kiểm tra xem tên đã tồn tại chưa (không tính chính mình)
+      $select_name = $conn->prepare("SELECT * FROM quantri WHERE TenAD = ? AND MaAD != ?");
+      $select_name->execute([$name, $admin_id]);
+      if ($select_name->rowCount() > 0) {
          $message[] = 'Tên người dùng đã được sử dụng!';
-      }else{
-         $update_name = $conn->prepare("UPDATE quantri SET name = ? WHERE id = ?");
+      } else {
+         // Cập nhật tên
+         $update_name = $conn->prepare("UPDATE quantri SET TenAD = ? WHERE MaAD = ?");
          $update_name->execute([$name, $admin_id]);
+         $message[] = 'Tên tài khoản đã được cập nhật!';
       }
    }
-
    $empty_pass = 'da39a3ee5e6b4b0d3255bfef95601890afd80709'; // Giá trị mặc định của mật khẩu rỗng
    $select_old_pass = $conn->prepare("SELECT Pass FROM quantri WHERE MaAD = ?");
    $select_old_pass->execute([$admin_id]);
@@ -88,6 +92,16 @@ if(isset($_POST['submit'])){
       <input type="password" name="new_pass" maxlength="20" placeholder="Nhập mật khẩu mới" class="box" oninput="this.value = this.value.replace(/\s/g, '')">
       <input type="password" name="confirm_pass" maxlength="20" placeholder="Nhập lại mật khẩu mới" class="box" oninput="this.value = this.value.replace(/\s/g, '')">
       <input type="submit" value="Cập nhật" name="submit" class="btn">
+      <a href="admin_accounts.php" class="option-btn">Quay lại</a>
+   
+   <?php if (!empty($message) && is_array($message)): ?>
+   <?php foreach ($message as $msg): ?>
+      <div class="message" style="background-color: <?= (strpos($msg, 'Đã thêm') !== false) ? '#d4edda' : '#f8d7da'; ?>; color: <?= (strpos($msg, 'Đã thêm') !== false) ? '#155724' : '#721c24'; ?>; border: 1px solid <?= (strpos($msg, 'Đã thêm') !== false) ? '#c3e6cb' : '#f5c6cb'; ?>; padding: 10px; margin: 10px 0; border-radius: 5px;">
+         <span><?= $msg; ?></span>
+         <i onclick="this.parentElement.style.display='none';" style="cursor:pointer; float:right;">&times;</i>
+      </div>
+   <?php endforeach; ?>
+<?php endif; ?>
    </form>
 
 </section>

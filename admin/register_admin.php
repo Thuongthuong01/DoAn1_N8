@@ -1,6 +1,4 @@
 <?php
-
-
 include '../components/connect.php';
 
 session_start();
@@ -10,33 +8,31 @@ if (!isset($_SESSION["user_id"])) {
    exit();
 }
 
+if (isset($_POST['submit'])) {
+   $maad = filter_var($_POST['maad'], FILTER_SANITIZE_NUMBER_INT);
+   $name = filter_var($_POST['name'], FILTER_SANITIZE_STRING);
+   $pass = filter_var(sha1($_POST['pass']), FILTER_SANITIZE_STRING);
+   $cpass = filter_var(sha1($_POST['cpass']), FILTER_SANITIZE_STRING);
+   $sdt = filter_var($_POST['sdt'], FILTER_SANITIZE_STRING);
+   $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
 
-if(isset($_POST['submit'])){
-   $name = $_POST['name'];
-   $name = filter_var($name, FILTER_SANITIZE_STRING);
-   $pass = sha1($_POST['pass']);
-   $pass = filter_var($pass, FILTER_SANITIZE_STRING);
-   $cpass = sha1($_POST['cpass']);
-   $cpass = filter_var($cpass, FILTER_SANITIZE_STRING);
+   $check_admin = $conn->prepare("SELECT * FROM `quantri` WHERE TenAD = ? OR MaAD = ?");
+   $check_admin->execute([$name, $maad]);
 
-   $select_admin = $conn->prepare("SELECT * FROM `admin` WHERE name = ?");
-   $select_admin->execute([$name]);
-   
-   if($select_admin->rowCount() > 0){
-      $message[] = 'Tên người dùng đã tồn tại!';
-   }else{
-      if($pass != $cpass){
+   if ($check_admin->rowCount() > 0) {
+      $message[] = 'Tên tài khoản hoặc Mã Admin đã tồn tại!';
+   } else {
+      if ($pass != $cpass) {
          $message[] = 'Xác nhận mật khẩu không khớp!';
-      }else{
-         $insert_admin = $conn->prepare("INSERT INTO `admin`(name, password) VALUES(?,?)");
-         $insert_admin->execute([$name, $cpass]);
+      } else {
+         $insert_admin = $conn->prepare("INSERT INTO `quantri`(MaAD, TenAD, Pass, SDT, Email) VALUES(?,?,?,?,?)");
+         $insert_admin->execute([$maad, $name, $cpass, $sdt, $email]);
          $message[] = 'Quản trị viên mới đã được đăng ký!';
          header("Location: admin_accounts.php");
+         exit();
       }
    }
-
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -61,27 +57,43 @@ if(isset($_POST['submit'])){
 <!-- register admin section starts  -->
 
 <section class="form-container" >
+<form action="" method="POST">
+   <h3>Đăng ký quản trị viên</h3>
+   <div class="order_table">
+      <span style="min-width: 160px;font-size:1.8rem;">Mã Admin:</span>
+      <input type="number" name="maad" required class="box">
+   </div>
 
-   <form action="" method="POST">
-      <h3>Đăng ký</h3>
-<div class="order_table">
-           <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Tên tài khoản:</span>
-      <input type="text" name="name" maxlength="20" required placeholder="" class="box" oninput="this.value = this.value.replace(/\s/g, '')">
-</div>
-<div class="order_table">
-           <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Mật khẩu:</span>
-      <input type="password" name="pass" maxlength="20" required placeholder="" class="box" oninput="this.value = this.value.replace(/\s/g, '')">
-</div>
-<div class="order_table">
-           <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Nhập lại mật khẩu:</span>
-      <input type="password" name="cpass" maxlength="20" required placeholder="" class="box" oninput="this.value = this.value.replace(/\s/g, '')">
-</div>
-<div class="flex-btn">
+   <div class="order_table">
+      <span style="min-width: 160px;font-size:1.8rem;">Tên tài khoản:</span>
+      <input type="text" name="name" maxlength="50" required class="box" oninput="this.value = this.value.replace(/\s/g, '')">
+   </div>
+
+   <div class="order_table">
+      <span style="min-width: 160px;font-size:1.8rem;">Mật khẩu:</span>
+      <input type="password" name="pass" maxlength="50" required class="box" oninput="this.value = this.value.replace(/\s/g, '')">
+   </div>
+
+   <div class="order_table">
+      <span style="min-width: 160px;font-size:1.8rem;">Nhập lại mật khẩu:</span>
+      <input type="password" name="cpass" maxlength="50" required class="box" oninput="this.value = this.value.replace(/\s/g, '')">
+   </div>
+
+   <div class="order_table">
+      <span style="min-width: 160px;font-size:1.8rem;">Số điện thoại:</span>
+      <input type="text" name="sdt" maxlength="20" required class="box" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+   </div>
+
+   <div class="order_table">
+      <span style="min-width: 160px;font-size:1.8rem;">Email:</span>
+      <input type="email" name="email" maxlength="100" required class="box">
+   </div>
+
+   <div class="flex-btn">
       <input type="submit" value="Đăng ký ngay" name="submit" class="btn">
       <a href="admin_accounts.php" class="option-btn">Quay lại</a>
-</div>
-   </form>
-
+   </div>
+</form>
 </section>
 
 <!-- register admin section ends -->

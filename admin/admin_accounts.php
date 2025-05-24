@@ -12,7 +12,7 @@ if (!isset($_SESSION["user_id"])) {
 
 if(isset($_GET['delete'])){
    $delete_id = $_GET['delete'];
-   $delete_admin = $conn->prepare("DELETE FROM `admin` WHERE id = ?");
+   $delete_admin = $conn->prepare("DELETE FROM `quantri` WHERE MaAD = ?");
    $delete_admin->execute([$delete_id]);
    header('location:admin_accounts.php');
 }
@@ -37,49 +37,6 @@ if(isset($_GET['delete'])){
 <body>
 
 <?php include '../components/admin_header.php' ?>
-
-<!-- admins accounts section starts  -->
-<!-- 
-<section class="accounts">
-
-   <h1 class="heading">Danh sách tài khoản</h1>
-
-   <div class="box-container">
-
-   <div class="box">
-      <p>Đăng ký tài khoản mới</p>
-      <a href="register_admin.php" class="option-btn">Đăng ký</a>
-   </div>
-
-   <?php
-      $select_account = $conn->prepare("SELECT * FROM `quantri`");
-      $select_account->execute();
-      if($select_account->rowCount() > 0){
-         while($fetch_accounts = $select_account->fetch(PDO::FETCH_ASSOC)){  
-   ?>
-   <div class="box">
-      <p> ID : <span><?= $fetch_accounts['MaAD']; ?></span> </p>
-      <p> Tài khoản : <span><?= $fetch_accounts['TenAD']; ?></span> </p>
-      <p> SĐT : <span><?= $fetch_accounts['SDT']; ?></span> </p>
-      <p> Email : <span><?= $fetch_accounts['Email']; ?></span> </p>
-      <div class="flex-btn">
-         <a href="admin_accounts.php?delete=<?= $fetch_accounts['MaAD']; ?>" class="delete-btn" onclick="return confirm('Xoá tài khoản?');">Xoá</a>
-         <?php
-            if($fetch_accounts['MaAD'] == $admin_id){
-               echo '<a href="update_profile.php" class="option-btn">Chỉnh sửa</a>';
-            }
-         ?>
-      </div>
-   </div>
-   <?php
-      }
-   }else{
-      echo '<p class="empty">Không có tài khoản nào khả dụng</p>';
-   }
-   ?>
-
-   </div>
-</section> -->
 
 
 <section class="accounts">
@@ -119,7 +76,7 @@ if(isset($_GET['delete'])){
             <td><?= $fetch_admin['Email']; ?></td>
             <td>
                <a href="update_profile_admin.php?update=<?= $fetch_admin['MaAD']; ?>" class="btn btn-update">Cập nhật</a>
-               <a href="quantri.php?delete=<?= $fetch_admin['MaAD']; ?>" class="btn btn-delete" onclick="return confirm('Xoá sản phẩm?');">Xoá</a>
+               <a href="admin_accounts.php?delete=<?= $fetch_admin['MaAD']; ?>" class="btn btn-delete" onclick="return confirm('Xoá sản phẩm?');">Xoá</a>
             </td>
          </tr>
          <?php

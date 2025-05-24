@@ -102,7 +102,7 @@ if ($stmt_check->rowCount() == 0) {
          while($fetch_products = $show_products->fetch(PDO::FETCH_ASSOC)){  
    ?>
    <form action="" method="POST" enctype="multipart/form-data">
-<!-- <span>Hình ảnh</span> -->
+
    <input type="hidden" name="MaBD" value="<?= $fetch_products['MaBD']; ?>">
    
    <input type="hidden" name="old_image" value="<?= $fetch_products['image']; ?>">
