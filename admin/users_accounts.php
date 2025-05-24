@@ -50,54 +50,51 @@ if(isset($_GET['delete'])){
     opacity: 0.85;
 }
 
+th.sortable {
+  position: relative;
+  cursor: pointer;
+}
+
+th.sortable::after {
+  content: "⇅";
+  position: absolute;
+  right: 8px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 1.3em;
+  color: #888;
+}
+
+th.sortable:hover::after {
+  opacity: 1;
+}
+
+th.sortable.sorted-asc::after {
+  content: "↑";
+  opacity: 1;
+  font-size: 1.3em;
+}
+
+th.sortable.sorted-desc::after {
+  content: "↓";
+  opacity: 1;
+  font-size: 1.3em;
+}
+.filter-row input {
+  width: 95%;
+  padding: 4px 6px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
    </style>
 </head>
 <body>
 
 <?php include '../components/admin_header.php' ?>
 
-<!-- user accounts section starts  -->
-<!-- 
-<section class="accounts">
 
-   <h1 class="heading">Tài khoản người dùng</h1>
- 
-
-   <div class="box-container">
-   <div class="box">
-      <p>Đăng ký tài khoản mới</p>
-      <a href="register_user.php" class="option-btn">Đăng ký</a>
-   </div>
-
-   <?php
-      $select_account = $conn->prepare("SELECT * FROM `khachhang`");
-      $select_account->execute();
-      if($select_account->rowCount() > 0){
-         while($fetch_accounts = $select_account->fetch(PDO::FETCH_ASSOC)){  
-   ?>
-   <div class="box">
-      <p> ID : <span><?= $fetch_accounts['MaKH']; ?></span> </p>
-      <p> Tài khoản : <span><?= $fetch_accounts['TenKH']; ?></span> </p>
-      <p> SĐT : <span><?= $fetch_accounts['SDT']; ?></span> </p>
-      <p> Địa chỉ : <span><?= $fetch_accounts['Diachi']; ?></span> </p>
-      <p> Email : <span><?= $fetch_accounts['Email']; ?></span> </p>
-      <div class="flex-btn">
-         <a href="update_profile_user.php?id=<?= $fetch_accounts['MaKH']; ?>" class="option-btn">Cập nhật</a>
-         <a href="users_accounts.php?delete=<?= $fetch_accounts['MaKH']; ?>" class="delete-btn" onclick="return confirm('Bạn có chắc muốn xoá tài khoản này?');">Xoá</a>
-      </div>
-   </div>
-   <?php
-      }
-   }else{
-      echo '<p class="empty">Không có tài khoản nào khả dụng</p>';
-   }
-   ?>
-
-   </div>
-
-</section> -->
-
-<!-- user accounts section ends -->
 
 <section class="accounts">
 
@@ -115,11 +112,11 @@ if(isset($_GET['delete'])){
    <table class="product-table">
       <thead>
          <tr>
-            <th>Mã KH</th>
-            <th>Tên KH</th>
-            <th>SĐT</th>
-            <th>Địa Chỉ</th>
-            <th>Email</th>
+            <th class="sortable" data-index="0">Mã KH</th>
+            <th class="sortable" data-index="1">Tên KH</th>
+            <th class="sortable" data-index="2">SĐT</th>
+            <th class="sortable" data-index="3">Địa Chỉ</th>
+            <th class="sortable" data-index="4">Email</th>
             <th>Lịch sử thuê</th>
             <th>Chức năng</th>
          </tr>
@@ -155,11 +152,50 @@ if(isset($_GET['delete'])){
    </table>
 </section>
 
+<script>
+let currentSortedIndex = -1;
+let isAsc = true;
 
+document.querySelectorAll("th.sortable").forEach(th => {
+  th.addEventListener("click", () => {
+    const table = th.closest("table");
+    const tbody = table.querySelector("tbody");
+    const index = parseInt(th.getAttribute("data-index"));
+    const rows = Array.from(tbody.querySelectorAll("tr"));
 
+    // Đảo chiều nếu click lại cùng cột
+    if (index === currentSortedIndex) {
+      isAsc = !isAsc;
+    } else {
+      isAsc = true;
+      currentSortedIndex = index;
+    }
 
+    // Xóa class cũ
+    table.querySelectorAll("th.sortable").forEach(t => {
+      t.classList.remove("sorted-asc", "sorted-desc");
+    });
 
-<!-- custom js file link  -->
+    // Thêm class mới
+    th.classList.add(isAsc ? "sorted-asc" : "sorted-desc");
+
+    // Sắp xếp
+    rows.sort((a, b) => {
+      let aText = a.cells[index].textContent.trim();
+      let bText = b.cells[index].textContent.trim();
+      let aVal = isNaN(aText) ? aText.toLowerCase() : parseFloat(aText.replace(/[^\d.-]/g, ''));
+      let bVal = isNaN(bText) ? bText.toLowerCase() : parseFloat(bText.replace(/[^\d.-]/g, ''));
+
+      if (aVal < bVal) return isAsc ? -1 : 1;
+      if (aVal > bVal) return isAsc ? 1 : -1;
+      return 0;
+    });
+
+    // Gắn lại thứ tự vào bảng
+    rows.forEach(row => tbody.appendChild(row));
+  });
+});
+</script>
 <script src="../js/admin_script.js"></script>
 
 </body>

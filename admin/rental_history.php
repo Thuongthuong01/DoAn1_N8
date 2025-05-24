@@ -117,7 +117,7 @@ if (isset($_GET['detail'])) {
     </thead>
     <tbody>
         <?php if (count($phieu_thue) == 0): ?>
-            <tr><td colspan="<?= $MaKH ? 5 : 6 ?>">Không có phiếu thuê nào.</td></tr>
+            <tr><td colspan="<?= $MaKH ? 6 : 6 ?>">Không có phiếu thuê nào.</td></tr>
         <?php else: ?>
             <?php foreach($phieu_thue as $pt): ?>
                 <tr>
@@ -126,8 +126,8 @@ if (isset($_GET['detail'])) {
                     <td><?= htmlspecialchars($pt['NgayThue']) ?></td>
                     <td><?= htmlspecialchars($pt['NgayTraDK']) ?></td>
                     <td><?= htmlspecialchars($pt['TrangThai']) ?></td>
-                    <td><a href="?<?= $MaKH ? 'MaKH=' . urlencode($MaKH) . '&' : '' ?>detail=<?= urlencode($pt['MaThue']) ?>" class="btn">Xem</a>
-</td>
+                    <td><a href="?<?= $MaKH ? 'MaKH=' . urlencode($MaKH) . '&' : '' ?>detail=<?= urlencode($pt['MaThue']) ?>" class="btn">Xem</a></td>
+
                 </tr>
             <?php endforeach; ?>
         <?php endif; ?>

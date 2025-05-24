@@ -54,7 +54,47 @@ if (isset($_GET['delete_ncc'])) {
 
     <!-- custom css file link  -->
     <link rel="stylesheet" href="../css/admin_style.css">
+<style>
+th.sortable {
+  position: relative;
+  cursor: pointer;
+}
 
+th.sortable::after {
+  content: "⇅";
+  position: absolute;
+  right: 8px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 1.3em;
+  color: #888;
+}
+
+th.sortable:hover::after {
+  opacity: 1;
+}
+
+th.sortable.sorted-asc::after {
+  content: "↑";
+  opacity: 1;
+  font-size: 1.3em;
+}
+
+th.sortable.sorted-desc::after {
+  content: "↓";
+  opacity: 1;
+  font-size: 1.3em;
+}
+.filter-row input {
+  width: 95%;
+  padding: 4px 6px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+
+   </style>
 </head>
 <body>
 <?php include '../components/admin_header.php' ?>
@@ -97,11 +137,11 @@ if (isset($_GET['delete_ncc'])) {
       <table class="product-table">
    <thead>
       <tr>
-         <th>Mã NCC</th>
-         <th>Tên Nhà Cung Cấp</th>
-         <th>SĐT</th>
-         <th>Địa chỉ</th>
-         <th>Chức năng</th>
+         <th class="sortable" data-index="0">Mã NCC</th>
+         <th class="sortable" data-index="1">Tên nhà cung cấp</th>
+         <th class="sortable" data-index="2">SĐT</th>
+         <th class="sortable" data-index="3">Địa chỉ</th>
+         <th >Chức năng</th>
       </tr>
    </thead>
    <tbody>
@@ -117,7 +157,7 @@ if (isset($_GET['delete_ncc'])) {
          <td><?= htmlspecialchars($ncc['SDT']); ?></td>
          <td><?= $ncc['DiaChi']; ?></td>
          <td>
-            <!-- <a href="update_supplier.php?update=<?= $ncc['MaNCC']; ?>" class="btn btn-update">Sửa</a> -->
+            <a href="update_supplier.php?update=<?= $ncc['MaNCC']; ?>" class="btn btn-update">Sửa</a>
             <a href="?delete_ncc=<?= $ncc['MaNCC']; ?>" class="btn delete-btn" onclick="return confirm('Bạn có chắc muốn xóa nhà cung cấp này?');">Xóa</a>
          </td>
       </tr>
@@ -132,15 +172,50 @@ if (isset($_GET['delete_ncc'])) {
 
 
 </section>
+<script>
+let currentSortedIndex = -1;
+let isAsc = true;
 
+document.querySelectorAll("th.sortable").forEach(th => {
+  th.addEventListener("click", () => {
+    const table = th.closest("table");
+    const tbody = table.querySelector("tbody");
+    const index = parseInt(th.getAttribute("data-index"));
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    // Đảo chiều nếu click lại cùng cột
+    if (index === currentSortedIndex) {
+      isAsc = !isAsc;
+    } else {
+      isAsc = true;
+      currentSortedIndex = index;
+    }
+
+    // Xóa class cũ
+    table.querySelectorAll("th.sortable").forEach(t => {
+      t.classList.remove("sorted-asc", "sorted-desc");
+    });
+
+    // Thêm class mới
+    th.classList.add(isAsc ? "sorted-asc" : "sorted-desc");
+
+    // Sắp xếp
+    rows.sort((a, b) => {
+      let aText = a.cells[index].textContent.trim();
+      let bText = b.cells[index].textContent.trim();
+      let aVal = isNaN(aText) ? aText.toLowerCase() : parseFloat(aText.replace(/[^\d.-]/g, ''));
+      let bVal = isNaN(bText) ? bText.toLowerCase() : parseFloat(bText.replace(/[^\d.-]/g, ''));
+
+      if (aVal < bVal) return isAsc ? -1 : 1;
+      if (aVal > bVal) return isAsc ? 1 : -1;
+      return 0;
+    });
+
+    // Gắn lại thứ tự vào bảng
+    rows.forEach(row => tbody.appendChild(row));
+  });
+});
+</script>
 </body>
 <!-- hiển thị thông báo -->
-<?php if (!empty($message) && is_array($message)): ?>
-   <?php foreach ($message as $msg): ?>
-      <div class="message" style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 10px; margin: 10px 0; border-radius: 5px;">
-         <span><?= $msg; ?></span>
-         <i onclick="this.parentElement.style.display='none';" style="cursor:pointer; float:right;">&times;</i>
-      </div>
-   <?php endforeach; ?>
-<?php endif; ?>
 </html>

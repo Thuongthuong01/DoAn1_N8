@@ -10,6 +10,10 @@ if (!isset($_SESSION["user_id"])) {
 }
 
 $admin_id = $_SESSION["user_id"]; // Lấy mã admin từ session
+// Lấy thông tin tài khoản đang đăng nhập
+$fetch_profile_stmt = $conn->prepare("SELECT TenAD FROM quantri WHERE MaAD = ?");
+$fetch_profile_stmt->execute([$admin_id]);
+$fetch_profile = $fetch_profile_stmt->fetch(PDO::FETCH_ASSOC);
 
 if (isset($_POST['submit'])) {
 
@@ -91,9 +95,10 @@ if (isset($_POST['submit'])) {
       <input type="password" name="old_pass" maxlength="20" placeholder="Nhập mật khẩu cũ" class="box" oninput="this.value = this.value.replace(/\s/g, '')">
       <input type="password" name="new_pass" maxlength="20" placeholder="Nhập mật khẩu mới" class="box" oninput="this.value = this.value.replace(/\s/g, '')">
       <input type="password" name="confirm_pass" maxlength="20" placeholder="Nhập lại mật khẩu mới" class="box" oninput="this.value = this.value.replace(/\s/g, '')">
+      <div class="flex-btn">
       <input type="submit" value="Cập nhật" name="submit" class="btn">
       <a href="admin_accounts.php" class="option-btn">Quay lại</a>
-   
+</div>
    <?php if (!empty($message) && is_array($message)): ?>
    <?php foreach ($message as $msg): ?>
       <div class="message" style="background-color: <?= (strpos($msg, 'Đã thêm') !== false) ? '#d4edda' : '#f8d7da'; ?>; color: <?= (strpos($msg, 'Đã thêm') !== false) ? '#155724' : '#721c24'; ?>; border: 1px solid <?= (strpos($msg, 'Đã thêm') !== false) ? '#c3e6cb' : '#f5c6cb'; ?>; padding: 10px; margin: 10px 0; border-radius: 5px;">

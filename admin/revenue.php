@@ -99,7 +99,8 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php foreach ($data as $row): ?>
         <tr>
             <?php if ($filter == 'ngày'): ?>
-                <td><?= htmlspecialchars($row['ngay']) ?></td>
+                <td><?php echo date('d/m/Y', strtotime($row['ngay'])); ?></td>
+
             <?php elseif ($filter == 'tháng'): ?>
                 <td><?= $row['thang'] ?>/<?= $row['nam'] ?> </td>
                 

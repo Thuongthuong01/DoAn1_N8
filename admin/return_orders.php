@@ -187,7 +187,47 @@ if (isset($_GET['delete'])) {
    <link rel="stylesheet" href="../css/admin_style.css">
 </head>
 <body>
+<style>
+th.sortable {
+  position: relative;
+  cursor: pointer;
+}
 
+th.sortable::after {
+  content: "⇅";
+  position: absolute;
+  right: 8px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 1.3em;
+  color: #888;
+}
+
+th.sortable:hover::after {
+  opacity: 1;
+}
+
+th.sortable.sorted-asc::after {
+  content: "↑";
+  opacity: 1;
+  font-size: 1.3em;
+}
+
+th.sortable.sorted-desc::after {
+  content: "↓";
+  opacity: 1;
+  font-size: 1.3em;
+}
+.filter-row input {
+  width: 95%;
+  padding: 4px 6px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+
+   </style>
 <?php include '../components/admin_header.php' ?>
 <section class="main-content placed-orders-admin">
    <section class="form-container" style="margin-right:2.2rem;">
@@ -267,18 +307,30 @@ if (isset($_GET['delete'])) {
    <table class="product-table">
       <thead>
          <tr>
-            <th>Mã Trả</th>
-            <th>Mã Thuê</th>
-            <th>Khách Hàng (Mã KH)</th>
-            <th>SĐT</th>
-            <th>Ngày Trả Thực Tế</th>
-            <th>Chất Lượng</th>
-            <th>Trả Muộn (ngày)</th>
-            <th>Tiền phạt</th>
-            <th>Tiền trả</th>
+            <th class="sortable" data-index="0">Mã trả</th>
+            <th class="sortable" data-index="1">Mã thuê</th>
+            <th class="sortable" data-index="2">Khách hàng (Mã KH)</th>
+            <th class="sortable" data-index="3">SĐT</th>
+            <th class="sortable" data-index="4">Ngày trả thực tế</th>
+            <th class="sortable" data-index="5">Chất lượng</th>
+            <th class="sortable" data-index="6">Trả muộn (Ngày)</th>
+            <th class="sortable" data-index="7">Tiền phạt</th>
+            <th class="sortable" data-index="8">Tiền trả</th>
             <th>Chức năng</th>
 
          </tr>
+         <tr class="filter-row">
+    <th><input type="text" placeholder="Lọc mã trả" data-index="0"></th>
+    <th><input type="text" placeholder="Lọc mã thuê" data-index="1"></th>
+    <th><input type="text" placeholder="Lọc tên khách hàng" data-index="2"></th>
+    <th></th>
+    <th></th>
+    <th><input type="text" placeholder="Lọc chất lượng" data-index="5"></th>
+    <th><input type="text" placeholder="Lọc trả muộn" data-index="6"></th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
       </thead>
       <tbody>
          <?php
@@ -302,7 +354,7 @@ if (isset($_GET['delete'])) {
                   <td><?= $phieu['MaThue']; ?></td>
                   <td><?= $phieu['TenKH']; ?>(<?= htmlspecialchars($phieu['MaKH']) ?>)</td>
                   <td><?= $phieu['SDT']; ?></td>
-                  <td><?= $phieu['NgayTraTT']; ?></td>
+                  <td><?php echo date('d/m/Y', strtotime($phieu['NgayTraTT'])); ?></td>
                   <td><?= $phieu['ChatLuong']; ?></td>
                   <td><?= $phieu['TraMuon']; ?> ngày</td>
                   <td><?= number_format($phieu['TienPhat'], 0, ',', '.'); ?> VNĐ</td>
@@ -442,7 +494,81 @@ function calculateFines() {
 
 
 </script>
+<script>
+let currentSortedIndex = -1;
+let isAsc = true;
 
+document.querySelectorAll("th.sortable").forEach(th => {
+  th.addEventListener("click", () => {
+    const table = th.closest("table");
+    const tbody = table.querySelector("tbody");
+    const index = parseInt(th.getAttribute("data-index"));
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    // Đảo chiều nếu click lại cùng cột
+    if (index === currentSortedIndex) {
+      isAsc = !isAsc;
+    } else {
+      isAsc = true;
+      currentSortedIndex = index;
+    }
+
+    // Xóa class cũ
+    table.querySelectorAll("th.sortable").forEach(t => {
+      t.classList.remove("sorted-asc", "sorted-desc");
+    });
+
+    // Thêm class mới
+    th.classList.add(isAsc ? "sorted-asc" : "sorted-desc");
+
+    // Sắp xếp
+    rows.sort((a, b) => {
+      let aText = a.cells[index].textContent.trim();
+      let bText = b.cells[index].textContent.trim();
+      let aVal = isNaN(aText) ? aText.toLowerCase() : parseFloat(aText.replace(/[^\d.-]/g, ''));
+      let bVal = isNaN(bText) ? bText.toLowerCase() : parseFloat(bText.replace(/[^\d.-]/g, ''));
+
+      if (aVal < bVal) return isAsc ? -1 : 1;
+      if (aVal > bVal) return isAsc ? 1 : -1;
+      return 0;
+    });
+
+    // Gắn lại thứ tự vào bảng
+    rows.forEach(row => tbody.appendChild(row));
+  });
+});
+</script>
+<script>
+document.querySelectorAll(".filter-row input").forEach((input) => {
+  input.addEventListener("input", () => {
+    const table = input.closest("table");
+    const tbody = table.querySelector("tbody");
+    const rows = tbody.querySelectorAll("tr");
+    const filters = {};
+
+    document.querySelectorAll(".filter-row input").forEach(i => {
+      if (i.value.trim() !== "") {
+        filters[i.dataset.index] = i.value.trim().toLowerCase();
+      }
+    });
+
+    rows.forEach(row => {
+      const cells = row.querySelectorAll("td");
+      let visible = true;
+
+      for (let index in filters) {
+        const cellText = cells[index]?.textContent.toLowerCase() || "";
+        if (!cellText.includes(filters[index])) {
+          visible = false;
+          break;
+        }
+      }
+
+      row.style.display = visible ? "" : "none";
+    });
+  });
+});
+</script>
 <script src="../js/admin_script.js"></script>
 </body>
 </html>

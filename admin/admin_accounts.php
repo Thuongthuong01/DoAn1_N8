@@ -9,6 +9,18 @@ if (!isset($_SESSION["user_id"])) {
    header("Location:admin_login");
    exit();
 }
+if(isset($_GET['delete'])){
+    $delete_id = $_GET['delete'];
+    if ($delete_id == $_SESSION['user_id']) {
+        // Không cho xóa chính tài khoản đang đăng nhập
+        echo "<script>alert('Không thể xóa tài khoản đang đăng nhập!');</script>";
+    } else {
+        $delete_admin = $conn->prepare("DELETE FROM `quantri` WHERE MaAD = ?");
+        $delete_admin->execute([$delete_id]);
+        header('location:admin_accounts.php');
+        exit();
+    }
+}
 
 if(isset($_GET['delete'])){
    $delete_id = $_GET['delete'];
@@ -35,7 +47,52 @@ if(isset($_GET['delete'])){
 
 </head>
 <body>
+<style>
+   .disabled-text {
+   color: #aaa;
+   font-style: italic;
+   cursor: not-allowed;
+}
 
+th.sortable {
+  position: relative;
+  cursor: pointer;
+}
+
+th.sortable::after {
+  content: "⇅";
+  position: absolute;
+  right: 8px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 1.3em;
+  color: #888;
+}
+
+th.sortable:hover::after {
+  opacity: 1;
+}
+
+th.sortable.sorted-asc::after {
+  content: "↑";
+  opacity: 1;
+  font-size: 1.3em;
+}
+
+th.sortable.sorted-desc::after {
+  content: "↓";
+  opacity: 1;
+  font-size: 1.3em;
+}
+.filter-row input {
+  width: 95%;
+  padding: 4px 6px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+   </style>
 <?php include '../components/admin_header.php' ?>
 
 
@@ -55,10 +112,10 @@ if(isset($_GET['delete'])){
    <table class="product-table">
       <thead>
          <tr>
-            <th>ID</th>
-            <th>Tên tài khoản</th>
-            <th>SĐT</th>
-            <th>Email</th>
+            <th class="sortable" data-index="0">ID</th>
+            <th class="sortable" data-index="1">Tên tài khoản</th>
+            <th class="sortable" data-index="2">SĐT</th>
+            <th class="sortable" data-index="3">Email</th>
             <th>Chức năng</th>
          </tr>
       </thead>
@@ -75,39 +132,72 @@ if(isset($_GET['delete'])){
             <td><?= $fetch_admin['SDT']; ?></td>
             <td><?= $fetch_admin['Email']; ?></td>
             <td>
+            <?php if ($fetch_admin['MaAD'] == $_SESSION['user_id']): ?>
                <a href="update_profile_admin.php?update=<?= $fetch_admin['MaAD']; ?>" class="btn btn-update">Cập nhật</a>
-               <a href="admin_accounts.php?delete=<?= $fetch_admin['MaAD']; ?>" class="btn btn-delete" onclick="return confirm('Xoá sản phẩm?');">Xoá</a>
-            </td>
+            <?php else: ?>
+               <span class="disabled-text" >Không thể sửa</span>
+            <?php endif; ?>
+            <?php if ($fetch_admin['MaAD'] != $_SESSION['user_id']): ?>
+               <a href="admin_accounts.php?delete=<?= $fetch_admin['MaAD']; ?>" class="btn btn-delete" onclick="return confirm('Xoá quản trị viên?');">Xoá</a>
+            <?php else: ?>
+               <span class="disabled-text" >Không thể xoá</span>
+            <?php endif; ?>
+         </td>
+
          </tr>
          <?php
                }
             } else {
-               echo '<tr><td colspan="8" class="empty">Chưa có sản phẩm nào được thêm vào!</td></tr>';
+               echo '<tr><td colspan="8" class="empty">Chưa có tài khoản nào được thêm vào!</td></tr>';
             }
          ?>
       </tbody>
    </table>
 </section>
+<script>
+let currentSortedIndex = -1;
+let isAsc = true;
 
+document.querySelectorAll("th.sortable").forEach(th => {
+  th.addEventListener("click", () => {
+    const table = th.closest("table");
+    const tbody = table.querySelector("tbody");
+    const index = parseInt(th.getAttribute("data-index"));
+    const rows = Array.from(tbody.querySelectorAll("tr"));
 
+    // Đảo chiều nếu click lại cùng cột
+    if (index === currentSortedIndex) {
+      isAsc = !isAsc;
+    } else {
+      isAsc = true;
+      currentSortedIndex = index;
+    }
 
+    // Xóa class cũ
+    table.querySelectorAll("th.sortable").forEach(t => {
+      t.classList.remove("sorted-asc", "sorted-desc");
+    });
 
+    // Thêm class mới
+    th.classList.add(isAsc ? "sorted-asc" : "sorted-desc");
 
+    // Sắp xếp
+    rows.sort((a, b) => {
+      let aText = a.cells[index].textContent.trim();
+      let bText = b.cells[index].textContent.trim();
+      let aVal = isNaN(aText) ? aText.toLowerCase() : parseFloat(aText.replace(/[^\d.-]/g, ''));
+      let bVal = isNaN(bText) ? bText.toLowerCase() : parseFloat(bText.replace(/[^\d.-]/g, ''));
 
+      if (aVal < bVal) return isAsc ? -1 : 1;
+      if (aVal > bVal) return isAsc ? 1 : -1;
+      return 0;
+    });
 
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- custom js file link  -->
+    // Gắn lại thứ tự vào bảng
+    rows.forEach(row => tbody.appendChild(row));
+  });
+});
+</script>
 <script src="../js/admin_script.js"></script>
 
 </body>

@@ -108,20 +108,51 @@ if (isset($_GET['delete_phieunhap'])) {
 
 <!-- custom css file link  -->
 <link rel="stylesheet" href="../css/admin_style.css">
+<style>
+th.sortable {
+  position: relative;
+  cursor: pointer;
+}
 
+th.sortable::after {
+  content: "⇅";
+  position: absolute;
+  right: 8px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 1.3em;
+  color: #888;
+}
+
+th.sortable:hover::after {
+  opacity: 1;
+}
+
+th.sortable.sorted-asc::after {
+  content: "↑";
+  opacity: 1;
+  font-size: 1.3em;
+}
+
+th.sortable.sorted-desc::after {
+  content: "↓";
+  opacity: 1;
+  font-size: 1.3em;
+}
+.filter-row input {
+  width: 95%;
+  padding: 4px 6px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+
+   </style>
 </head>
 <body>
 <?php include '../components/admin_header.php' ?>
-<!-- <section class="warehouse"> -->
-<!-- <section class="accounts">
 
-   <h1 class="heading">Thêm phiếu nhập hàng</h1>
-   <div class="box-container">
-   <div class="box">
-      <p>Thêm phiếu nhập mới</p>
-      <a href="warehouse_receipt.php" class="option-btn">Thêm</a>
-   </div>
-</section> -->
 <?php
 // Kết nối CSDL nếu chưa có
 // $conn = new PDO(...);
@@ -196,7 +227,7 @@ $ds_ncc = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
 <div class="flex-btn">
       <input type="submit" name="submit" value="Thêm" class="btn">
-      <a href="warehouse.php" class="option-btn">Quay lại</a>
+      <!-- <a href="warehouse.php" class="option-btn">Quay lại</a> -->
    </div>
    </form>
 
@@ -277,12 +308,12 @@ document.querySelector("form").addEventListener("submit", function (e) {
    <table class="product-table">
       <thead>
          <tr>
-            <th>Mã Phiếu</th>
-            <th>Mã NCC</th>
-            <th>Ngày Nhập</th>
-            <th>Số Lượng</th>
-            <th>Chi Tiết Băng Đĩa (Mã BD - Giá Gốc)</th>
-            <th>Tổng Tiền</th>
+            <th class="sortable" data-index="0">Mã phiếu</th>
+            <th class="sortable" data-index="1">Mã NCC</th>
+            <th class="sortable" data-index="2">Ngày nhập</th>
+            <th class="sortable" data-index="3">Số lượng</th>
+            <th class="sortable" data-index="4">Chi tiết băng đĩa (Mã BD - Giá gốc)</th>
+            <th class="sortable" data-index="5">Tổng tiền</th>
             <th>Chức năng</th>
          </tr>
       </thead>
@@ -309,10 +340,10 @@ document.querySelector("form").addEventListener("submit", function (e) {
          <tr>
             <td><?= htmlspecialchars($phieu['MaPhieu']); ?></td>
             <td><?= htmlspecialchars($phieu['MaNCC']); ?></td>
-            <td><?= htmlspecialchars($phieu['NgayNhap']); ?></td>
+            <td><?php echo date('d/m/Y', strtotime($phieu['NgayNhap'])); ?></td>
             <td><?= htmlspecialchars($phieu['SoLuong']); ?></td>
             <td style="white-space: nowrap;"><?= $chiTietStr; ?></td>
-            <td><?= number_format($phieu['TongTien'], 0, ',', '.') . "đ"; ?></td>
+            <td><?= number_format($phieu['TongTien'], 0, ',', '.') . " VNĐ"; ?></td>
             <td>
                <!-- Ví dụ có thể thêm sửa xóa phiếu nhập -->
                <!-- <a href="update_phieunhap.php?update=<?= urlencode($phieu['MaPhieu']); ?>" class="btn btn-update">Sửa</a> -->
@@ -330,7 +361,50 @@ document.querySelector("form").addEventListener("submit", function (e) {
       </tbody>
    </table>
 </section>
+<script>
+let currentSortedIndex = -1;
+let isAsc = true;
 
+document.querySelectorAll("th.sortable").forEach(th => {
+  th.addEventListener("click", () => {
+    const table = th.closest("table");
+    const tbody = table.querySelector("tbody");
+    const index = parseInt(th.getAttribute("data-index"));
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    // Đảo chiều nếu click lại cùng cột
+    if (index === currentSortedIndex) {
+      isAsc = !isAsc;
+    } else {
+      isAsc = true;
+      currentSortedIndex = index;
+    }
+
+    // Xóa class cũ
+    table.querySelectorAll("th.sortable").forEach(t => {
+      t.classList.remove("sorted-asc", "sorted-desc");
+    });
+
+    // Thêm class mới
+    th.classList.add(isAsc ? "sorted-asc" : "sorted-desc");
+
+    // Sắp xếp
+    rows.sort((a, b) => {
+      let aText = a.cells[index].textContent.trim();
+      let bText = b.cells[index].textContent.trim();
+      let aVal = isNaN(aText) ? aText.toLowerCase() : parseFloat(aText.replace(/[^\d.-]/g, ''));
+      let bVal = isNaN(bText) ? bText.toLowerCase() : parseFloat(bText.replace(/[^\d.-]/g, ''));
+
+      if (aVal < bVal) return isAsc ? -1 : 1;
+      if (aVal > bVal) return isAsc ? 1 : -1;
+      return 0;
+    });
+
+    // Gắn lại thứ tự vào bảng
+    rows.forEach(row => tbody.appendChild(row));
+  });
+});
+</script>
 
 </body>
 </html>

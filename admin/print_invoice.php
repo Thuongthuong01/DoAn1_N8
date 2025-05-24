@@ -118,14 +118,14 @@ switch ($loai) {
     <h1>Hóa đơn phiếu thuê #<?= htmlspecialchars($id) ?></h1>
     <p>Ngày in hóa đơn: <?= date('d/m/Y H:i:s') ?></p>
     <p><strong>Khách hàng:</strong> <?= htmlspecialchars($phieu['MaKH']) ?> - <?= htmlspecialchars($phieu['TenKH']) ?> (SDT: <?= htmlspecialchars($phieu['SDT']) ?>)</p>
-    <p><strong>Ngày thuê:</strong> <?= htmlspecialchars($phieu['NgayThue']) ?> | <strong>Ngày trả dự kiến:</strong> <?= htmlspecialchars($phieu['NgayTraDK']) ?></p>
+    <p><strong>Ngày thuê:</strong><?php echo date('d/m/Y', strtotime($phieu['NgayThue'])); ?> | <strong>Ngày trả dự kiến:</strong><?php echo date('d/m/Y', strtotime($phieu['NgayTraDK'])); ?></p>
     <p><strong>Người nhập phiếu thuê:</strong> <?= htmlspecialchars($phieu['TenAD']) ?></p>
 
     <table>
         <thead>
             <tr>
-                <th>Mã Băng Đĩa</th>
-                <th>Tên Băng Đĩa</th>
+                <th>Mã băng đĩa</th>
+                <th>Tên băng đĩa</th>
                 <th>Số lượng</th>
                 <th>Đơn giá (VNĐ)</th>
                 <th>Thành tiền (VNĐ)</th>
@@ -168,7 +168,7 @@ switch ($loai) {
     <h1>Hóa đơn phiếu nhập #<?= htmlspecialchars($id) ?></h1>
     <p>Ngày in hóa đơn: <?= date('d/m/Y H:i:s') ?></p>
     <p><strong>Nhà cung cấp:</strong> <?= htmlspecialchars($phieu['MaNCC']) ?> - <?= htmlspecialchars($phieu['TenNCC']) ?></p>
-    <p><strong>Ngày nhập:</strong> <?= htmlspecialchars($phieu['NgayNhap']) ?></p>
+    <p><strong>Ngày nhập:</strong><?php echo date('d/m/Y', strtotime($phieu['NgayNhap'])); ?></p>
     <p><strong>Người nhập:</strong> <?= htmlspecialchars($phieu['TenAD']) ?></p>
 
     <table>
@@ -199,17 +199,17 @@ switch ($loai) {
     <h1>Hóa đơn phiếu trả #<?= htmlspecialchars($id) ?></h1>
     <p>Ngày in hóa đơn: <?= date('d/m/Y H:i:s') ?></p>
     <p><strong>Khách hàng:</strong> <?= htmlspecialchars($phieu['MaKH']) ?> - <?= htmlspecialchars($phieu['TenKH']) ?> (SDT: <?= htmlspecialchars($phieu['SDT']) ?>)</p>
-    <p><strong>Ngày trả:</strong> <?= htmlspecialchars($phieu['NgayTraTT']) ?></p>
+    <p><strong>Ngày trả:</strong><?php echo date('d/m/Y', strtotime($phieu['NgayTraTT'])); ?></p>
     <p><strong>Người nhập:</strong> <?= htmlspecialchars($phieu['TenNguoiNhap'] ?: 'Không xác định') ?></p>
 
     <table>
         <thead>
             <tr>
-                <th>Mã Băng Đĩa</th>
-                <th>Tên Băng Đĩa</th>
-                <th>Đơn Giá (VNĐ)</th>
-                <th>Chất Lượng</th>
-                <th>Trả Muộn (Ngày)</th>
+                <th>Mã băng đĩa</th>
+                <th>Tên băng đĩa</th>
+                <th>Đơn giá (VNĐ)</th>
+                <th>Chất lượng</th>
+                <th>Trả muộn (Ngày)</th>
             </tr>
         </thead>
         <tbody>

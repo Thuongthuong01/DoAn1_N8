@@ -79,7 +79,47 @@ if (isset($_GET['delete'])) {
 
 </head>
 <body>
+<style>
+th.sortable {
+  position: relative;
+  cursor: pointer;
+}
 
+th.sortable::after {
+  content: "⇅";
+  position: absolute;
+  right: 8px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 1.3em;
+  color: #888;
+}
+
+th.sortable:hover::after {
+  opacity: 1;
+}
+
+th.sortable.sorted-asc::after {
+  content: "↑";
+  opacity: 1;
+  font-size: 1.3em;
+}
+
+th.sortable.sorted-desc::after {
+  content: "↓";
+  opacity: 1;
+  font-size: 1.3em;
+}
+.filter-row input {
+  width: 95%;
+  padding: 4px 6px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+
+   </style>
 <?php include '../components/admin_header.php' ?>
 <?php
    // Lấy các MaBD từ chitietphieunhap chưa có trong bangdia
@@ -91,11 +131,7 @@ $get_available_maBD = $conn->query("
 $availableMaBDs = $get_available_maBD->fetchAll(PDO::FETCH_COLUMN);
 
 ?>
-<?php if (empty($availableMaBDs)): ?>
-   <div class="message" style="font-size:1.5rem;background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 10px; margin-top: 10px; border-radius: 5px;margin-right:1rem">
-      ⚠️ Hiện không còn mã băng đĩa nào từ phiếu nhập chưa được thêm vào!
-   </div>
-<?php endif; ?>
+
 
 <!-- thêm sản phẩm -->
 <section class="form-container" >
@@ -177,17 +213,28 @@ $availableMaBDs = $get_available_maBD->fetchAll(PDO::FETCH_COLUMN);
    <table class="product-table">
       <thead>
          <tr>
-            <th>Mã đĩa</th>
-            <th>Ảnh</th>
-            <th>Tên Băng Đĩa</th>
-            <th>Thể loại</th>
-            <th>Đơn giá thuê</th>
-            <th>NSX</th>
-            <th>Tình trạng</th>
-            <th>Chất lượng</th>
-            <th>Chức năng</th>
-
+            <th class="sortable" data-index="0">Mã đĩa</th>
+      <th>Ảnh</th>
+      <th class="sortable" data-index="2">Tên băng đĩa</th>
+      <th class="sortable" data-index="3">Thể loại</th>
+      <th class="sortable" data-index="4">Đơn giá thuê</th>
+      <th class="sortable" data-index="5">NSX</th>
+      <th class="sortable" data-index="6">Tình trạng</th>
+      <th class="sortable" data-index="7">Chất lượng</th>
+      <th>Chức năng</th>
          </tr>
+         <tr class="filter-row">
+    <th><input type="text" placeholder="Lọc mã đĩa" data-index="0"></th>
+    <th></th>
+    <th><input type="text" placeholder="Lọc tên" data-index="2"></th>
+    <th><input type="text" placeholder="Lọc thể loại" data-index="3"></th>
+    <th><input type="text" placeholder="Lọc giá" data-index="4"></th>
+    <th><input type="text" placeholder="Lọc NSX" data-index="5"></th>
+    <th><input type="text" placeholder="Lọc tình trạng" data-index="6"></th>
+    <th><input type="text" placeholder="Lọc chất lượng" data-index="7"></th>
+    <th></th>
+    
+  </tr>
       </thead>
       <tbody>
          <?php
@@ -213,12 +260,88 @@ $availableMaBDs = $get_available_maBD->fetchAll(PDO::FETCH_COLUMN);
          <?php
                }
             } else {
-               echo '<tr><td colspan="8" class="empty">Chưa có sản phẩm nào được thêm vào!</td></tr>';
+               echo '<tr><td colspan="9" class="empty">Chưa có sản phẩm nào được thêm vào!</td></tr>';
             }
          ?>
       </tbody>
    </table>
 </section>
+<script>
+let currentSortedIndex = -1;
+let isAsc = true;
+
+document.querySelectorAll("th.sortable").forEach(th => {
+  th.addEventListener("click", () => {
+    const table = th.closest("table");
+    const tbody = table.querySelector("tbody");
+    const index = parseInt(th.getAttribute("data-index"));
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    // Đảo chiều nếu click lại cùng cột
+    if (index === currentSortedIndex) {
+      isAsc = !isAsc;
+    } else {
+      isAsc = true;
+      currentSortedIndex = index;
+    }
+
+    // Xóa class cũ
+    table.querySelectorAll("th.sortable").forEach(t => {
+      t.classList.remove("sorted-asc", "sorted-desc");
+    });
+
+    // Thêm class mới
+    th.classList.add(isAsc ? "sorted-asc" : "sorted-desc");
+
+    // Sắp xếp
+    rows.sort((a, b) => {
+      let aText = a.cells[index].textContent.trim();
+      let bText = b.cells[index].textContent.trim();
+      let aVal = isNaN(aText) ? aText.toLowerCase() : parseFloat(aText.replace(/[^\d.-]/g, ''));
+      let bVal = isNaN(bText) ? bText.toLowerCase() : parseFloat(bText.replace(/[^\d.-]/g, ''));
+
+      if (aVal < bVal) return isAsc ? -1 : 1;
+      if (aVal > bVal) return isAsc ? 1 : -1;
+      return 0;
+    });
+
+    // Gắn lại thứ tự vào bảng
+    rows.forEach(row => tbody.appendChild(row));
+  });
+});
+</script>
+<script>
+document.querySelectorAll(".filter-row input").forEach((input) => {
+  input.addEventListener("input", () => {
+    const table = input.closest("table");
+    const tbody = table.querySelector("tbody");
+    const rows = tbody.querySelectorAll("tr");
+    const filters = {};
+
+    document.querySelectorAll(".filter-row input").forEach(i => {
+      if (i.value.trim() !== "") {
+        filters[i.dataset.index] = i.value.trim().toLowerCase();
+      }
+    });
+
+    rows.forEach(row => {
+      const cells = row.querySelectorAll("td");
+      let visible = true;
+
+      for (let index in filters) {
+        const cellText = cells[index]?.textContent.toLowerCase() || "";
+        if (!cellText.includes(filters[index])) {
+          visible = false;
+          break;
+        }
+      }
+
+      row.style.display = visible ? "" : "none";
+    });
+  });
+});
+</script>
+
 
 <!-- custom js file link  -->
 <script src="../js/admin_script.js"></script>
