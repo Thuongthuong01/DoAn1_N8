@@ -27,14 +27,8 @@ if (isset($_POST['add_phieuthue'])) {
     $message[] = "Không thể thuê quá 10 đĩa cùng lúc.";
 } else {
     // Tiếp tục xử lý thêm phiếu thuê như hiện tại
-    try {
-        $conn->beginTransaction();
-        //... (phần còn lại giữ nguyên)
-    } catch (Exception $e) {
-        $conn->rollBack();
-        $message[] = "Lỗi khi thêm phiếu thuê: " . $e->getMessage();
-    }
-}
+    
+
    try {
       $conn->beginTransaction();
 
@@ -98,6 +92,7 @@ if (isset($_POST['add_phieuthue'])) {
       $conn->rollBack();
       $message[] = "Lỗi khi thêm phiếu thuê: " . $e->getMessage();
    }
+}
 }
 // Xoá đơn hàng thuê
    if (isset($_GET['delete'])) {
