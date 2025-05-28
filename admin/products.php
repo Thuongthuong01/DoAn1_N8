@@ -160,6 +160,7 @@ $availableMaBDs = $get_available_maBD->fetchAll(PDO::FETCH_COLUMN);
          <option value="" disabled selected>--Chọn thể loại --</option>
          <option value="Âm nhạc">Âm nhạc</option>
          <option value="Phim">Phim</option>
+         <option value="Hoạt hình">Hoạt hình</option>
          <option value="Khác">Khác</option>
       </select>
    </div>

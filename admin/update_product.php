@@ -126,6 +126,7 @@ if ($stmt_check->rowCount() == 0) {
    <select name="Theloai" class="box" required>
       <option value="Âm nhạc" <?= ($fetch_products['Theloai'] == 'Âm nhạc') ? 'selected' : ''; ?>>Âm nhạc</option>
       <option value="Phim" <?= ($fetch_products['Theloai'] == 'Phim') ? 'selected' : ''; ?>>Phim</option>
+      <option value="Hoạt hình" <?= ($fetch_products['Theloai'] == 'Hoạt hình') ? 'selected' : ''; ?>>Hoạt hình</option>
       <option value="Khác" <?= ($fetch_products['Theloai'] == 'Khác') ? 'selected' : ''; ?>>Khác</option>
    </select>
          </div>
