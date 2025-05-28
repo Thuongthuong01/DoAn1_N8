@@ -51,16 +51,35 @@ $insert_product->execute([$MaBD, $TenBD, $Theloai, $Dongia, $NSX, $Tinhtrang, $C
 
 
 if (isset($_GET['delete'])) {
-   $delete_id = $_GET['delete'];
-   $delete_product_image = $conn->prepare("SELECT * FROM bangdia WHERE MaBD = ?");
-   $delete_product_image->execute([$delete_id]);
-   $fetch_delete_image = $delete_product_image->fetch(PDO::FETCH_ASSOC);
-   unlink('../uploaded_img/' . $fetch_delete_image['image']);
+    $delete_id = $_GET['delete'];
 
-   $delete_product = $conn->prepare("DELETE FROM bangdia WHERE MaBD = ?");
-   $delete_product->execute([$delete_id]);
-   header('location:products.php');
+    // Kiểm tra băng đĩa này có đang được thuê không
+    $check = $conn->prepare("SELECT * FROM chitietphieuthue WHERE MaBD = ?");
+    $check->execute([$delete_id]);
+
+    if ($check->rowCount() > 0 && !isset($_GET['confirm'])) {
+        // Nếu có phiếu thuê liên quan và chưa xác nhận xoá
+        echo "<script>
+            if (confirm('❗ Sản phẩm đang có trong phiếu thuê. Bạn có chắc muốn xoá không?')) {
+                window.location.href = 'products.php?delete={$delete_id}&confirm=yes';
+            } else {
+                window.location.href = 'products.php';
+            }
+        </script>";
+        exit(); // Dừng xử lý tiếp cho đến khi người dùng xác nhận
+    }
+
+    // Xoá chi tiết phiếu thuê trước
+    $delete_ctpt = $conn->prepare("DELETE FROM chitietphieuthue WHERE MaBD = ?");
+    $delete_ctpt->execute([$delete_id]);
+
+    // Xoá băng đĩa
+    $delete_product = $conn->prepare("DELETE FROM bangdia WHERE MaBD = ?");
+    $delete_product->execute([$delete_id]);
+
+    $message[] = '✅ Đã xoá băng đĩa thành công!';
 }
+
 
 ?>
 <!DOCTYPE html>
@@ -253,7 +272,7 @@ $availableMaBDs = $get_available_maBD->fetchAll(PDO::FETCH_COLUMN);
             <td style="white-space: normal; word-wrap: break-word; max-width: 200px;"><?= $fetch_products['Tinhtrang']; ?></td>
             <td><?= $fetch_products['ChatLuong']; ?></td>
             <td>
-               <a href="update_product.php?update=<?= $fetch_products['MaBD']; ?>" class="btn btn-update">Sửa</a>
+               <a href="update_product.php?update=<?= $fetch_products['MaBD']; ?>" class="btn btn-update">Cập nhật</a>
                <a href="products.php?delete=<?= $fetch_products['MaBD']; ?>" class="btn btn-delete" onclick="return confirm('Xoá sản phẩm?');">Xoá</a>
             </td>
          </tr>

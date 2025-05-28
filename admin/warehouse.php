@@ -43,58 +43,96 @@ if (isset($_POST['submit'])) {
 
    // Kiểm tra mã băng đĩa trùng trong CSDL
    // Kiểm tra mã băng đĩa đã tồn tại trong bảng bangdia chưa
-$maBDValues = [];
+   $maBDValues = [];
 
 for ($i = 1; $i <= $soLuong; $i++) {
    $maBD = $_POST["MaBD_$i"];
 
+   // Kiểm tra trùng trong danh sách người dùng nhập
    if (in_array($maBD, $maBDValues)) {
       $errors[] = "❌ Mã băng đĩa '$maBD' bị nhập trùng trong cùng một phiếu!";
    } else {
       $maBDValues[] = $maBD;
    }
 
-   // Không cần kiểm tra trùng trong bangdia khi nhập phiếu
-// Nhưng cần kiểm tra xem MaBD có tồn tại trong bảng chitietphieunhap không khi thêm băng đĩa (trong phần khác của hệ thống)
-
+   // Kiểm tra MaBD đã tồn tại trong chitietphieunhap chưa
+   $check_bd = $conn->prepare("SELECT MaBD FROM chitietphieunhap WHERE MaBD = ?");
+   $check_bd->execute([$maBD]);
+   if ($check_bd->rowCount() > 0) {
+      $errors[] = "❌ Mã băng đĩa '$maBD' đã tồn tại trong cơ sở dữ liệu!";
+   }
 }
 
+if (empty($errors)) {
+   // ✅ B1: Thêm vào bảng phieunhap
+   $insert = $conn->prepare("INSERT INTO phieunhap (MaPhieu, MaNCC, NgayNhap, SoLuong, TongTien, MaAD) VALUES (?, ?, ?, ?, ?, ?)");
+   $insert->execute([$maPhieu, $maNCC, $ngayNhap, $soLuong, $tongTien, $maAD]);
 
+   // ✅ B2: Sau khi thêm thành công, mới thêm chi tiết
+   for ($i = 1; $i <= $soLuong; $i++) {
+      $maBD = $_POST["MaBD_$i"];
+      $giaGoc = $_POST["GiaGoc_$i"];
 
-   // Nếu không có lỗi thì mới insert
-   if (empty($errors)) {
-       // Lấy mã quản trị viên đang đăng nhập
-
-$insert = $conn->prepare("INSERT INTO phieunhap (MaPhieu, MaNCC, NgayNhap, SoLuong, TongTien, MaAD) VALUES (?, ?, ?, ?, ?, ?)");
-$insert->execute([$maPhieu, $maNCC, $ngayNhap, $soLuong, $tongTien, $maAD]);
-
-
-      for ($i = 1; $i <= $soLuong; $i++) {
-         $maBD = $_POST["MaBD_$i"];
-         $giaGoc = $_POST["GiaGoc_$i"];
-         $insert_ct = $conn->prepare("INSERT INTO chitietphieunhap (MaPhieu, MaBD, GiaGoc) VALUES (?, ?, ?)");
-         $insert_ct->execute([$maPhieu, $maBD, $giaGoc]);
-      }
-
-      $message[] = "✅ Đã thêm phiếu nhập thành công!";
-   } else {
-      $message = $errors;
+      $insert_ct = $conn->prepare("INSERT INTO chitietphieunhap (MaPhieu, MaBD, GiaGoc) VALUES (?, ?, ?)");
+      $insert_ct->execute([$maPhieu, $maBD, $giaGoc]);
    }
+
+   $message[] = "✅ Đã thêm phiếu nhập thành công!";
+   if (empty($errors)) {
+         // ✅ Tránh lỗi thêm xong bị xoá bằng cách redirect
+         header("Location: warehouse.php?success=1");
+           $message[] = "✅ Đã thêm phiếu nhập thành công!";
+         exit();
+      }
+} else {
+   $message = $errors;
+}
 }
 if (isset($_GET['delete_phieunhap'])) {
    $delete_id = $_GET['delete_phieunhap'];
+// Kiểm tra nếu có băng đĩa trong phiếu nhập này đang được thuê
+   $stmt_check = $conn->prepare("
+      SELECT ctp.MaBD
+      FROM chitietphieunhap ctp
+      JOIN chitietphieuthue ctpt ON ctp.MaBD = ctpt.MaBD
+      WHERE ctp.MaPhieu = ?
+   ");
+   $stmt_check->execute([$delete_id]);
 
-   // Xoá chi tiết phiếu nhập trước
-   $delete_ct = $conn->prepare("DELETE FROM chitietphieunhap WHERE MaPhieu = ?");
-   $delete_ct->execute([$delete_id]);
+   if ($stmt_check->rowCount() > 0 && !isset($_GET['confirm'])) {
+      echo "<script>
+         if (confirm('❗ Một số sản phẩm trong phiếu nhập này đang được thuê. Bạn có chắc chắn muốn xoá không?')) {
+            window.location.href = 'warehouse.php?delete_phieunhap={$delete_id}&confirm=yes';
+         } else {
+            window.location.href = 'warehouse.php';
+         }
+      </script>";
+      exit();
+   }
 
-   // Sau đó mới xoá phiếu nhập
-   $delete_phieunhap = $conn->prepare("DELETE FROM phieunhap WHERE MaPhieu = ?");
-   $delete_phieunhap->execute([$delete_id]);
+   // Xoá chi tiết phiếu thuê liên quan đến MaBD trong phiếu nhập
+   $delete_ctthue = $conn->prepare("
+   DELETE FROM chitietphieuthue 
+   WHERE MaBD IN (SELECT MaBD FROM chitietphieunhap WHERE MaPhieu = ?)
+   ");
+$delete_ctthue->execute([$delete_id]);
 
+// Tiếp theo xoá băng đĩa
+$delete_bd = $conn->prepare("
+   DELETE FROM bangdia 
+   WHERE MaBD IN (SELECT MaBD FROM chitietphieunhap WHERE MaPhieu = ?)
+");
+$delete_bd->execute([$delete_id]);
+
+// Sau đó xoá chi tiết phiếu nhập
+$delete_ct = $conn->prepare("DELETE FROM chitietphieunhap WHERE MaPhieu = ?");
+$delete_ct->execute([$delete_id]);
+
+// Cuối cùng xoá phiếu nhập
+$delete_phieunhap = $conn->prepare("DELETE FROM phieunhap WHERE MaPhieu = ?");
+$delete_phieunhap->execute([$delete_id]);
    $message[] = "✅ Đã xoá phiếu nhập thành công !";
 }
-
 
 ?> 
 <!DOCTYPE html>
@@ -202,7 +240,7 @@ $ds_ncc = $stmt->fetchAll(PDO::FETCH_ASSOC);
          <input type="number" class="box"name="SoLuong" id="SoLuong" min="1" max="30" required placeholder="" oninput="generateFields()">
         </div>
 
-      <div class="dynamic-fields" id="dynamicFields">
+      <div id="dynamicFields">
     <?php
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SoLuong'])) {
     $soLuong = (int)$_POST['SoLuong'];

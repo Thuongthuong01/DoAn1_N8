@@ -100,7 +100,7 @@ if(isset($_POST['submit'])){
 
       <div class="order_table">
          <span style="min-width: 160px; font-size:1.8rem;">Số điện thoại:</span>
-         <input type="tel" name="sdt" pattern="[0-9]{10}" required class="box" placeholder="10 chữ số">
+         <input type="number" name="sdt" pattern="[0-9]{10}" required class="box" placeholder="10 chữ số">
       </div>
 
       <div class="order_table">
