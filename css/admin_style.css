@@ -234,8 +234,8 @@ section {
   
 }
 .header .flex {
-  /* padding: 2rem 2rem; */
-  /* position: relative; */
+  max-width: 1450px;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content:space-between;
@@ -245,11 +245,13 @@ section {
   font-size: 3rem;
   color: var(--black);
   font-weight: bolder;
+  
 }
 .header .flex .search-form {
-  width: 50rem;
+  width: 55rem;
   border-radius: 0.5rem;
   display: flex;
+  margin-left: 17rem;
   align-items: center;
   gap: 1.5rem;
   padding: 1rem 2rem;
@@ -806,6 +808,7 @@ section {
   body {
     padding-left: 10px;
   }
+  
   .side-bar {
     transition: 0.2s linear;
     left: -30rem;
