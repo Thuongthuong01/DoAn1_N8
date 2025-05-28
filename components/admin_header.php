@@ -32,7 +32,7 @@ if (isset($_SESSION['user_id'])) {
     <button type="submit" class="fas fa-search" name="search-btn"></button>
 </form>
 
-        <h3>Xin chào, <?= htmlspecialchars($admin_name); ?></h3>
+        <h2 stype="padding-left:10rem;">Xin chào, <?= htmlspecialchars($admin_name); ?></h2>
         <div class="icons">
             <div id="search-btn" class="fas fa-search"></div>
             <div id="user-btn"  class="fa-solid fa-user"></div>
@@ -40,6 +40,7 @@ if (isset($_SESSION['user_id'])) {
             <!-- <div id="toggle-btn" class="fa-solid fa-sun"></div> -->
         </div>
         <div class="profile">
+            
         <?php if (isset($_SESSION["user_id"])) { ?>
             <img src="../images/user1.png" alt="">
             <h3>Xin chào, <?= htmlspecialchars($admin_name); ?></h3>
@@ -64,7 +65,7 @@ $is_order_open = in_array($current_page, $order_pages);
     <?php if (isset($_SESSION["user_id"])) { ?>
 
     <nav class="navbar">
-        <div style="font-weight: bold; color: #333; padding: 10px; font-size:20px;">Danh mục</div>
+        <div style="font-weight: bold; color: #333; padding: 20px; font-size:20px;">Danh mục</div>
 
         <a href="dashboard.php" class="<?= $current_page == 'dashboard.php' ? 'active' : '' ?>"><i class="fa-solid fa-house"></i><span> Trang chủ</span></a>
         <a href="products.php" class="<?= $current_page == 'products.php' ? 'active' : '' ?>"><i class="fa-solid fa-compact-disc"></i><span> Sản phẩm</span></a>

@@ -91,8 +91,9 @@ if ($stmt_check->rowCount() == 0) {
 <!-- update product section starts  -->
 
 <section class="update-product">
+   <form action="" method="POST" enctype="multipart/form-data">
 
-   <h1 class="heading">Cập nhật sản phẩm</h1>
+   <h3 class="heading">Cập nhật sản phẩm</h3>
 
    <?php
       $update_id = $_GET['update'];
@@ -101,7 +102,6 @@ if ($stmt_check->rowCount() == 0) {
       if($show_products->rowCount() > 0){
          while($fetch_products = $show_products->fetch(PDO::FETCH_ASSOC)){  
    ?>
-   <form action="" method="POST" enctype="multipart/form-data">
 
    <input type="hidden" name="MaBD" value="<?= $fetch_products['MaBD']; ?>">
    

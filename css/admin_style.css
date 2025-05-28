@@ -173,6 +173,7 @@ section {
   align-items: center;
   justify-content: center;
   min-height: 60vh;
+  
 }
 
 .form-container form {
@@ -183,6 +184,9 @@ section {
   padding: 2rem;
   text-align: center;
   width: 60rem;
+  margin-left: 17rem;
+
+  
 }
 
 .form-container form h3 {
@@ -212,6 +216,7 @@ section {
   font-size: 1.8rem;
   border-radius: 0.5rem;
   text-align: left;
+  
 }
 .form-container form .box input {
   font-size: 1.8rem;
@@ -225,14 +230,17 @@ section {
   left: 0;
   right: 0;
   z-index: 1201;
+  
+  
 }
 .header .flex {
-  padding: 2rem 2rem;
-  position: relative;
+  /* padding: 2rem 2rem; */
+  /* position: relative; */
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content:space-between;
 }
+
 .header .flex .logo {
   font-size: 3rem;
   color: var(--black);
@@ -342,7 +350,8 @@ section {
   flex-wrap: wrap;
   gap: 1.5rem;
   justify-content: center;
-  margin-left: 20px;
+  margin-left: -20px;
+  margin-right: -20px;
   padding: 2rem;
 }
 
@@ -451,6 +460,7 @@ section {
   color: var(--main-color);
   margin-right: 1.5rem;
   transition: 0.2s linear;
+  
 }
 .side-bar span {
   font-size: 1.5rem;
@@ -467,6 +477,7 @@ section {
 .side-bar.active {
   left: -31rem;
 }
+
 /* item */
 .dropdown .dropdown-menu {
   display: none !important;
@@ -591,14 +602,19 @@ section {
   background-color: #fffefedb;
   font-size: 15px;
   text-align: justify;
+  
 }
 
 .show-products .product-table th {
   background-color: #c0bfbfdb;
-  text-align: center;
+  text-align: center;      /* Căn giữa ngang */
+        vertical-align: middle; 
   font-size: 14px;
 }
-
+.show-products .product-table td{
+  text-align: left;      /* Căn giữa ngang */
+        vertical-align: middle; 
+}
 .show-products .product-table td img {
   max-width: 80px;
   height: auto;
@@ -633,6 +649,7 @@ section {
   box-shadow: var(--box-shadow);
   border: var(--border);
   padding: 2rem;
+  margin-right: 17rem;
 }
 
 .update-product form img {
@@ -713,49 +730,6 @@ section {
   text-align: left;
 }
 
-/* 
-.placed-orders-admin .order-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 2rem;
-  font-size: 14px;
-}
-.placed-orders-admin .box-container .order-table th,
-.placed-orders-admin .box-container .order-table td {
-  border: 1px solid #141010;
-  padding: 1rem;
-  text-align: left;
-  background-color: var(--white);
-}
-.placed-orders-admin .box-container .order-table th {
-  background-color: #d8d5d5;
-  font-weight: bold;
-  font-size: 16px;
-}
-
-.placed-orders-admin .box-container .order-table td form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-.placed-orders-admin .box-container .order-table .btn {
-  padding: 5px 8px;
-  /* margin: 5px; 
-  border-radius: 5px;
-  text-decoration: none;
-  /* font-weight: bold; 
-  font-size: 13px;
-  text-align: center;
-}
-.placed-orders-admin .box-container .order-table .delete-btn {
-  padding: 5px 8px;
-  /* margin: 5px; 
-  border-radius: 5px;
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 13px;
-  text-align: center;
-} */
 
 .accounts {
   margin-left: 250px;
@@ -880,11 +854,7 @@ section {
     width: 100%;
   }
 }
-@media (max-width: 450px) {
-  html {
-    font-size: 50%;
-  }
-}
+
 
 @media (max-width: 450px) {
   html {
@@ -899,7 +869,11 @@ section {
   .heading {
     font-size: 3rem;
   }
-
+.side-bar {
+    width: 170%;
+    height: auto;
+    position: relative;
+  }
   .show-products .box-container {
     grid-template-columns: 1fr;
   }

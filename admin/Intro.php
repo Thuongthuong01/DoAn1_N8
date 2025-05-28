@@ -23,28 +23,44 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
     background: #fff;
     padding: 30px;
     border-radius: 12px;
-    margin-top: 30px;
+    /* margin-top: 30px; */
     font-size: 18px;
     line-height: 1.9;
     color: #333;
 }
         .intro-section h2 {
-    font-size: 24px;
+    font-size: 2.0rem;
     color: #2c3e50;
-    margin-top: 30px;
+    /* margin-top: 30px; */
 }
-        .intro-section ul {
-    margin-left: 20px;
-    font-size: 20px;
+        .intro-section li {
+    margin-left: 50px;
+    font-size: 1.8rem;
 }
-    
+    .intro-section h3 {
+      font-size: 2.0rem;
+    }
+
 .dashboard-header {
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: 5px;
-  font-size: 28px;
+  font-size: 2.5rem;
+}
+.comeback{
+  background-color: orange;
+  border-radius: 1rem; /*  bo góc*/
+  padding: 1rem 3rem;
+  font-size: 1.8rem;
+  color: #fff;
+  margin-top: 1rem;
+  text-align: center;
+  font-weight: bold;
+}
+.comeback:hover{
+  background-color:rgb(16, 17, 18);
 }
 
 </style>
@@ -55,13 +71,13 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
 
 <section class="dashboard">
   <div class="dashboard-header">
-     <h1 class="gradient-text">📀 Thông tin về CD HOUSE</h1>
-     <p class="current-date">📅 <?= date('d/m/Y') ?></p>
+     <h3>📀 Quy định của cửa hàng CD HOUSE</h3>
+     <p style="font-size : 20px; padding-top: 10px;">📅 <?= date('d/m/Y') ?></p>
   </div>
 
   <div class="box-container">
     <div class="intro-section">
-      <h2>📌 Giới thiệu cửa hàng CD</h2>
+     <h2>📌 Giới thiệu cửa hàng CD</h2>
       <p>
         CD là một cửa hàng chuyên kinh doanh băng đĩa giải trí hoạt động theo hình thức bán hàng offline, tọa lạc tại địa chỉ: <strong>218 Lĩnh Nam - Q.Hoàng Mai - TP Hà Nội</strong>.
       </p>
@@ -69,12 +85,12 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
         Chúng tôi chuyên cung cấp đa dạng các loại băng đĩa như: phim điện ảnh, phim truyền hình, ca nhạc, trò chơi điện tử và phần mềm.
         Tất cả sản phẩm đều được kiểm tra chất lượng trước khi đưa ra thị trường, đảm bảo mang lại trải nghiệm giải trí tốt nhất cho khách hàng.
       </p>
-      <p>
-        Hệ thống quản lý của cửa hàng được xây dựng nhằm mục tiêu:<br>
-        – Tối ưu hóa công tác quản lý kho đĩa,<br>
-        – Theo dõi việc thuê và trả đĩa của khách hàng,<br>
-        – Thống kê, báo cáo doanh thu vào mỗi cuối tháng để hỗ trợ việc ra quyết định kinh doanh hiệu quả.
-      </p>
+      <ul> Hệ thống quản lý của cửa hàng được xây dựng nhằm mục tiêu:
+        <li>Tối ưu hóa công tác quản lý kho đĩa</li>
+        <li>Theo dõi việc thuê và trả đĩa của khách hàng</li>
+        <li>Thống kê, báo cáo doanh thu vào mỗi cuối tháng để hỗ trợ việc ra quyết định kinh doanh hiệu quả.</li>
+      </ul>
+      
 
       <h2>📜 Nội Quy Thuê Băng Đĩa</h2>
       <p>
@@ -108,6 +124,9 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
       </ul>
     </div>
   </div>
+  <div>
+         <a href="dashboard.php" class="comeback">Quay lại Trang Chủ</a>
+      </div>
 </section>
 
 <script src="../js/admin_script.js"></script>

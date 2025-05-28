@@ -117,7 +117,7 @@ switch ($loai) {
 <?php if ($loai == 'thue'): ?>
     <h1>Hóa đơn phiếu thuê #<?= htmlspecialchars($id) ?></h1>
     <p>Ngày in hóa đơn: <?= date('d/m/Y H:i:s') ?></p>
-    <p><strong>Khách hàng:</strong> <?= htmlspecialchars($phieu['MaKH']) ?> - <?= htmlspecialchars($phieu['TenKH']) ?> (SDT: <?= htmlspecialchars($phieu['SDT']) ?>)</p>
+    <p><strong>Khách hàng:</strong> <?= htmlspecialchars($phieu['MaKH']) ?> - <?= htmlspecialchars($phieu['TenKH']) ?> (SĐT: <?= htmlspecialchars($phieu['SDT']) ?>)</p>
     <p><strong>Ngày thuê:</strong><?php echo date('d/m/Y', strtotime($phieu['NgayThue'])); ?> | <strong>Ngày trả dự kiến:</strong><?php echo date('d/m/Y', strtotime($phieu['NgayTraDK'])); ?></p>
     <p><strong>Người nhập phiếu thuê:</strong> <?= htmlspecialchars($phieu['TenAD']) ?></p>
 
@@ -198,7 +198,7 @@ switch ($loai) {
 <?php elseif ($loai == 'tra'): ?>
     <h1>Hóa đơn phiếu trả #<?= htmlspecialchars($id) ?></h1>
     <p>Ngày in hóa đơn: <?= date('d/m/Y H:i:s') ?></p>
-    <p><strong>Khách hàng:</strong> <?= htmlspecialchars($phieu['MaKH']) ?> - <?= htmlspecialchars($phieu['TenKH']) ?> (SDT: <?= htmlspecialchars($phieu['SDT']) ?>)</p>
+    <p><strong>Khách hàng:</strong> <?= htmlspecialchars($phieu['MaKH']) ?> - <?= htmlspecialchars($phieu['TenKH']) ?> (SĐT: <?= htmlspecialchars($phieu['SDT']) ?>)</p>
     <p><strong>Ngày trả:</strong><?php echo date('d/m/Y', strtotime($phieu['NgayTraTT'])); ?></p>
     <p><strong>Người nhập:</strong> <?= htmlspecialchars($phieu['TenNguoiNhap'] ?: 'Không xác định') ?></p>
 

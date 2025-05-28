@@ -74,6 +74,7 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
 
 <?php include '../components/admin_header.php' ?>
+<section class="main-content show-products">
 <h1 style="font-size:3rem;">Thống kê doanh thu theo <?= htmlspecialchars($filter) ?></h1>
 
 <div class="filter-links">
@@ -82,7 +83,7 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <a href="?filter=năm" class="<?= $filter == 'năm' ? 'active' : '' ?>">Theo năm</a>
 </div>
 
-<table>
+<table style="width:100rem;" >
     <thead>
         <tr>
             <?php if ($filter == 'ngày'): ?>
@@ -112,6 +113,6 @@ $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php endforeach; ?>
     </tbody>
 </table>
-
+            </section>
 </body>
 </html>

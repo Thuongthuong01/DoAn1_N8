@@ -229,8 +229,8 @@ th.sortable.sorted-desc::after {
 
    </style>
 <?php include '../components/admin_header.php' ?>
-<section class="main-content placed-orders-admin">
-   <section class="form-container" style="margin-right:2.2rem;">
+
+   <section class="form-container" >
         <form action="" method="POST" enctype="multipart/form-data">
    <h3>Phiếu trả đĩa</h3>
    <div style="margin-top: 10px; font-size: 1.4rem; color:rgb(132, 130, 130);">
@@ -300,7 +300,7 @@ th.sortable.sorted-desc::after {
    <?php endforeach; ?>
 <?php endif; ?>
     </section>
-</section>
+
 
 <section class="main-content show-products">
    <h1 class="heading">Danh sách phiếu trả</h1>
@@ -352,7 +352,7 @@ th.sortable.sorted-desc::after {
                <tr>
                   <td><?= $phieu['MaTra']; ?></td>
                   <td><?= $phieu['MaThue']; ?></td>
-                  <td><?= $phieu['TenKH']; ?>(<?= htmlspecialchars($phieu['MaKH']) ?>)</td>
+                  <td><?= $phieu['TenKH']; ?> (<?= htmlspecialchars($phieu['MaKH']) ?>)</td>
                   <td><?= $phieu['SDT']; ?></td>
                   <td><?php echo date('d/m/Y', strtotime($phieu['NgayTraTT'])); ?></td>
                   <td><?= $phieu['ChatLuong']; ?></td>

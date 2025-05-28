@@ -325,17 +325,17 @@ try {
 
     <section class="dashboard">
         <!-- Các phần box giữ nguyên -->
-        <div class="intro-box">
+        <div>
             <a href="intro.php" class="btn pink-btn">
-                <i class="fas fa-chevron-circle-right"></i> Hệ thống quản lý của CD HOUSE
+                <i class="fas fa-chevron-circle-right" ></i> Quy định của CD HOUSE
             </a>
         </div>
 
         <div class="box-container">
             <!-- Revenue Box -->
             <div class="box revenue-box">
-                <h3><?= number_format($month_revenue, 0, ',', '.') ?> VNĐ</h3>
-                <p style="font-size:1.4rem;">💰 Doanh thu tháng <?= $current_month . '/' . $current_year ?></p>
+                <h3 style="text-align:center;"><?= number_format($month_revenue, 0, ',', '.') ?> VNĐ</h3>
+                <p style="font-size:1.4rem;text-align:center;">Doanh thu tháng <?= $current_month . '/' . $current_year ?></p>
                 <a href="revenue.php" class="btn pulse-effect">
                     <i class="fas fa-chart-line"></i> Xem chi tiết
                 </a>
@@ -343,8 +343,8 @@ try {
 
             <!-- Orders Box -->
             <div class="box orders-box">
-                <h3><?= $total_orders ?></h3>
-                <p style="font-size:1.4rem;">📦 Tổng phiếu thuê</p>
+                <h3 style="text-align:center;"><?= $total_orders ?></h3>
+                <p style="font-size:1.4rem;text-align:center;">Tổng phiếu thuê</p>
                 <a href="placed_orders.php" class="btn pulse-effect">
                     <i class="fas fa-clipboard-list"></i> Xem đơn hàng
                 </a>
@@ -352,8 +352,8 @@ try {
 
             <!-- Products Box -->
             <div class="box products-box">
-                <h3><?= $total_products ?></h3>
-                <p style="font-size:1.4rem;">🎵 Băng đĩa có sẵn</p>
+                <h3 style="text-align:center;"><?= $total_products ?></h3>
+                <p style="font-size:1.4rem;text-align:center;">Băng đĩa có sẵn</p>
                 <a href="products.php" class="btn pulse-effect">
                     <i class="fas fa-box-open"></i> Quản lý kho
                 </a>
@@ -361,8 +361,8 @@ try {
 
             <!-- Users Box -->
             <div class="box users-box">
-                <h3><?= $total_users ?></h3>
-                <p style="font-size:1.4rem;">👥 Thành viên hệ thống</p>
+                <h3 style="text-align:center;"><?= $total_users ?></h3>
+                <p style="font-size:1.4rem;text-align:center;">Thành viên hệ thống</p>
                 <a href="users_accounts.php" class="btn pulse-effect">
                     <i class="fas fa-user-cog"></i> Quản lý người dùng
                 </a>
