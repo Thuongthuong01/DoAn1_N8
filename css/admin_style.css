@@ -400,6 +400,10 @@ section {
 .dashboard .box-container .box:nth-child(4) {
   background-color: #e74c3c;
 }
+.dashboard .box-container .box:nth-child(5) {
+  background-color: #a424e3cf;
+}
+
 .dashboard .box-container .box h3 {
   font-size: 2rem;
   font-weight: bold;

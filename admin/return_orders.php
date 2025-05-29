@@ -155,27 +155,35 @@ $insert->execute([$MaThue, $MaKH, $NgayTraTT, $ChatLuong, $TraMuon, $TienPhat, $
 
 // xoá 
 if (isset($_GET['delete'])) {
-   $delete_id = $_GET['delete'];
+    $delete_id = $_GET['delete'];
 
-   $delete_phieutra = $conn->prepare("DELETE FROM phieutra WHERE MaTra = ?");
-   $delete_phieutra->execute([$delete_id]);
+    // Bước 1: Lấy MaThue từ phieutra
+    $stmt_thue = $conn->prepare("SELECT MaThue FROM phieutra WHERE MaTra = ?");
+    $stmt_thue->execute([$delete_id]);
+    $row_thue = $stmt_thue->fetch(PDO::FETCH_ASSOC);
 
-   $message[] = "✅ Đã xóa phiếu trả thành công!";
+    if ($row_thue) {
+        $maThue = $row_thue['MaThue'];
+
+        // Bước 2: Lấy danh sách MaBD từ chitietphieuthue theo MaThue
+        $stmt_discs = $conn->prepare("SELECT MaBD FROM chitietphieuthue WHERE MaThue = ?");
+        $stmt_discs->execute([$maThue]);
+        $discs = $stmt_discs->fetchAll(PDO::FETCH_ASSOC);
+
+        // Bước 3: Cập nhật từng MaBD về trạng thái "Đang cho thuê"
+        $update_stmt = $conn->prepare("UPDATE bangdia SET Tinhtrang = 'Đang cho thuê' WHERE MaBD = ?");
+        foreach ($discs as $disc) {
+            $update_stmt->execute([$disc['MaBD']]);
+        }
+    }
+
+    // Bước 4: Xóa phiếu trả
+    $delete_phieutra = $conn->prepare("DELETE FROM phieutra WHERE MaTra = ?");
+    $delete_phieutra->execute([$delete_id]);
+
+    $message[] = "✅ Đã xóa phiếu trả thành công!";
 }
 ?>
-<!-- thông báo -->
-<!-- <?php if (!empty($message) && is_array($message)): ?>
-   <?php foreach ($message as $msg): ?>
-      <?php
-         $isSuccess = strpos($msg, 'Đã thêm') !== false || strpos($msg, 'Đã xóa') !== false;
-      ?>
-      <div class="message" style="background-color: <?= $isSuccess ? '#d4edda' : '#f8d7da'; ?>; color: <?= $isSuccess ? '#155724' : '#721c24'; ?>; border: 1px solid <?= $isSuccess ? '#c3e6cb' : '#f5c6cb'; ?>; padding: 10px; margin: 10px 0; border-radius: 5px;">
-         <span><?= $msg; ?></span>
-         <i onclick="this.parentElement.style.display='none';" style="cursor:pointer; float:right;">&times;</i>
-      </div>
-   <?php endforeach; ?>
-<?php endif; ?> -->
-
 
 
 <!DOCTYPE html>
