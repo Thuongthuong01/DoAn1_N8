@@ -1,6 +1,5 @@
 <?php
 
-
 include '../components/connect.php';
 
 session_start();
@@ -8,6 +7,11 @@ session_start();
 if (!isset($_SESSION["user_id"])) {
    header("Location:admin_login");
    exit();
+}
+$message = []; // Khởi tạo biến nếu chưa có
+if(isset($_SESSION['message'])){
+   $message[] = $_SESSION['message'];
+   unset($_SESSION['message']);
 }
 $user_id = $_SESSION['user_id'];
 $tenAD = '';
@@ -18,6 +22,7 @@ if ($stmt->rowCount() > 0) {
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     $tenAD = $row['TenAD'];
 }
+
 if (isset($_POST['submit'])) {
    $maPhieu = $_POST['MaPhieu'];
    $maNCC = $_POST['MaNCC'];
@@ -26,77 +31,65 @@ if (isset($_POST['submit'])) {
    $tongTien = $_POST['TongTien'];
    $maAD = $_SESSION['user_id'];
    $errors = [];
+   $today = date('Y-m-d');
 
-   // Kiểm tra MaNCC có tồn tại không
+   if ($ngayNhap > $today) {
+      $errors[] = "❌ Ngày nhập không được lớn hơn ngày hiện tại!";
+   }
+
    $stmt = $conn->prepare("SELECT * FROM nhacc WHERE MaNCC = ?");
    $stmt->execute([$maNCC]);
    if ($stmt->rowCount() == 0) {
       $errors[] = "❌ Mã nhà cung cấp không tồn tại!";
    }
 
-   // Kiểm tra MaPhieu trùng
    $check_stmt = $conn->prepare("SELECT MaPhieu FROM phieunhap WHERE MaPhieu = ?");
    $check_stmt->execute([$maPhieu]);
    if ($check_stmt->rowCount() > 0) {
       $errors[] = "❌ Mã phiếu đã tồn tại. Vui lòng nhập mã khác!";
    }
 
-   // Kiểm tra mã băng đĩa trùng trong CSDL
-   // Kiểm tra mã băng đĩa đã tồn tại trong bảng bangdia chưa
    $maBDValues = [];
+   for ($i = 1; $i <= $soLuong; $i++) {
+      $maBD = $_POST["MaBD_$i"];
 
-for ($i = 1; $i <= $soLuong; $i++) {
-   $maBD = $_POST["MaBD_$i"];
+      if (in_array($maBD, $maBDValues)) {
+         $errors[] = "❌ Mã băng đĩa '$maBD' bị nhập trùng trong cùng một phiếu!";
+      } else {
+         $maBDValues[] = $maBD;
+      }
 
-   // Kiểm tra trùng trong danh sách người dùng nhập
-   if (in_array($maBD, $maBDValues)) {
-      $errors[] = "❌ Mã băng đĩa '$maBD' bị nhập trùng trong cùng một phiếu!";
-   } else {
-      $maBDValues[] = $maBD;
+      $check_bd = $conn->prepare("SELECT MaBD FROM chitietphieunhap WHERE MaBD = ?");
+      $check_bd->execute([$maBD]);
+      if ($check_bd->rowCount() > 0) {
+         $errors[] = "❌ Mã băng đĩa '$maBD' đã tồn tại trong cơ sở dữ liệu!";
+      }
    }
 
-   // Kiểm tra MaBD đã tồn tại trong chitietphieunhap chưa
-   $check_bd = $conn->prepare("SELECT MaBD FROM chitietphieunhap WHERE MaBD = ?");
-   $check_bd->execute([$maBD]);
-   if ($check_bd->rowCount() > 0) {
-      $errors[] = "❌ Mã băng đĩa '$maBD' đã tồn tại trong cơ sở dữ liệu!";
-   }
-}
-
-if (empty($errors)) {
-   // ✅ B1: Thêm vào bảng phieunhap
+   if (empty($errors)) {
    $insert = $conn->prepare("INSERT INTO phieunhap (MaPhieu, MaNCC, NgayNhap, SoLuong, TongTien, MaAD) VALUES (?, ?, ?, ?, ?, ?)");
    $insert->execute([$maPhieu, $maNCC, $ngayNhap, $soLuong, $tongTien, $maAD]);
 
-   // ✅ B2: Sau khi thêm thành công, mới thêm chi tiết
    for ($i = 1; $i <= $soLuong; $i++) {
       $maBD = $_POST["MaBD_$i"];
       $giaGoc = $_POST["GiaGoc_$i"];
-
       $insert_ct = $conn->prepare("INSERT INTO chitietphieunhap (MaPhieu, MaBD, GiaGoc) VALUES (?, ?, ?)");
       $insert_ct->execute([$maPhieu, $maBD, $giaGoc]);
    }
 
-   $message[] = "✅ Đã thêm phiếu nhập thành công!";
-   if (empty($errors)) {
-         // ✅ Tránh lỗi thêm xong bị xoá bằng cách redirect
-         header("Location: warehouse.php?success=1");
-           $message[] = "✅ Đã thêm phiếu nhập thành công!";
-         exit();
-      }
-} else {
-   $message = $errors;
+   $_SESSION['message'] = "✅ Thêm phiếu nhập thành công!";
+   header("Location: warehouse.php?success=1");
+   exit();
 }
+ else {
+      $message = $errors;
+   }
 }
+
 if (isset($_GET['delete_phieunhap'])) {
    $delete_id = $_GET['delete_phieunhap'];
-// Kiểm tra nếu có băng đĩa trong phiếu nhập này đang được thuê
-   $stmt_check = $conn->prepare("
-      SELECT ctp.MaBD
-      FROM chitietphieunhap ctp
-      JOIN chitietphieuthue ctpt ON ctp.MaBD = ctpt.MaBD
-      WHERE ctp.MaPhieu = ?
-   ");
+   $stmt_check = $conn->prepare("SELECT ctp.MaBD FROM chitietphieunhap ctp 
+      JOIN chitietphieuthue ctpt ON ctp.MaBD = ctpt.MaBD WHERE ctp.MaPhieu = ?");
    $stmt_check->execute([$delete_id]);
 
    if ($stmt_check->rowCount() > 0 && !isset($_GET['confirm'])) {
@@ -110,31 +103,25 @@ if (isset($_GET['delete_phieunhap'])) {
       exit();
    }
 
-   // Xoá chi tiết phiếu thuê liên quan đến MaBD trong phiếu nhập
-   $delete_ctthue = $conn->prepare("
-   DELETE FROM chitietphieuthue 
-   WHERE MaBD IN (SELECT MaBD FROM chitietphieunhap WHERE MaPhieu = ?)
-   ");
-$delete_ctthue->execute([$delete_id]);
+   $delete_ctthue = $conn->prepare("DELETE FROM chitietphieuthue WHERE MaBD IN (SELECT MaBD FROM chitietphieunhap WHERE MaPhieu = ?)");
+   $delete_ctthue->execute([$delete_id]);
 
-// Tiếp theo xoá băng đĩa
-$delete_bd = $conn->prepare("
-   DELETE FROM bangdia 
-   WHERE MaBD IN (SELECT MaBD FROM chitietphieunhap WHERE MaPhieu = ?)
-");
-$delete_bd->execute([$delete_id]);
+   $delete_bd = $conn->prepare("DELETE FROM bangdia WHERE MaBD IN (SELECT MaBD FROM chitietphieunhap WHERE MaPhieu = ?)");
+   $delete_bd->execute([$delete_id]);
 
-// Sau đó xoá chi tiết phiếu nhập
-$delete_ct = $conn->prepare("DELETE FROM chitietphieunhap WHERE MaPhieu = ?");
-$delete_ct->execute([$delete_id]);
+   $delete_ct = $conn->prepare("DELETE FROM chitietphieunhap WHERE MaPhieu = ?");
+   $delete_ct->execute([$delete_id]);
 
-// Cuối cùng xoá phiếu nhập
-$delete_phieunhap = $conn->prepare("DELETE FROM phieunhap WHERE MaPhieu = ?");
-$delete_phieunhap->execute([$delete_id]);
-   $message[] = "✅ Đã xoá phiếu nhập thành công !";
+   $delete_phieunhap = $conn->prepare("DELETE FROM phieunhap WHERE MaPhieu = ?");
+   $delete_phieunhap->execute([$delete_id]);
+
+   $_SESSION['message'] = "✅ Đã xoá phiếu nhập thành công !";
+   header("Location: warehouse.php");
+   exit();
 }
 
-?> 
+?>
+ 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -184,6 +171,42 @@ th.sortable.sorted-desc::after {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+#dynamicFields tr td {
+  padding: 8px 12px;
+  vertical-align: middle;
+  
+  /* border-bottom: 2px solid #ddd; */
+}
+
+#dynamicFields tr td:first-child {
+  text-align:right ; /* Số thứ tự căn giữa */
+  width: 160px;
+  font-weight: 1000;
+  font-size: 1.5rem;
+  padding-right: 20px;
+}
+
+#dynamicFields input[type="text"],
+#dynamicFields input[type="number"] {
+  /* box-sizing: border-box; */
+  padding: 6px 8px;
+  font-size: 1.5rem;
+  
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+  
+}
+
+#dynamicFields input[type="text"]:focus,
+#dynamicFields input[type="number"]:focus {
+  border-color: #4a90e2;
+  outline: none;
+}
+
+.don-gia {
+  text-align: left;
+}
 
 
    </style>
@@ -192,10 +215,7 @@ th.sortable.sorted-desc::after {
 <?php include '../components/admin_header.php' ?>
 
 <?php
-// Kết nối CSDL nếu chưa có
-// $conn = new PDO(...);
 
-// Truy vấn danh sách nhà cung cấp
 $stmt = $conn->prepare("SELECT MaNCC, TenNCC FROM nhacc");
 $stmt->execute();
 $ds_ncc = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -211,9 +231,7 @@ $ds_ncc = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <div class="order_table">
            <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Mã phiếu:</span>
-        <input type="text"class="box" name="MaPhieu" required placeholder="" 
-        value="<?= htmlspecialchars($_POST['MaPhieu'] ?? '') ?>">
-        
+        <input type="text"class="box" name="MaPhieu" required placeholder="" value="<?= htmlspecialchars($_POST['MaPhieu'] ?? '') ?>"> 
         </div>
 <div class="order_table">
            <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Mã nhà cung cấp:</span>
@@ -232,26 +250,21 @@ $ds_ncc = $stmt->fetchAll(PDO::FETCH_ASSOC);
            <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Ngày nhập:</span>
          <!-- <input type="date" name="NgayNhap" required> -->
         <input type="date"class="box" name="NgayNhap" required 
-       value="<?= htmlspecialchars($_POST['NgayNhap'] ?? '') ?>">
+       value="<?= htmlspecialchars($_POST['NgayNhap'] ?? '') ?>"
+       max="<?= date('Y-m-d') ?>">
       </div>
 
 <div class="order_table">
            <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Số lượng:</span>
-         <input type="number" class="box"name="SoLuong" id="SoLuong" min="1" max="30" required placeholder="" oninput="generateFields()">
+         <input type="number" class="box" name="SoLuong" id="SoLuong" min="1" max="30" required placeholder="" oninput="generateFields()" 
+         value="<?= htmlspecialchars($_POST['SoLuong'] ?? '') ?>">
         </div>
 
-      <div id="dynamicFields">
-    <?php
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SoLuong'])) {
-    $soLuong = (int)$_POST['SoLuong'];
-    for ($i = 1; $i <= $soLuong; $i++) {
-        $maBD = $_POST["MaBD_$i"] ?? '';
-        $giaGoc = $_POST["GiaGoc_$i"] ?? '';
-        echo '<input type="text" name="MaBD_'.$i.'" placeholder="Mã băng đĩa '.$i.'" required value="'.htmlspecialchars($maBD).'">';
-        echo '<input type="number" name="GiaGoc_'.$i.'" placeholder="Đơn giá '.$i.'" required value="'.htmlspecialchars($giaGoc).'" class="don-gia">';
-        }
-    }
-    ?>
+      <div id="dynamicFieldsContainer">
+  <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; max-width: 600px; margin-top: 10px;">
+    <tbody id="dynamicFields">
+    </tbody>
+  </table>
 </div>
 
 
@@ -284,33 +297,46 @@ $ds_ncc = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <script>
 function generateFields() {
    const sl = document.getElementById('SoLuong').value;
-   const container = document.getElementById('dynamicFields');
-   container.innerHTML = "";
+   const tbody = document.getElementById('dynamicFields');
+   tbody.innerHTML = "";
 
    const soLuong = parseInt(sl);
    if (!isNaN(soLuong) && soLuong > 0 && soLuong <= 30) {
       for (let i = 1; i <= soLuong; i++) {
-         const maBD = document.createElement("input");
-         maBD.type = "text";
-         maBD.name = `MaBD_${i}`;
-         maBD.placeholder = `Mã băng đĩa ${i}`;
-         maBD.required = true;
+         const tr = document.createElement("tr");
 
-         const giaGoc = document.createElement("input");
-         giaGoc.type = "number";
-         giaGoc.name = `GiaGoc_${i}`;
-         giaGoc.placeholder = `Đơn giá ${i}` ;
-         giaGoc.min = 0;
-         giaGoc.required = true;
-         giaGoc.classList.add("don-gia");
-         giaGoc.addEventListener("input", calculateTotal);
+         const tdIndex = document.createElement("td");
+         tdIndex.textContent = i;
+         tr.appendChild(tdIndex);
 
-         container.appendChild(maBD);
-         container.appendChild(giaGoc);
+         const tdMaBD = document.createElement("td");
+         const inputMaBD = document.createElement("input");
+         inputMaBD.type = "text";
+         inputMaBD.name = `MaBD_${i}`;
+         inputMaBD.placeholder = `Mã băng đĩa ${i}`;
+         inputMaBD.required = true;
+         inputMaBD.style.width = "100%";
+         tdMaBD.appendChild(inputMaBD);
+         tr.appendChild(tdMaBD);
+
+         const tdGiaGoc = document.createElement("td");
+         const inputGiaGoc = document.createElement("input");
+         inputGiaGoc.type = "number";
+         inputGiaGoc.name = `GiaGoc_${i}`;
+         inputGiaGoc.placeholder = `Đơn giá `;
+         inputGiaGoc.min = 0;
+         inputGiaGoc.required = true;
+         inputGiaGoc.classList.add("don-gia");
+         inputGiaGoc.style.width = "100%";
+         inputGiaGoc.addEventListener("input", calculateTotal);
+         tdGiaGoc.appendChild(inputGiaGoc);
+         tr.appendChild(tdGiaGoc);
+
+         tbody.appendChild(tr);
       }
    }
 
-   calculateTotal(); // gọi ngay để reset tổng tiền
+   calculateTotal();
 }
 
 function calculateTotal() {
@@ -326,20 +352,6 @@ function calculateTotal() {
    const tongTienInput = document.querySelector('input[name="TongTien"]');
    tongTienInput.value = total;
 }
-document.querySelector("form").addEventListener("submit", function (e) {
-   const maBDInputs = document.querySelectorAll('input[name^="MaBD_"]');
-   const maBDValues = [];
-
-   for (let input of maBDInputs) {
-      const val = input.value.trim();
-      if (maBDValues.includes(val)) {
-         alert("❌ Mã băng đĩa bị trùng: " + val);
-         e.preventDefault(); // chặn submit
-         return;
-      }
-      maBDValues.push(val);
-   }
-});
 </script>
 <section class="main-content show-products" style="padding-top: 0;">
    <h1 class="heading">Danh sách phiếu nhập hàng</h1>

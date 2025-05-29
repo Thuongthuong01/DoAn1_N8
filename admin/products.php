@@ -80,7 +80,9 @@ if (isset($_GET['delete'])) {
     $message[] = '✅ Đã xoá băng đĩa thành công!';
 }
 
-
+if (isset($_GET['message']) && $_GET['message'] == 'success') {
+   $message[] ='✅ Cập nhật thông tin băng đĩa thành công!';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -177,9 +179,11 @@ $availableMaBDs = $get_available_maBD->fetchAll(PDO::FETCH_COLUMN);
            <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Thể loại:</span>
       <select name="Theloai" class="box" required>
          <option value="" disabled selected>--Chọn thể loại --</option>
+         <option value="Phim ảnh">Phim ảnh</option>
          <option value="Âm nhạc">Âm nhạc</option>
-         <option value="Phim">Phim</option>
-         <option value="Hoạt hình">Hoạt hình</option>
+         <option value="Giải trí">Giải trí</option>
+         <option value="Giáo dục">Giáo dục</option>
+         <option value="Thiếu nhi">Thiếu nhi</option>
          <option value="Khác">Khác</option>
       </select>
    </div>
@@ -192,7 +196,7 @@ $availableMaBDs = $get_available_maBD->fetchAll(PDO::FETCH_COLUMN);
       <select name="Tinhtrang" class="box" required>
          <option value="" disabled selected>-- Chọn tình trạng --</option>
          <option value="Trống">Trống</option>
-         <option value="Đã cho thuê">Đã cho thuê</option>
+         <!-- <option value="Đã cho thuê">Đã cho thuê</option> -->
          <option value="Đang bảo trì">Đang bảo trì</option>
       </select>
    </div>

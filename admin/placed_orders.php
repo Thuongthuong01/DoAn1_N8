@@ -15,14 +15,37 @@ if ($stmt->rowCount() > 0) {
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     $tenAD = $row['TenAD'];
 }
-$message = [];
+if (!isset($message) || !is_array($message)) {
+      $message = [];
+   }
+// Truy vấn số lượng băng đĩa còn trống
+
 
 // Thêm đơn hàng thuê mới vào bảng PhieuThue
 if (isset($_POST['add_phieuthue'])) {
    $maKH = $_POST['MaKH'];
    $ngayThue = $_POST['ngayThue'];
-   $hanTra = $_POST['ngayTra'];
-   $bangDiaList = json_decode($_POST['dsBangDia'], true);
+   $ngayThueDate = new DateTime($ngayThue);
+$today = new DateTime();
+
+if ($ngayThueDate > $today) {
+    // xử lý lỗi, ví dụ:
+    echo "❌ Ngày thuê không được vượt quá ngày hiện tại.";
+    exit;  // hoặc return nếu trong function
+}
+$bangDiaList = json_decode($_POST['dsBangDia'], true);
+
+$stmt = $conn->query("SELECT COUNT(*) FROM bangdia WHERE Tinhtrang = 'Trống'");
+$soBangDiaConTrong = $stmt->fetchColumn();
+
+// Kiểm tra nếu số lượng yêu cầu vượt quá số đĩa trống
+if (count($bangDiaList) > $soBangDiaConTrong) {
+   $message[] = "❌ Không thể thuê quá số lượng băng đĩa hiện có. Hiện tại chỉ còn $soBangDiaConTrong đĩa trống.";
+} else {
+   // Tiếp tục xử lý như bình thường
+}
+$hanTra = $_POST['ngayTra'];
+
    if (count($bangDiaList) > 10) {
     $message[] = "Không thể thuê quá 10 đĩa cùng lúc.";
 } else {
@@ -74,7 +97,7 @@ if (isset($_POST['add_phieuthue'])) {
          $insertCT->execute([$maThueMoi, $maBD, $soLuong, $donGia]);
 
          // Cập nhật tình trạng băng đĩa
-         $conn->prepare("UPDATE bangdia SET Tinhtrang = 'Đã thuê' WHERE MaBD = ?")->execute([$maBD]);
+         $conn->prepare("UPDATE bangdia SET Tinhtrang = 'Đã cho thuê' WHERE MaBD = ?")->execute([$maBD]);
       }
 
       // Bước 3: Tính tổng thanh toán
@@ -87,7 +110,7 @@ if (isset($_POST['add_phieuthue'])) {
 
       $conn->commit();
 
-      $message[] = "Đã thêm phiếu thuê thành công. Tổng thanh toán: " . number_format($tongThanhToan, 0, ',', '.') . " VNĐ.";
+      $message[] = "✅ Đã thêm phiếu thuê thành công. Tổng thanh toán: " . number_format($tongThanhToan, 0, ',', '.') . " VNĐ.";
    } catch (Exception $e) {
       $conn->rollBack();
       $message[] = "Lỗi khi thêm phiếu thuê: " . $e->getMessage();
@@ -116,9 +139,9 @@ $stmt = $conn->prepare("SELECT MaBD FROM chitietphieuthue WHERE MaThue = ?");
     // Bước 4: Xoá phiếu thuê
     $delete_order = $conn->prepare("DELETE FROM phieuthue WHERE MaThue = ?");
     $delete_order->execute([$delete_id]);
-
-    header('location:placed_orders.php');
-    exit();
+    $message[] = '✅ Đã xoá phiếu thuê thành công. ';
+   //  header('location:placed_orders.php');
+   //  exit();
 }
 
 
@@ -203,9 +226,17 @@ th.sortable.sorted-desc::after {
          <?php endforeach; ?>
       </datalist>
 </div>
+<?php
+   $soBDTrong = count($availableBDs);
+   if ($soBDTrong == 0) {
+      echo "<p style='color:red;font-weight:bold;'>❌ Hiện tại không còn băng đĩa nào có sẵn để thuê.</p>";
+   }
+?>
 <div class="order_table">
    <span>Số lượng thuê:</span>
-   <input type="number" id="inputSoLuong" class="box" placeholder="Số lượng" min="1" max="10"  oninput="taoONhapBangDia()">
+<input type="number" id="inputSoLuong" class="box" 
+   placeholder="Số lượng" min="1" max="<?= $soBDTrong ?>" 
+   oninput="taoONhapBangDia()" <?= $soBDTrong == 0 ? 'disabled' : '' ?>>
 </div>
 
 <div id="InputMaBD" style="margin-top: 10px;"></div>
@@ -225,11 +256,12 @@ th.sortable.sorted-desc::after {
 
 <div class="order_table">
         <span >Ngày thuê:</span>
-         <input type="date"class="box" required name="ngayThue" onchange="renderBangDiaList()">
+         <input type="date" class="box" required name="ngayThue" id="ngayThueInput" onchange="kiemTraNgayThue(); renderBangDiaList()">
+         
 </div>
 <div class="order_table">
         <span>Ngày trả:</span>
-         <input type="date"class="box" required name="ngayTra" onchange="renderBangDiaList()">
+         <input type="date"class="box" required name="ngayTra"  id="ngayTraInput"onchange="kiemTraNgayTra();renderBangDiaList()">
 </div>
 <div class="order_table">
       <span>Tiền băng đĩa:</span>
@@ -269,7 +301,15 @@ function taoONhapBangDia() {
    const soLuong = parseInt(document.getElementById("inputSoLuong").value);
    const container = document.getElementById("InputMaBD");
    container.innerHTML = "";
+   const maxSoLuong = <?= count($availableBDs) ?>; // lấy số lượng đĩa trống từ PHP
 
+   if (isNaN(soLuong) || soLuong <= 0) return;
+
+   if (soLuong > maxSoLuong) {
+       alert("❌ Số lượng vượt quá số lượng băng đĩa còn trống (" + maxSoLuong + ").");
+       soLuong = maxSoLuong;
+       document.getElementById("inputSoLuong").value = soLuong;
+   }
    if (isNaN(soLuong) || soLuong <= 0) return;
    if (soLuong > 10) {
        alert("Bạn chỉ được thuê tối đa 10 đĩa.");
@@ -305,19 +345,32 @@ function taoONhapBangDia() {
       priceSpan.style.marginLeft="17rem";
 
       // Sự kiện nhập mã đĩa
-      input.addEventListener("input", function () {
-         const maBD = input.value;
-         const option = document.querySelector(`#maBD_list option[value="${maBD}"]`);
-         if (option) {
-            const donGia = option.getAttribute("data-price");
-            priceSpan.textContent = `Đơn giá: ${Number(donGia).toLocaleString()} VNĐ`;
-         } else {
-            priceSpan.textContent = "Không tìm thấy đơn giá.";
-         }
+      input.addEventListener("blur", function () {
+   const maBD = input.value.trim();
+   const option = document.querySelector(`#maBD_list option[value="${maBD}"]`);
+   const isDuplicate = Array.from(document.querySelectorAll('input[name="maBDs[]"]'))
+   .filter(inp => inp !== input) // loại trừ chính ô hiện tại
+   .some(inp => inp.value.trim() === maBD);
 
-         // Gọi cập nhật danh sách
-         capNhatDanhSachBangDia();
-      });
+if (isDuplicate) {
+   alert("❌ Mỗi băng đĩa chỉ được chọn một lần.");
+   input.value = "";
+   input.focus();
+   priceSpan.textContent = "";
+   return;
+}
+   if (option) {
+      const donGia = option.getAttribute("data-price");
+      priceSpan.textContent = `Đơn giá: ${Number(donGia).toLocaleString()} VNĐ`;
+   } else {
+      priceSpan.textContent = "❌ Mã băng đĩa  không hợp lệ hoặc đã được thuê.";
+      input.value = ""; // reset nếu sai
+      input.focus(); // yêu cầu nhập lại
+   }
+
+   capNhatDanhSachBangDia();
+});
+
 
       wrapper.appendChild(label);
       wrapper.appendChild(input);
@@ -336,14 +389,20 @@ function getDonGia(maBD) {
 function capNhatDanhSachBangDia() {
    bangDiaArray = [];
    const inputMaBDs = document.querySelectorAll('input[name="maBDs[]"]');
+   const datalistOptions = [...document.querySelectorAll('#maBD_list option')].map(opt => opt.value);
 
    inputMaBDs.forEach(input => {
       const maBD = input.value.trim();
+
       if (maBD !== "") {
+         if (!datalistOptions.includes(maBD)) {
+   // Không thêm vào mảng nếu không hợp lệ
+   return;
+}
+
          const donGia = getDonGia(maBD);
          bangDiaArray.push({
             maBD,
-            // tenBD,
             soLuong: 1,
             donGia
          });
@@ -352,6 +411,7 @@ function capNhatDanhSachBangDia() {
 
    renderBangDiaList();
 }
+
 
 // Hiển thị danh sách và tính tiền
 function renderBangDiaList() {
@@ -400,6 +460,37 @@ function renderBangDiaList() {
 function removeBangDia(index) {
    bangDiaArray.splice(index, 1);
    renderBangDiaList();
+}
+function kiemTraNgayThue() {
+   const input = document.getElementById('ngayThueInput');
+   const selectedDate = new Date(input.value);
+   const today = new Date();
+
+   // So sánh với hôm nay
+   selectedDate.setHours(0, 0, 0, 0);
+   today.setHours(0, 0, 0, 0);
+
+   if (selectedDate > today) {
+      alert("❌ Ngày thuê không được vượt quá ngày hiện tại.");
+      input.value = ""; // Reset
+   }
+}
+function kiemTraNgayTra() {
+   const ngayThueInput = document.getElementById('ngayThueInput');
+   const ngayTraInput = document.getElementById('ngayTraInput');
+   const selectedNgayThue = new Date(ngayThueInput.value);
+   const selectedNgayTra = new Date(ngayTraInput.value);
+
+   // Đặt giờ về 0 để so sánh đúng ngày
+   selectedNgayThue.setHours(0, 0, 0, 0);
+   selectedNgayTra.setHours(0, 0, 0, 0);
+
+   if (selectedNgayTra <= selectedNgayThue) {
+      alert("❌ Ngày trả phải sau ngày thuê.");
+      ngayTraInput.value = ""; // Reset ngày trả
+      return false;
+   }
+   return true;
 }
 </script>
 

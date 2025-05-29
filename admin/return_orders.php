@@ -144,7 +144,7 @@ $maAD = $_SESSION['user_id'];
 $insert = $conn->prepare("INSERT INTO phieutra(MaThue, MaKH, NgayTraTT, ChatLuong, TraMuon, TienPhat, TienTra,MaAD) VALUES (?,?, ?, ?, ?, ?, ?, ?)");
 $insert->execute([$MaThue, $MaKH, $NgayTraTT, $ChatLuong, $TraMuon, $TienPhat, $TienTra, $maAD]);
 
-         $message[] = "Đã thêm phiếu trả thành công!";
+         $message[] = "✅ Đã thêm phiếu trả thành công!";
       } else {
          $message[] = "❌ Không tìm thấy thông tin thuê phù hợp để tính phí!";
       }
@@ -160,7 +160,7 @@ if (isset($_GET['delete'])) {
    $delete_phieutra = $conn->prepare("DELETE FROM phieutra WHERE MaTra = ?");
    $delete_phieutra->execute([$delete_id]);
 
-   $message[] = "Đã xóa phiếu trả thành công!";
+   $message[] = "✅ Đã xóa phiếu trả thành công!";
 }
 ?>
 <!-- thông báo -->
@@ -231,7 +231,7 @@ th.sortable.sorted-desc::after {
 <?php include '../components/admin_header.php' ?>
 
    <section class="form-container" >
-        <form action="" method="POST" enctype="multipart/form-data">
+        <form action="" method="POST" enctype="multipart/form-data" id="myForm">
    <h3>Phiếu trả đĩa</h3>
    <div style="margin-top: 10px; font-size: 1.4rem; color:rgb(132, 130, 130);">
     <strong>Người nhập phiếu:</strong> <?= htmlspecialchars($tenAD) ?>
@@ -247,7 +247,7 @@ th.sortable.sorted-desc::after {
    </div>
    <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
         <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Mã khách hàng:</span>
-   <input type="text" required placeholder="" name="MaKH" id="MaKH"list="dsMaKH" maxlength="9" class="box">
+   <input type="text" required placeholder="" name="MaKH" id="MaKH" class="box" readonly>
    <datalist id="dsMaKH">
    <?php foreach ($dsMaKH as $maKH): ?>
        <option value="<?= htmlspecialchars($maKH) ?>"></option>
@@ -256,7 +256,7 @@ th.sortable.sorted-desc::after {
    </div>
    <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
         <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Ngày trả:</span>
-   <input type="date" required name="NgayTraTT" class="box">
+   <input type="date" required name="NgayTraTT" class="box" id="NgayTraTT">
    </div>
    <div  style="display: flex; align-items: center; gap: 10px; margin-bottom: 1px;">
         <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Chất lượng đĩa:</span>
@@ -434,7 +434,18 @@ document.getElementById("MaKH").addEventListener("blur", function() {
    })
    .catch(error => console.error("Lỗi khi lấy mã thuê từ mã KH:", error));
 });
+const inputNgayTra = document.getElementById('NgayTraTT');
 
+  inputNgayTra.addEventListener('change', function () {
+    const selectedDate = new Date(this.value + 'T00:00:00'); // tránh lệch múi giờ
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // so sánh đến ngày thôi
+
+    if (selectedDate > today) {
+      alert('❌ Ngày trả không được lớn hơn ngày hiện tại!');
+      this.value = ''; // xóa giá trị sai
+    }
+  });
 // Khi ngày hoặc chất lượng thay đổi => tự động tính phạt
 document.querySelector('input[name="NgayTraTT"]').addEventListener("change", calculateFines);
 document.querySelector('select[name="ChatLuong"]').addEventListener("change", calculateFines);
@@ -494,6 +505,27 @@ function calculateFines() {
 
 
 </script>
+<script>
+document.getElementById('MaThue').addEventListener('change', function () {
+    const maThue = this.value;
+    if (maThue.trim() === '') return;
+
+    fetch('', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: new URLSearchParams({ ajax: 1, MaThue: maThue })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data && data.MaKH) {
+            document.getElementById('MaKH').value = data.MaKH;
+        } else {
+            document.getElementById('MaKH').value = '';
+        }
+    });
+});
+</script>
+
 <script>
 let currentSortedIndex = -1;
 let isAsc = true;

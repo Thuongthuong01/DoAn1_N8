@@ -22,21 +22,39 @@ if(isset($_POST['update'])){
    $NSX = filter_var($NSX, FILTER_SANITIZE_STRING);
    $Tinhtrang = $_POST['Tinhtrang'];
    $Tinhtrang = filter_var($Tinhtrang, FILTER_SANITIZE_STRING);
-if ($Tinhtrang == 'Trống') {
-   $update_chatluong = $conn->prepare("UPDATE `bangdia` SET ChatLuong = 'Tốt' WHERE MaBD = ?");
-   $update_chatluong->execute([$MaBD]);
-}
-   // Kiểm tra MaBD có trong chitietphieunhap không
-$stmt_check = $conn->prepare("SELECT 1 FROM chitietphieunhap WHERE MaBD = ?");
-$stmt_check->execute([$MaBD]);
+   if (!isset($message) || !is_array($message)) {
+      $message = [];
+   }
+// Lấy tình trạng hiện tại từ CSDL
+$stmt_current = $conn->prepare("SELECT Tinhtrang FROM bangdia WHERE MaBD = ?");
+$stmt_current->execute([$MaBD]);
+$current = $stmt_current->fetch(PDO::FETCH_ASSOC);
+$current_status = $current['Tinhtrang'];
 
-if ($stmt_check->rowCount() == 0) {
-   $message[] = "❌ Mã băng đĩa '$MaBD' chưa được nhập kho! Không thể cập nhật.";
+$valid_change = false;
+
+// Chỉ cho phép Trống <-> Đang bảo trì
+if (
+   ($current_status == 'Trống' && $Tinhtrang == 'Đang bảo trì') ||
+   ($current_status == 'Đang bảo trì' && $Tinhtrang == 'Trống') ||
+   ($current_status == $Tinhtrang) // Không đổi trạng thái vẫn hợp lệ
+) {
+   $valid_change = true;
+}
+
+if (!$valid_change) {
+   $message[] = "❌ Không thể thay đổi tình trạng từ '$current_status' sang '$Tinhtrang'.";
 } else {
-   // Cho phép cập nhật nếu mã tồn tại
+   // Cập nhật nếu hợp lệ
+   if ($Tinhtrang == 'Trống') {
+      $update_chatluong = $conn->prepare("UPDATE `bangdia` SET ChatLuong = 'Tốt' WHERE MaBD = ?");
+      $update_chatluong->execute([$MaBD]);
+   }
+
    $update_product = $conn->prepare("UPDATE `bangdia` SET TenBD = ?, Dongia = ?, Theloai = ?, NSX = ?, Tinhtrang = ? WHERE MaBD = ?");
    $update_product->execute([$TenBD, $Dongia, $Theloai, $NSX, $Tinhtrang, $MaBD]);
 
+   // Xử lý ảnh nếu có thay đổi
    $old_image = $_POST['old_image'];
    $image = $_FILES['img']['name'];
    $image = filter_var($image, FILTER_SANITIZE_STRING);
@@ -59,9 +77,11 @@ if ($stmt_check->rowCount() == 0) {
    }
 
    $message[] = '✅ Cập nhật thông tin băng đĩa thành công!';
-   header("Location: products.php");
-   exit();
+header("Location: products.php?message=success");
+exit();
+
 }
+
 
 
 }
@@ -124,9 +144,11 @@ if ($stmt_check->rowCount() == 0) {
          <div class="order_table">
    <span>Thể loại</span>
    <select name="Theloai" class="box" required>
+      <option value="Phim ảnh" <?= ($fetch_products['Theloai'] == 'Phim ảnh') ? 'selected' : ''; ?>>Phim ảnh</option>
       <option value="Âm nhạc" <?= ($fetch_products['Theloai'] == 'Âm nhạc') ? 'selected' : ''; ?>>Âm nhạc</option>
-      <option value="Phim" <?= ($fetch_products['Theloai'] == 'Phim') ? 'selected' : ''; ?>>Phim</option>
-      <option value="Hoạt hình" <?= ($fetch_products['Theloai'] == 'Hoạt hình') ? 'selected' : ''; ?>>Hoạt hình</option>
+      <option value="Giải trí" <?= ($fetch_products['Theloai'] == 'Giải trí') ? 'selected' : ''; ?>>Giải trí</option>
+      <option value="Giáo dục" <?= ($fetch_products['Theloai'] == 'Giáo dục') ? 'selected' : ''; ?>>Giáo dục</option>
+      <option value="Thiếu nhi" <?= ($fetch_products['Theloai'] == 'Thiếu nhi') ? 'selected' : ''; ?>>Thiếu nhi</option>
       <option value="Khác" <?= ($fetch_products['Theloai'] == 'Khác') ? 'selected' : ''; ?>>Khác</option>
    </select>
          </div>
@@ -138,8 +160,8 @@ if ($stmt_check->rowCount() == 0) {
    <span>Tình trạng</span>
    <select name="Tinhtrang" class="box" required>
       <option value="Trống" <?= ($fetch_products['Tinhtrang'] == 'Trống') ? 'selected' : ''; ?>>Trống</option>
-      <option value="Đã cho thuê" <?= ($fetch_products['Tinhtrang'] == 'Đã cho thuê') ? 'selected' : ''; ?>>Đã cho thuê</option>
       <option value="Đang bảo trì" <?= ($fetch_products['Tinhtrang'] == 'Đang bảo trì') ? 'selected' : ''; ?>>Đang bảo trì</option>
+      <option value="Đã cho thuê" disabled <?= ($fetch_products['Tinhtrang'] == 'Đã cho thuê') ? 'selected' : ''; ?>>Đã cho thuê</option>
    </select>
          </div>
          <div class="order_table">
