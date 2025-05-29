@@ -112,6 +112,9 @@ if (isset($_GET['delete'])) {
    color: #aaa;
    font-style: italic;
    cursor: not-allowed;
+    display: inline-block;
+    width: 100%;
+    text-align: center;
 }
 
 th.sortable {
