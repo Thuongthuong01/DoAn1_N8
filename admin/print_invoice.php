@@ -96,31 +96,127 @@ switch ($loai) {
     <meta charset="UTF-8">
     <title>Hóa đơn chi tiết</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: auto; width:85%; }
-        table { border-collapse: collapse; width: 85%; margin-top: 20px; margin:auto;}
-        th, td { border: 2px solid rgb(52, 50, 50); padding: 8px; text-align: left; }
-        th { background-color:rgb(179, 178, 178); }
-        .total { font-weight: bold; }
-        h1 {text-align: center;}
-        p {text-align: left;width: 85%;margin:auto;padding:5px;}
-        .btn-print { padding: 6px 12px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px; margin-top: 10px;margin-left:45%; cursor: pointer;font-size:1.2rem; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 20px;
+        }
+        .receipt-container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .receipt-header {
+            text-align: left;
+            margin: 30px 0;
+        }
+        .store-name {
+            font-weight: bold;
+            color: #000000;
+            margin-bottom: 5px;
+            font-size: 28px;
+        }
+        .store-address {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .receipt-info {
+            margin-bottom: 20px;
+        }
+        .receipt-info p {
+            margin: 5px 0;
+        }
+        .receipt-title {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        .note {
+            text-align: center;
+            font-style: italic;
+            margin-top: 20px;
+            color: #444;
+        }
+        .print-button {
+            text-align: center;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 15px 10px;
+            
+        }
+        .btn-print {
+            background-color:rgb(51, 88, 209);
+            color: white;
+            
+        }
+        .btn-print:hover {
+            background-color:rgb(42, 46, 157);
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+        }
+        .btn-secondary:hover {
+            background-color: #5c636a;
+        }
         @media print {
-  .btn-print {
+            .print-button {
+                display: none;
+            }
+            .qr-code {
+                display: block !important;
+            }
+            canvas, img {
+                display: block !important;
+                max-width: 100%;
+                margin: 0 auto;
+            }
+            .btn-print {
     display: none;
   }
-}
+        }
+        
 
     </style>
 </head>
 <body>
 
+<div class="receipt-container">
+        <div class="receipt-header">
+            <div class="store-name">CD House</div>
+            <div class="store-address">Lĩnh Nam - Hoàng Mai - Hà Nội</div>
+        </div>
 <?php if ($loai == 'thue'): ?>
-    <h1>Hóa đơn phiếu thuê #<?= htmlspecialchars($id) ?></h1>
-    <p>Ngày in hóa đơn: <?= date('d/m/Y H:i:s') ?></p>
-    <p><strong>Khách hàng:</strong> <?= htmlspecialchars($phieu['MaKH']) ?> - <?= htmlspecialchars($phieu['TenKH']) ?> (SĐT: <?= htmlspecialchars($phieu['SDT']) ?>)</p>
-    <p><strong>Ngày thuê:</strong><?php echo date('d/m/Y', strtotime($phieu['NgayThue'])); ?> | <strong>Ngày trả dự kiến:</strong><?php echo date('d/m/Y', strtotime($phieu['NgayTraDK'])); ?></p>
-    <p><strong>Người nhập phiếu thuê:</strong> <?= htmlspecialchars($phieu['TenAD']) ?></p>
-
+    <div class="receipt-title">HOÁ ĐƠN THUÊ #<?= htmlspecialchars($id) ?></div>
+    <div class="receipt-info">
+    <p><strong>Ngày in hóa đơn: </strong>  <?= date('d/m/Y H:i:s') ?></p>
+    <p><strong>Khách hàng: </strong> <?= htmlspecialchars($phieu['MaKH']) ?> - <?= htmlspecialchars($phieu['TenKH']) ?> (SĐT: <?= htmlspecialchars($phieu['SDT']) ?>)</p>
+    <p><strong>Ngày thuê: </strong><?php echo date('d/m/Y', strtotime($phieu['NgayThue'])); ?> | <strong>Ngày trả dự kiến: </strong><?php echo date('d/m/Y', strtotime($phieu['NgayTraDK'])); ?></p>
+    <p><strong>Người nhập phiếu thuê: </strong> <?= htmlspecialchars($phieu['TenAD']) ?></p>
+    </div>
     <table>
         <thead>
             <tr>
@@ -150,7 +246,7 @@ switch ($loai) {
                 <th colspan="5"></th>
             </tr>
             <tr class="total">
-                <td colspan="4">Tổng đơn giá băng đĩa</td>
+                <td colspan="4">Tổng giá băng đĩa</td>
                 <td><?= number_format($tong, 0, ',', '.') ?></td>
             </tr>
             <tr class="total">
@@ -158,19 +254,20 @@ switch ($loai) {
                 <td>50,000</td>
             </tr>
             <tr class="total">
-                <td colspan="4">Tổng thanh toán</td>
+                <td colspan="4" style="font-weight: bold;">Tổng thanh toán</td>
                 <td><?= number_format($phieu['TongTien'], 0, ',', '.') ?></td>
             </tr>
         </tbody>
     </table>
 
 <?php elseif ($loai == 'nhap'): ?>
-    <h1>Hóa đơn phiếu nhập #<?= htmlspecialchars($id) ?></h1>
-    <p>Ngày in hóa đơn: <?= date('d/m/Y H:i:s') ?></p>
-    <p><strong>Nhà cung cấp:</strong> <?= htmlspecialchars($phieu['MaNCC']) ?> - <?= htmlspecialchars($phieu['TenNCC']) ?></p>
-    <p><strong>Ngày nhập:</strong><?php echo date('d/m/Y', strtotime($phieu['NgayNhap'])); ?></p>
-    <p><strong>Người nhập:</strong> <?= htmlspecialchars($phieu['TenAD']) ?></p>
-
+    <div class="receipt-title">HOÁ ĐƠN NHẬP #<?= htmlspecialchars($id) ?></div>
+    <div class="receipt-info">
+    <p><strong>Ngày in hóa đơn: </strong><?= date('d/m/Y H:i:s') ?></p>
+    <p><strong>Nhà cung cấp: </strong> <?= htmlspecialchars($phieu['MaNCC']) ?> - <?= htmlspecialchars($phieu['TenNCC']) ?></p>
+    <p><strong>Ngày nhập: </strong><?php echo date('d/m/Y', strtotime($phieu['NgayNhap'])); ?></p>
+    <p><strong>Người nhập: </strong> <?= htmlspecialchars($phieu['TenAD']) ?></p>
+</div>
     <table>
         <thead>
             <tr>
@@ -188,7 +285,7 @@ switch ($loai) {
                 <th colspan="2"></th>
             </tr>
             <tr class="total">
-                <td colspan="1">Tổng thanh toán</td>
+                <td colspan="1" style="font-weight: bold;">Tổng thanh toán</td>
                 <td><?= number_format($phieu['TongTien'], 0, ',', '.') ?></td>
             </tr>
             
@@ -196,12 +293,13 @@ switch ($loai) {
     </table>
 
 <?php elseif ($loai == 'tra'): ?>
-    <h1>Hóa đơn phiếu trả #<?= htmlspecialchars($id) ?></h1>
-    <p>Ngày in hóa đơn: <?= date('d/m/Y H:i:s') ?></p>
-    <p><strong>Khách hàng:</strong> <?= htmlspecialchars($phieu['MaKH']) ?> - <?= htmlspecialchars($phieu['TenKH']) ?> (SĐT: <?= htmlspecialchars($phieu['SDT']) ?>)</p>
-    <p><strong>Ngày trả:</strong><?php echo date('d/m/Y', strtotime($phieu['NgayTraTT'])); ?></p>
-    <p><strong>Người nhập:</strong> <?= htmlspecialchars($phieu['TenNguoiNhap'] ?: 'Không xác định') ?></p>
-
+    <div class="receipt-title">HOÁ ĐƠN TRẢ #<?= htmlspecialchars($id) ?></div>
+<div class="receipt-info">
+    <p><strong>Ngày in hóa đơn: </strong><?= date('d/m/Y H:i:s') ?></p>
+    <p><strong>Khách hàng: </strong> <?= htmlspecialchars($phieu['MaKH']) ?> - <?= htmlspecialchars($phieu['TenKH']) ?> (SĐT: <?= htmlspecialchars($phieu['SDT']) ?>)</p>
+    <p><strong>Ngày trả: </strong><?php echo date('d/m/Y', strtotime($phieu['NgayTraTT'])); ?></p>
+    <p><strong>Người nhập: </strong> <?= htmlspecialchars($phieu['TenNguoiNhap'] ?: 'Không xác định') ?></p>
+</div>
     <table>
         <thead>
             <tr>
@@ -263,7 +361,7 @@ switch ($loai) {
         </tr>
         
             <tr class="total">
-                <td colspan="3">Tiền phạt trả Muộn</td>
+                <td colspan="3">Tiền phạt trả muộn</td>
                 <td colspan="3"><?= number_format($phattramuon, 0, ',', '.') ?></td>
             </tr>
             <tr class="total">
@@ -271,7 +369,7 @@ switch ($loai) {
                 <td colspan="2"><?= number_format($tongphat, 0, ',', '.') ?></td>
         </tr>
         <tr class="total">
-                <td colspan="3">Tiền trả</td>
+                <td colspan="3" style="font-weight: bold;">Tổng tiền trả</td>
                 <td colspan="2"><?= number_format($phieu['TienTra'], 0, ',', '.') ?></td>
         </tr>
             
@@ -279,8 +377,14 @@ switch ($loai) {
     </table>
 
 <?php endif; ?>
-
-<button onclick="window.print()" class="btn-print">In hóa đơn</button>
+        <div class="note">
+            Cảm ơn quý khách đã tin tưởng và sử dụng dịch vụ. Hẹn gặp lại!
+        </div>
+        <div class="print-button">
+        <button onclick="window.print()" class="btn btn-print" >In hóa đơn</button>
+        </div>
+    
+        </div>
 
 </body>
 </html>

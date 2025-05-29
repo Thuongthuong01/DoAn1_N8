@@ -125,7 +125,7 @@ th.sortable.sorted-desc::after {
 </div>
 <div class="order_table">
            <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Tên nhà cung cấp:</span>
-      <input type="text" required placeholder="Nhập tên nhà cung câp" name="TenNCC" maxlength="100" class="box">
+      <input type="text" required placeholder="Nhập tên nhà cung cấp" name="TenNCC" maxlength="100" class="box">
 </div>
 <div class="order_table">
            <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Số điện thoại:</span>

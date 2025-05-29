@@ -72,6 +72,7 @@ if (isset($_POST['submit'])) {
       <input type="number" name="maad" required class="box" placeholder="Nhập mã quản trị viên">
    </div>
 
+<<<<<<< Updated upstream
    <div class="order_table">
       <span style="min-width: 160px;font-size:1.8rem;">Tên tài khoản:</span>
       <input type="text" name="name" maxlength="50" required class="box" placeholder="Nhập tên quản trị" oninput="this.value = this.value.replace(/\s/g, '')">
@@ -104,6 +105,7 @@ if (isset($_POST['submit'])) {
       <a href="admin_accounts.php" class="option-btn">Quay lại</a>
    </div>
 </form>
+
 </section>
 
 <!-- register admin section ends -->
