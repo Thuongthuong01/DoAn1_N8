@@ -8,38 +8,55 @@ if (!isset($_SESSION["user_id"])) {
    exit();
 }
 
-
 if (isset($_POST['add_supplier'])) {
-    $MaNCC = $_POST['MaNCC'];
-    $TenNCC = $_POST['TenNCC'];
-    $SDT = $_POST['SDT'];
-    $DiaChi = $_POST['DiaChi'];
+    // Lấy dữ liệu và lọc bớt khoảng trắng
+    $MaNCC = trim($_POST['MaNCC']);
+    $TenNCC = trim($_POST['TenNCC']);
+    $SDT = trim($_POST['SDT']);
+    $DiaChi = trim($_POST['DiaChi']);
+    $message = [];
 
-    // Kiểm tra mã NCC đã tồn tại hay chưa
-    $check_stmt = $conn->prepare("SELECT MaNCC FROM nhacc WHERE MaNCC = ?");
-    $check_stmt->execute([$MaNCC]);
-
-    if ($check_stmt->rowCount() > 0) {
-        // Nếu mã đã tồn tại
-        $message[] = "❌ Mã nhà cung cấp đã tồn tại, vui lòng nhập mã khác!";
+    // Kiểm tra dữ liệu đầu vào
+    if (empty($MaNCC) || empty($TenNCC) || empty($SDT) || empty($DiaChi)) {
+        $message[] = "❌ Vui lòng điền đầy đủ thông tin!";
+    } elseif (!preg_match('/^[0-9]{10}$/', $SDT)) {
+        $message[] = "❌ Số điện thoại phải đúng 10 chữ số!";
     } else {
-        // Chưa tồn tại, thì thêm vào bảng nhacc
-        $insert_stmt = $conn->prepare("INSERT INTO nhacc (MaNCC, TenNCC, SDT, DiaChi) VALUES (?, ?, ?, ?)");
-        $insert_success = $insert_stmt->execute([$MaNCC, $TenNCC, $SDT, $DiaChi]);
+        try {
+            // Kiểm tra mã NCC đã tồn tại chưa
+            $check_stmt = $conn->prepare("SELECT MaNCC FROM nhacc WHERE MaNCC = ?");
+            $check_stmt->execute([$MaNCC]);
 
-        if ($insert_success) {
-            $message[] = "✅ Đã thêm nhà cung cấp thành công!";
-        } else {
-            $message[] = "❌ Thêm thất bại, hãy kiểm tra lại dữ liệu!";
+            if ($check_stmt->rowCount() > 0) {
+                $message[] = "❌ Mã nhà cung cấp đã tồn tại, vui lòng nhập mã khác!";
+            } else {
+                // Thêm mới nhà cung cấp
+                $insert_stmt = $conn->prepare("INSERT INTO nhacc (MaNCC, TenNCC, SDT, DiaChi) VALUES (?, ?, ?, ?)");
+                if ($insert_stmt->execute([$MaNCC, $TenNCC, $SDT, $DiaChi])) {
+                    $message[] = "✅ Đã thêm nhà cung cấp thành công!";
+                } else {
+                    $message[] = "❌ Thêm thất bại, hãy kiểm tra lại dữ liệu!";
+                }
+            }
+        } catch (PDOException $e) {
+            $message[] = "❌ Lỗi hệ thống: " . $e->getMessage();
         }
     }
 }
-
+// Xử lý xoá nhà cung cấp (nếu có)
 if (isset($_GET['delete_ncc'])) {
-   $delete_id = $_GET['delete_ncc'];
-   $delete_ncc = $conn->prepare("DELETE FROM nhacc WHERE MaNCC = ?");
-   $delete_ncc->execute([$delete_id]);
-   $message[] = "✅ Đã xoá nhà cung cấp thành công!";
+    $delete_id = $_GET['delete_ncc'];
+
+    try {
+        $delete_ncc = $conn->prepare("DELETE FROM nhacc WHERE MaNCC = ?");
+        if ($delete_ncc->execute([$delete_id])) {
+            $message[] = "✅ Đã xoá nhà cung cấp thành công!";
+        } else {
+            $message[] = "❌ Xoá thất bại!";
+        }
+    } catch (PDOException $e) {
+        $message[] = "❌ Lỗi khi xoá: " . $e->getMessage();
+    }
 }
 
 ?> 

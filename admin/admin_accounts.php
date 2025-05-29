@@ -9,24 +9,84 @@ if (!isset($_SESSION["user_id"])) {
    header("Location:admin_login");
    exit();
 }
-if(isset($_GET['delete'])){
+if (isset($_GET['delete'])) {
     $delete_id = $_GET['delete'];
-    if ($delete_id == $_SESSION['user_id']) {
-        // Không cho xóa chính tài khoản đang đăng nhập
-        echo "<script>alert('Không thể xóa tài khoản đang đăng nhập!');</script>";
-    } else {
-        $delete_admin = $conn->prepare("DELETE FROM `quantri` WHERE MaAD = ?");
-        $delete_admin->execute([$delete_id]);
-        header('location:admin_accounts.php');
-        exit();
-    }
-}
+    $confirm = isset($_GET['confirm']) ? $_GET['confirm'] : 'no';
 
-if(isset($_GET['delete'])){
-   $delete_id = $_GET['delete'];
-   $delete_admin = $conn->prepare("DELETE FROM `quantri` WHERE MaAD = ?");
-   $delete_admin->execute([$delete_id]);
-   header('location:admin_accounts.php');
+    // Lấy thông tin admin cần xóa
+    $stmt = $conn->prepare("SELECT TenAD FROM quantri WHERE MaAD = ?");
+    $stmt->execute([$delete_id]);
+    $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$admin) {
+        $message[] = "❌ Tài khoản không tồn tại!";
+    } elseif ($delete_id == $_SESSION['user_id']) {
+        $message[] = "❌ Không thể xóa tài khoản đang đăng nhập!";
+    } elseif (strtolower($admin['TenAD']) === 'admin') {
+        $message[] = "❌ Không thể xóa tài khoản quản trị viên có tên admin!";
+    } else {
+        // Đếm liên kết với 3 bảng
+        $tables = ['phieuthue' => 'phiếu thuê', 'phieutra' => 'phiếu trả', 'phieunhap' => 'phiếu nhập'];
+        $has_data = false;
+        $info = [];
+
+        foreach ($tables as $table => $label) {
+            $stmt = $conn->prepare("SELECT COUNT(*) FROM $table WHERE MaAD = ?");
+            $stmt->execute([$delete_id]);
+            $count = $stmt->fetchColumn();
+            if ($count > 0) {
+                $has_data = true;
+                $info[] = "$count $label";
+            }
+        }
+
+        if ($confirm !== 'yes' && $has_data) {
+            // Cảnh báo xác nhận xoá
+            $details = implode(', ', $info);
+            echo "<script>
+                if (confirm('⚠️ Tài khoản này đang liên kết với: {$details}. Bạn có chắc chắn muốn xóa?')) {
+                    window.location.href = '?delete={$delete_id}&confirm=yes';
+                } else {
+                    window.location.href = 'admin_accounts.php'; //về trang chủ
+                }
+            </script>";
+        } else {
+            // Tiến hành chuyển quyền và xoá như cũ
+            try {
+                $default_stmt = $conn->prepare(
+                    "SELECT MaAD FROM quantri WHERE LOWER(TenAD) = 'admin' LIMIT 1"
+                );
+                $default_stmt->execute();
+                $default = $default_stmt->fetch(PDO::FETCH_ASSOC);
+
+                if (!$default) {
+                    throw new Exception("Không tìm thấy admin mặc định để chuyển quyền!");
+                }
+                $default_admin_id = $default['MaAD'];
+
+                foreach (array_keys($tables) as $table) {
+                    $check = $conn->prepare("SELECT COUNT(*) FROM {$table} WHERE MaAD = ?");
+                    $check->execute([$delete_id]);
+                    $count = (int)$check->fetchColumn();
+
+                    if ($count > 0) {
+                        $upd = $conn->prepare("UPDATE {$table} SET MaAD = ? WHERE MaAD = ?");
+                        $upd->execute([$default_admin_id, $delete_id]);
+                        $message[] = "🔄 Đã chuyển quyền trong bảng {$table}.";
+                    }
+                }
+
+                $del = $conn->prepare("DELETE FROM quantri WHERE MaAD = ?");
+                $del->execute([$delete_id]);
+
+                $message[] = "✅ Đã xoá tài khoản thành công!";
+            } catch (PDOException $e) {
+                $message[] = "❌ Lỗi hệ thống: " . $e->getMessage();
+            } catch (Exception $e) {
+                $message[] = "❌ " . $e->getMessage();
+            }
+        }
+    }
 }
 
 ?>

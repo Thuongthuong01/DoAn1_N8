@@ -1,4 +1,47 @@
 <?php
+// include '../components/connect.php';
+// session_start();
+
+// if (!isset($_SESSION["user_id"])) {
+//    header("Location:admin_login");
+//    exit();
+// }
+
+// if (!isset($_GET['update'])) {
+//     header("Location:supplier.php"); // quay về nếu không có mã
+//     exit();
+// }
+
+// $MaNCC = $_GET['update'];
+
+// // Lấy dữ liệu cũ
+// $stmt = $conn->prepare("SELECT * FROM nhacc WHERE MaNCC = ?");
+// $stmt->execute([$MaNCC]);
+// $supplier = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// if (!$supplier) {
+//     echo "❌ Không tìm thấy nhà cung cấp!";
+//     exit();
+// }
+
+// // Xử lý cập nhật
+// if (isset($_POST['update_supplier'])) {
+//     $TenNCC = $_POST['TenNCC'];
+//     $SDT = $_POST['SDT'];
+//     $DiaChi = $_POST['DiaChi'];
+
+//     $update_stmt = $conn->prepare("UPDATE nhacc SET  SDT = ?, DiaChi = ? WHERE MaNCC = ?");
+//     $success = $update_stmt->execute([ $SDT, $DiaChi, $MaNCC]);
+
+//     if ($success) {
+//         $message[] = "✅ Cập nhật thành công!";
+//         // Cập nhật lại dữ liệu hiển thị
+//         $supplier = ['MaNCC' => $MaNCC, 'TenNCC' => $TenNCC, 'SDT' => $SDT, 'DiaChi' => $DiaChi];
+//     } else {
+//         $message[] = "❌ Cập nhật thất bại!";
+//     }
+// }
+
 include '../components/connect.php';
 session_start();
 
@@ -24,24 +67,32 @@ if (!$supplier) {
     exit();
 }
 
+$message = []; // Khởi tạo mảng thông báo
+
 // Xử lý cập nhật
 if (isset($_POST['update_supplier'])) {
-    $TenNCC = $_POST['TenNCC'];
-    $SDT = $_POST['SDT'];
-    $DiaChi = $_POST['DiaChi'];
+    $TenNCC = trim($_POST['TenNCC']);
+    $SDT = trim($_POST['SDT']);
+    $DiaChi = trim($_POST['DiaChi']);
 
-    $update_stmt = $conn->prepare("UPDATE nhacc SET  SDT = ?, DiaChi = ? WHERE MaNCC = ?");
-    $success = $update_stmt->execute([ $SDT, $DiaChi, $MaNCC]);
-
-    if ($success) {
-        $message[] = "✅ Cập nhật thành công!";
-        // Cập nhật lại dữ liệu hiển thị
-        $supplier = ['MaNCC' => $MaNCC, 'TenNCC' => $TenNCC, 'SDT' => $SDT, 'DiaChi' => $DiaChi];
+    // Kiểm tra hợp lệ số điện thoại
+    if (!preg_match('/^[0-9]{10}$/', $SDT)) {
+        $message[] = "❌ Số điện thoại phải đúng 10 chữ số!";
     } else {
-        $message[] = "❌ Cập nhật thất bại!";
+        $update_stmt = $conn->prepare("UPDATE nhacc SET SDT = ?, DiaChi = ?, TenNCC = ? WHERE MaNCC = ?");
+        $success = $update_stmt->execute([$SDT, $DiaChi, $TenNCC, $MaNCC]);
+
+        if ($success) {
+            $message[] = "✅ Cập nhật thành công!";
+            // Cập nhật lại dữ liệu hiển thị
+            $supplier = ['MaNCC' => $MaNCC, 'TenNCC' => $TenNCC, 'SDT' => $SDT, 'DiaChi' => $DiaChi];
+        } else {
+            $message[] = "❌ Cập nhật thất bại!";
+        }
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

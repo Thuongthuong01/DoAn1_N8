@@ -355,7 +355,7 @@ try {
                 <h3 style="text-align:center;"><?= $total_products ?></h3>
                 <p style="font-size:1.4rem;text-align:center;">Băng đĩa có sẵn</p>
                 <a href="products.php" class="btn pulse-effect">
-                    <i class="fas fa-box-open"></i> Quản lý kho
+                    <i class="fas fa-box-open"></i> Quản lý băng đĩa
                 </a>
             </div>
 

@@ -7,7 +7,6 @@ if (!isset($_SESSION["user_id"])) {
    header("Location:admin_login");
    exit();
 }
-
 if (isset($_POST['submit'])) {
    $maad = filter_var($_POST['maad'], FILTER_SANITIZE_NUMBER_INT);
    $name = filter_var($_POST['name'], FILTER_SANITIZE_STRING);
@@ -16,23 +15,32 @@ if (isset($_POST['submit'])) {
    $sdt = filter_var($_POST['sdt'], FILTER_SANITIZE_STRING);
    $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
 
-   $check_admin = $conn->prepare("SELECT * FROM `quantri` WHERE TenAD = ? OR MaAD = ?");
-   $check_admin->execute([$name, $maad]);
-
-   if ($check_admin->rowCount() > 0) {
-      $message[] = 'Tên tài khoản hoặc Mã Admin đã tồn tại!';
+   // Kiểm tra số điện thoại có đúng 10 số không
+   if (!preg_match('/^\d{10}$/', $sdt)) {
+      $message[] = 'Số điện thoại phải đủ 10 chữ số!';
+   } elseif (!$email) {
+      $message[] = 'Email không hợp lệ!';
    } else {
-      if ($pass != $cpass) {
-         $message[] = 'Xác nhận mật khẩu không khớp!';
+      // Kiểm tra trùng Mã Admin, Tên, SĐT, Email
+      $check_admin = $conn->prepare("SELECT * FROM `quantri` WHERE TenAD = ? OR MaAD = ? OR SDT = ? OR Email = ?");
+      $check_admin->execute([$name, $maad, $sdt, $email]);
+
+      if ($check_admin->rowCount() > 0) {
+         $message[] = 'Tên tài khoản, Mã Admin, SĐT hoặc Email đã tồn tại!';
       } else {
-         $insert_admin = $conn->prepare("INSERT INTO `quantri`(MaAD, TenAD, Pass, SDT, Email) VALUES(?,?,?,?,?)");
-         $insert_admin->execute([$maad, $name, $cpass, $sdt, $email]);
-         $message[] = 'Quản trị viên mới đã được đăng ký!';
-         header("Location: admin_accounts.php");
-         exit();
+         if ($pass != $cpass) {
+            $message[] = 'Xác nhận mật khẩu không khớp!';
+         } else {
+            $insert_admin = $conn->prepare("INSERT INTO `quantri`(MaAD, TenAD, Pass, SDT, Email) VALUES(?,?,?,?,?)");
+            $insert_admin->execute([$maad, $name, $cpass, $sdt, $email]);
+            $message[] = '✅ Quản trị viên mới đã được đăng ký!';
+            // header("Location: admin_accounts.php");
+            // exit();
+         }
       }
    }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -79,9 +87,11 @@ if (isset($_POST['submit'])) {
       <input type="password" name="cpass" maxlength="50" required class="box" oninput="this.value = this.value.replace(/\s/g, '')">
    </div>
 
-   <div class="order_table">
-      <span style="min-width: 160px;font-size:1.8rem;">Số điện thoại:</span>
-      <input type="text" name="sdt" maxlength="20" required class="box" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+  <div class="order_table">
+   <span style="min-width: 160px; font-size:1.8rem;">Số điện thoại:</span>
+   <input type="text" name="sdt" maxlength="10" required class="box"
+      pattern="\d{10}" title="Số điện thoại phải gồm đúng 10 chữ số"
+      oninput="this.value = this.value.replace(/[^0-9]/g, '')">
    </div>
 
    <div class="order_table">
