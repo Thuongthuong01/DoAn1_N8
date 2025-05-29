@@ -231,7 +231,11 @@ $ds_ncc = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <div class="order_table">
            <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Mã phiếu:</span>
-        <input type="text"class="box" name="MaPhieu" required placeholder="" value="<?= htmlspecialchars($_POST['MaPhieu'] ?? '') ?>"> 
+
+        <input type="text"class="box" name="MaPhieu" required placeholder="PNxxx" 
+        value="<?= htmlspecialchars($_POST['MaPhieu'] ?? '') ?>">
+        
+
         </div>
 <div class="order_table">
            <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Mã nhà cung cấp:</span>
@@ -258,6 +262,7 @@ $ds_ncc = $stmt->fetchAll(PDO::FETCH_ASSOC);
            <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Số lượng:</span>
          <input type="number" class="box" name="SoLuong" id="SoLuong" min="1" max="30" required placeholder="" oninput="generateFields()" 
          value="<?= htmlspecialchars($_POST['SoLuong'] ?? '') ?>">
+
         </div>
 
       <div id="dynamicFieldsContainer">
@@ -270,7 +275,7 @@ $ds_ncc = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <div class="order_table">
            <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Tổng tiền:</span>
-         <input type="number"class="box" name="TongTien" required placeholder=" ">
+         <input type="number" readonly class="box" name="TongTien" required placeholder=" ">
         <!-- <input type="number" name="TongTien" required 
         placeholder="Tổng đơn giá " 
 
