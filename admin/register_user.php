@@ -7,35 +7,30 @@ if (!isset($_SESSION["user_id"])) {
    header("Location:admin_login");
    exit();
 }
-
-if(isset($_POST['submit'])){
-
-   // Lấy và xử lý dữ liệu đầu vào
-   $tenKH = htmlspecialchars(trim($_POST['tenKH']));
+if (isset($_POST['submit'])) {
+   $tenKH = filter_var(trim($_POST['tenKH']), FILTER_SANITIZE_STRING);
    $sdt = preg_replace('/[^0-9]/', '', $_POST['sdt']);
-   $diachi = htmlspecialchars(trim($_POST['diachi']));
    $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
+   $diachi = filter_var(trim($_POST['diachi']), FILTER_SANITIZE_STRING);
 
-   // Kiểm tra hợp lệ
-   if(empty($tenKH) || strlen($tenKH) < 5){
-      $message[] = 'Tên khách hàng phải từ 5 ký tự!';
-   }
-   elseif(!preg_match('/^[0-9]{10}$/', $sdt)){
-      $message[] = 'Số điện thoại phải có 10 chữ số!';
-   }
-   elseif(!$email){
-      $message[] = 'Email không hợp lệ!';
-   }
-   else{
-      // Kiểm tra trùng email hoặc số điện thoại
-      $check = $conn->prepare("SELECT * FROM `khachhang` WHERE Email = ? OR SDT = ?");
-      $check->execute([$email, $sdt]);
+   $message = [];
 
-      if($check->rowCount() > 0){
-         $message[] = 'Email hoặc SĐT đã tồn tại!';
-      }
-      else{
-         // Sinh mã KH mới KH001, KH002,... bằng cách tìm mã KH lớn nhất
+   // ======= Kiểm tra hợp lệ =======
+   if (strlen($tenKH) < 5) {
+      $message[] = '❌ Tên khách hàng phải từ 5 ký tự trở lên!';
+   } elseif (!preg_match('/^[0-9]{10}$/', $sdt)) {
+      $message[] = '❌ Số điện thoại phải đúng 10 chữ số!';
+   } elseif (!$email) {
+      $message[] = '❌ Email không hợp lệ!';
+   } else {
+      // ======= Kiểm tra trùng SDT hoặc Email =======
+      $check = $conn->prepare("SELECT * FROM khachhang WHERE SDT = ? OR Email = ?");
+      $check->execute([$sdt, $email]);
+
+      if ($check->rowCount() > 0) {
+         $message[] = '❌ Số điện thoại hoặc Email đã tồn tại!';
+      } else {
+         // ======= Sinh mã KH mới: KH001, KH002, ... =======
          $stmt = $conn->query("SELECT MaKH FROM khachhang ORDER BY MaKH DESC LIMIT 1");
          $lastMaKH = $stmt->fetchColumn();
 
@@ -46,25 +41,20 @@ if(isset($_POST['submit'])){
             $maKH = 'KH001';
          }
 
-         // Thêm dữ liệu
+         // ======= Thêm vào CSDL =======
          try {
-            $insert = $conn->prepare("INSERT INTO `khachhang` (MaKH, TenKH, SDT, Diachi, Email) VALUES (?, ?, ?, ?, ?)");
+            $insert = $conn->prepare("INSERT INTO khachhang (MaKH, TenKH, SDT, Diachi, Email) VALUES (?, ?, ?, ?, ?)");
             $insert->execute([$maKH, $tenKH, $sdt, $diachi, $email]);
 
-            $message[] = 'Đăng ký thành công! Mã KH: ' . $maKH;
-            header("refresh:2;url=users_accounts.php");
-            exit();
-
-         } catch(PDOException $e) {
-            if ($e->getCode() == 23000) {
-               $message[] = 'Mã khách hàng đã tồn tại! Vui lòng thử lại.';
-            } else {
-               $message[] = 'Lỗi hệ thống: ' . $e->getMessage();
-            }
+            $message[] = '✅ Đăng ký khách hàng thành công! Mã KH: ' . $maKH;
+            // header("refresh:2;url=users_accounts.php"); // Mở nếu muốn chuyển trang sau 2s
+         } catch (PDOException $e) {
+            $message[] = '❌ Lỗi hệ thống: ' . $e->getMessage();
          }
       }
    }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

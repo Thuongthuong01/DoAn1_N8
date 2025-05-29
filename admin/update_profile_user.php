@@ -3,45 +3,80 @@ include '../components/connect.php';
 session_start();
 
 if (!isset($_SESSION["user_id"])) {
-   header("Location:admin_login");
+   header("Location: admin_login");
    exit();
 }
-$MaKH = $_GET['update'];
 
-// Lấy dữ liệu cũ
-$stmt = $conn->prepare("SELECT * FROM khachhang WHERE MaKH = ?");
-$stmt->execute([$MaKH]);
-$supplier = $stmt->fetch(PDO::FETCH_ASSOC);
-// Lấy thông tin khách hàng từ ID
-if (isset($_GET['id'])) {
-    $user_id = $_GET['id'];
-    $select_user = $conn->prepare("SELECT * FROM khachhang WHERE MaKH = ?");
-    $select_user->execute([$user_id]);
-    $user = $select_user->fetch(PDO::FETCH_ASSOC);
-
-    if (!$user) {
-        echo "Không tìm thấy khách hàng có mã $user_id";
-        exit();
-    }
+if (!isset($_GET['update']) || empty($_GET['update'])) {
+   header("Location: users_accounts.php?error=missing_id");
+   exit();
 }
 
-// Xử lý cập nhật
+$MaKH = $_GET['update'];
+$message = [];
+
+// Lấy dữ liệu cũ của khách hàng
+$stmt = $conn->prepare("SELECT * FROM khachhang WHERE MaKH = ?");
+$stmt->execute([$MaKH]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$user) {
+   echo "❌ Không tìm thấy khách hàng có mã $MaKH.";
+   exit();
+}
+
 if (isset($_POST['update'])) {
-    $MaKH = $_POST['MaKH'];
-    $TenKH = $_POST['TenKH'];
-    $SDT = $_POST['SDT'];
-    $Diachi = $_POST['Diachi'];
-    $Email = $_POST['Email'];
+   $TenKH = trim($_POST['TenKH']);
+   $SDT   = trim($_POST['SDT']);
+   $Diachi = trim($_POST['Diachi']);
+   $Email = trim($_POST['Email']);
 
-    $update_query = $conn->prepare("UPDATE khachhang SET TenKH = ?, SDT = ?, Diachi = ?, Email = ? WHERE MaKH = ?");
-    $update_result = $update_query->execute([$TenKH, $SDT, $Diachi, $Email, $MaKH]);
+   // ======= Kiểm tra số điện thoại =======
+   if (!preg_match('/^[0-9]{10}$/', $SDT)) {
+      $message[] = '❌ Số điện thoại phải đúng 10 chữ số!';
+   } else {
+      $check_sdt = $conn->prepare("SELECT * FROM khachhang WHERE SDT = ? AND MaKH != ?");
+      $check_sdt->execute([$SDT, $MaKH]);
+      if ($check_sdt->rowCount() > 0) {
+         $message[] = '❌ Số điện thoại đã được sử dụng!';
+      }
+   }
 
-    if ($update_result) {
-        header("Location: users_accounts.php?success=1");
-        exit();
-    } else {
-        echo "Lỗi khi cập nhật thông tin.";
-    }
+   // ======= Kiểm tra email =======
+   if (empty($message)) {
+      if (!filter_var($Email, FILTER_VALIDATE_EMAIL)) {
+         $message[] = '❌ Email không hợp lệ!';
+      } else {
+         $check_email = $conn->prepare("SELECT * FROM khachhang WHERE Email = ? AND MaKH != ?");
+         $check_email->execute([$Email, $MaKH]);
+         if ($check_email->rowCount() > 0) {
+            $message[] = '❌ Email đã được sử dụng!';
+         }
+      }
+   }
+
+   // ======= Kiểm tra nếu không có gì thay đổi =======
+   if (empty($message)) {
+      if (
+         $TenKH === $user['TenKH'] &&
+         $SDT === $user['SDT'] &&
+         $Diachi === $user['Diachi'] &&
+         $Email === $user['Email']
+      ) {
+         $message[] = 'ℹ️ Không có thay đổi nào để cập nhật!';
+      } else {
+         // ======= Cập nhật thông tin =======
+         $update = $conn->prepare("UPDATE khachhang SET TenKH = ?, SDT = ?, Diachi = ?, Email = ? WHERE MaKH = ?");
+         $update->execute([$TenKH, $SDT, $Diachi, $Email, $MaKH]);
+         $message[] = '✅ Cập nhật thông tin thành công!';
+
+         // Cập nhật lại dữ liệu hiển thị trong form
+         $user['TenKH'] = $TenKH;
+         $user['SDT'] = $SDT;
+         $user['Diachi'] = $Diachi;
+         $user['Email'] = $Email;
+      }
+   }
 }
 ?>
 
@@ -50,7 +85,7 @@ if (isset($_POST['update'])) {
 <html lang="vi">
 <head>
    <meta charset="UTF-8">
-   <title>Chỉnh sửa thông tin</title>
+   <title>Cập nhật tài khoản khách hàng</title>
 
    
    <!-- font awesome cdn link  -->
@@ -68,8 +103,10 @@ if (isset($_POST['update'])) {
 
    <form action="" method="POST">
       <h3>Cập nhật tài khoản khách hàng</h3>
-      <!-- Nếu cần giữ mã KH để xử lý cập nhật -->
-      <input type="hidden" class="box"name="MaKH" value="<?= htmlspecialchars($user['MaKH'] ?? '') ?>">
+       <div class="order_table">
+         <span>Mã khách hàng:</span>
+         <input type="text"class="box" name="MaKH" value="<?= htmlspecialchars($user['MaKH'] ?? '') ?>" readonly>
+      </div>
 
       <div class="order_table">
          <span>Tên khách hàng:</span>

@@ -69,12 +69,12 @@ if (isset($_POST['submit'])) {
    <h3>Đăng ký quản trị viên</h3>
    <div class="order_table">
       <span style="min-width: 160px;font-size:1.8rem;">Mã Admin:</span>
-      <input type="number" name="maad" required class="box">
+      <input type="number" name="maad" required class="box" placeholder="Nhập mã quản trị viên">
    </div>
 
    <div class="order_table">
       <span style="min-width: 160px;font-size:1.8rem;">Tên tài khoản:</span>
-      <input type="text" name="name" maxlength="50" required class="box" oninput="this.value = this.value.replace(/\s/g, '')">
+      <input type="text" name="name" maxlength="50" required class="box" placeholder="Nhập tên quản trị" oninput="this.value = this.value.replace(/\s/g, '')">
    </div>
 
    <div class="order_table">
@@ -89,14 +89,14 @@ if (isset($_POST['submit'])) {
 
   <div class="order_table">
    <span style="min-width: 160px; font-size:1.8rem;">Số điện thoại:</span>
-   <input type="text" name="sdt" maxlength="10" required class="box"
+   <input type="text" name="sdt" maxlength="10" required class="box" placeholder="10 chữ số"
       pattern="\d{10}" title="Số điện thoại phải gồm đúng 10 chữ số"
       oninput="this.value = this.value.replace(/[^0-9]/g, '')">
    </div>
 
    <div class="order_table">
       <span style="min-width: 160px;font-size:1.8rem;">Email:</span>
-      <input type="email" name="email" maxlength="100" required class="box">
+      <input type="email" name="email" maxlength="100" required class="box" placeholder="example@gmail.com">
    </div>
 
    <div class="flex-btn">

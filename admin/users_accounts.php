@@ -10,15 +10,62 @@ if (!isset($_SESSION["user_id"])) {
    exit();
 }
 
-if(isset($_GET['delete'])){
-   $delete_id = $_GET['delete'];
-   $delete_cart = $conn->prepare("DELETE FROM `phieutra` WHERE MaKH = ?");
-   $delete_cart->execute([$delete_id]);
-   $delete_order = $conn->prepare("DELETE FROM `phieuthue` WHERE MaKH = ?");
-   $delete_order->execute([$delete_id]);
-   $delete_users = $conn->prepare("DELETE FROM `khachhang` WHERE MaKH = ?");
-   $delete_users->execute([$delete_id]);
-   header('location:users_accounts.php');
+if (isset($_GET['delete'])) {
+    $delete_id = $_GET['delete'];
+    $confirm = isset($_GET['confirm']) ? $_GET['confirm'] : 'no';
+    $message = [];
+
+    // Lấy thông tin khách hàng
+    $stmt = $conn->prepare("SELECT TenKH FROM khachhang WHERE MaKH = ?");
+    $stmt->execute([$delete_id]);
+    $khach = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$khach) {
+        $message[] = "❌ Khách hàng không tồn tại!";
+    } else {
+        // Kiểm tra phiếu thuê và phiếu trả
+        $tables = ['phieuthue' => 'phiếu thuê', 'phieutra' => 'phiếu trả'];
+        $has_data = false;
+        $info = [];
+
+        foreach ($tables as $table => $label) {
+            $stmt = $conn->prepare("SELECT COUNT(*) FROM $table WHERE MaKH = ?");
+            $stmt->execute([$delete_id]);
+            $count = $stmt->fetchColumn();
+            if ($count > 0) {
+                $has_data = true;
+                $info[] = "$count $label";
+            }
+        }
+
+        if ($confirm !== 'yes' && $has_data) {
+            // Cảnh báo xác nhận xoá
+            $details = implode(', ', $info);
+            echo "<script>
+                if (confirm('⚠️ Khách hàng này đang có: {$details}. Nếu xoá KH sẽ xoá kèm {$details}. Bạn có chắc chắn muốn xóa?')) {
+                    window.location.href = '?delete={$delete_id}&confirm=yes';
+                } else {
+                    window.location.href = 'users_accounts.php';
+                }
+            </script>";
+        } else {
+            try {
+                // Nếu có phiếu thì nên xoá luôn phiếu trước khi xoá khách hàng (nếu muốn xoá cứng)
+                foreach (array_keys($tables) as $table) {
+                    $delete_stmt = $conn->prepare("DELETE FROM $table WHERE MaKH = ?");
+                    $delete_stmt->execute([$delete_id]);
+                }
+
+                // Xoá khách hàng
+                $del = $conn->prepare("DELETE FROM khachhang WHERE MaKH = ?");
+                $del->execute([$delete_id]);
+
+                $message[] = "✅ Đã xoá khách hàng thành công!";
+            } catch (PDOException $e) {
+                $message[] = "❌ Lỗi hệ thống: " . $e->getMessage();
+            }
+        }
+    }
 }
 
 ?>
