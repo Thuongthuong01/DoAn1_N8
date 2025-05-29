@@ -55,12 +55,13 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
   padding: 1rem 3rem;
   font-size: 1.8rem;
   color: #fff;
-  margin-top: 1rem;
-  text-align: center;
   font-weight: bold;
+  display: inline-block;
+  width: 40%;
+  text-align: center;
 }
 .comeback:hover{
-  background-color:rgb(16, 17, 18);
+  background-color:#888;
 }
 
 </style>
@@ -81,7 +82,7 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
       <p>CD House là một cửa hàng chuyên kinh doanh băng đĩa giải trí hoạt động theo hình thức thuê hàng offline.</p>
       <p>Địa chỉ cửa hàng tại: <strong>218 Lĩnh Nam - Q.Hoàng Mai - TP Hà Nội</strong></p>
       <p>
-        Chúng tôi chuyên cung cấp đa dạng các thể loại băng đĩa như: phim ảnh, ca nhạc giải trí, giáo dục đào tạo và băng đĩa dành cho thiếu nhi
+        Chúng tôi chuyên cung cấp đa dạng các thể loại băng đĩa như: phim ảnh, ca nhạc giải trí, giáo dục đào tạo và băng đĩa dành cho thiếu nhi.
         Tất cả sản phẩm đều được kiểm tra chất lượng trước khi đưa ra thị trường, đảm bảo mang lại trải nghiệm giải trí tốt nhất cho khách hàng.
       </p>
       <ul> Hệ thống quản lý của cửa hàng được xây dựng nhằm mục tiêu:
@@ -113,7 +114,8 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
       <p><strong>Lưu ý:</strong> Mức giá thuê có thể thay đổi theo từng loại đĩa (phim mới, bản đặc biệt...)</p>
 
       <h2>⏰ Quy Định Bồi Thường Trả Muộn Băng Đĩa</h2>
-      <p>Việc trả đĩa đúng hạn giúp hệ thống vận hành trơn tru và tôn trọng khách hàng khác, nếu trong trường hợp khách trả muộn:</p>
+      <p>Việc trả đĩa đúng hạn giúp hệ thống vận hành trơn tru và tôn trọng khách hàng khác. </p> 
+      <p> Nếu trong trường hợp khách trả muộn:</p>
       <ul>
         <li>Với mỗi ngày trả trễ, khách hàng trả thêm <strong>5% giá thuê</strong>.</li>
         <li>Thời gian trả trễ tính từ <strong>ngày trả dự kiến</strong> đến <strong>ngày trả thực tế</strong>.</li>
@@ -122,7 +124,7 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
       </ul>
     </div>
   </div>
-  <div>
+  <div style = "text-align : center; ">
          <a href="dashboard.php" class="comeback">Quay lại Trang Chủ</a>
       </div>
 </section>

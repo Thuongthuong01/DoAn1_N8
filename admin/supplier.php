@@ -121,19 +121,19 @@ th.sortable.sorted-desc::after {
       <h3>Thêm nhà cung cấp</h3>
 <div class="order_table">
         <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Mã nhà cung cấp:</span>
-      <input type="text" required placeholder="" name="MaNCC" maxlength="10" class="box">
+      <input type="text" required placeholder="NCCxxx" name="MaNCC" maxlength="10" class="box">
 </div>
 <div class="order_table">
            <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Tên nhà cung cấp:</span>
-      <input type="text" required placeholder="" name="TenNCC" maxlength="100" class="box">
+      <input type="text" required placeholder="Nhập tên nhà cung câp" name="TenNCC" maxlength="100" class="box">
 </div>
 <div class="order_table">
            <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Số điện thoại:</span>
-      <input type="number" required placeholder="" name="SDT" maxlength="15" class="box">
+      <input type="number" required placeholder="10 chữ số" name="SDT" maxlength="15" class="box" >
 </div>
 <div class="order_table">
            <span style="min-width: 160px;font-size:1.8rem; text-align: left;">Địa chỉ:</span>
-      <input type="text" required placeholder="" name="DiaChi" maxlength="255" class="box">
+      <input type="text" required placeholder="Nhập địa chỉ" name="DiaChi" maxlength="255" class="box">
 </div>
       <input type="submit" value="Thêm nhà cung cấp" name="add_supplier" class="btn">
    </form>
