@@ -7,7 +7,14 @@ if (!isset($_SESSION["user_id"])) {
     header("Location:admin_login");
     exit();
 }
+$total_returns = 0; // Giá trị mặc định
 
+$sql_returns = $conn->prepare("SELECT COUNT(*) AS total FROM phieutra");
+$sql_returns->execute();
+$row_returns = $sql_returns->fetch(PDO::FETCH_ASSOC);
+if ($row_returns && isset($row_returns['total'])) {
+    $total_returns = $row_returns['total'];
+}
 // Kiểm tra kết nối cơ sở dữ liệu
 if (!$conn) {
     die('Database connection failed');
@@ -27,6 +34,7 @@ try {
     $total_orders = $conn->query("SELECT COUNT(*) FROM `phieuthue`")->fetchColumn();
     $total_products = $conn->query("SELECT COUNT(*) FROM `bangdia`")->fetchColumn();
     $total_users = $conn->query("SELECT COUNT(*) FROM `khachhang`")->fetchColumn();
+
 
     // === Revenue Chart Data ===
     $revenue_data = [
@@ -226,6 +234,7 @@ try {
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang chủ quản trị - CD House</title>
@@ -386,26 +395,37 @@ try {
             <div class="box orders-box">
                 <h3 style="text-align:center;"><?= $total_orders ?></h3>
                 <p style="font-size:1.4rem;text-align:center;">Tổng phiếu thuê</p>
+                <p style="font-size:1.4rem;text-align:center;">băng đĩa</p>
                 <a href="placed_orders.php" class="btn pulse-effect">
                     <i class="fas fa-clipboard-list"></i> Xem đơn hàng
                 </a>
             </div>
-
+            <!-- Returned Orders Box -->
+            <div class="box returned-orders-box">
+                <h3 style="text-align:center;"><?= $total_returns ?></h3>
+                <p style="font-size:1.4rem;text-align:center;">Tổng phiếu trả</p>
+                <p style="font-size:1.4rem;text-align:center;">băng đĩa</p>
+                <a href="return_orders.php" class="btn pulse-effect">
+                    <i class="fas fa-undo-alt"></i> Xem phiếu trả
+            </a>
+            </div>
             <!-- Products Box -->
             <div class="box products-box">
                 <h3 style="text-align:center;"><?= $total_products ?></h3>
-                <p style="font-size:1.4rem;text-align:center;">Băng đĩa có sẵn</p>
+                <p style="font-size:1.4rem;text-align:center;">Tổng số lượng</p>
+                <p style="font-size:1.4rem;text-align:center;">băng đĩa có sẵn</p>
                 <a href="products.php" class="btn pulse-effect">
-                    <i class="fas fa-box-open"></i> Quản lý băng đĩa
+                    <i class="fas fa-box-open"></i> QL băng đĩa
                 </a>
             </div>
 
             <!-- Users Box -->
             <div class="box users-box">
                 <h3 style="text-align:center;"><?= $total_users ?></h3>
-                <p style="font-size:1.4rem;text-align:center;">Thành viên hệ thống</p>
+                <p style="font-size:1.4rem;text-align:center;">Tổng số lượng</p>
+                <p style="font-size:1.4rem;text-align:center;">thành viên</p>
                 <a href="users_accounts.php" class="btn pulse-effect">
-                    <i class="fas fa-user-cog"></i> Quản lý người dùng
+                    <i class="fas fa-user-cog"></i> QL người dùng
                 </a>
             </div>
         </div>
@@ -571,6 +591,7 @@ try {
                             padding: 15,
                             usePointStyle: true,
                             pointStyle: 'circle'
+
                         }
                     }
                 },
