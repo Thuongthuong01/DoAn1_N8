@@ -229,7 +229,7 @@ th.sortable.sorted-desc::after {
 <?php
    $soBDTrong = count($availableBDs);
    if ($soBDTrong == 0) {
-      echo "<p style='color:red;font-weight:bold;'>❌ Hiện tại không còn băng đĩa nào có sẵn để thuê.</p>";
+      alert('❌ Hiện tại không còn băng đĩa nào có sẵn để thuê.');
    }
 ?>
 <div class="order_table">

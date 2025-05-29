@@ -14,171 +14,164 @@ if (!$conn) {
 }
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 $today = date('Y-m-d');
-// Get current month/year
-$current_month = date('m'); // Chuỗi '05'
-$current_year = date('Y');  // Chuỗi '2025'
+$current_month = date('m');
+$current_year = date('Y');
 
-// 1. Monthly Revenue
 try {
+    // Tổng tiền thuê trong tháng hiện tại
     $month_revenue = $conn->prepare("SELECT SUM(TongTien) FROM phieuthue WHERE MONTH(NgayThue) = ? AND YEAR(NgayThue) = ?");
     $month_revenue->execute([$current_month, $current_year]);
     $month_revenue = $month_revenue->fetchColumn() ?? 0;
-} catch (PDOException $e) {
-    echo "Error fetching revenue: " . $e->getMessage();
-    $month_revenue = 0;
-}
 
-try {
+    // Tổng số phiếu, sản phẩm, khách hàng
     $total_orders = $conn->query("SELECT COUNT(*) FROM `phieuthue`")->fetchColumn();
     $total_products = $conn->query("SELECT COUNT(*) FROM `bangdia`")->fetchColumn();
     $total_users = $conn->query("SELECT COUNT(*) FROM `khachhang`")->fetchColumn();
-} catch (PDOException $e) {
-    echo "Error fetching stats: " . $e->getMessage();
-    $total_orders = $total_products = $total_users = 0;
-}
 
-// Revenue Chart Data
-try {
-    // Tạo dữ liệu đầy đủ cho 30 ngày, 12 tháng, 5 năm
+    // === Revenue Chart Data ===
     $revenue_data = [
         'daily' => [],
         'monthly' => [],
         'yearly' => []
     ];
 
-    // Daily: 30 ngày gần nhất
-    $daily_data = $conn->query("
-        SELECT 
-            DATE(pt.NgayThue) AS period,
-            SUM(pt.TongTien) AS tongtien,
-            IFNULL(SUM(-pr.TienTra), 0) AS tientra
-        FROM phieuthue pt
-        LEFT JOIN phieutra pr ON DATE(pr.NgayTraTT) = DATE(pt.NgayThue)
-        WHERE pt.NgayThue >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-        GROUP BY DATE(pt.NgayThue)
-        ORDER BY period ASC
+    // 1. DAILY: 30 ngày gần nhất
+    // DAILY REVENUE: 30 ngày gần nhất
+$daily_template = [];
+for ($i = 29; $i >= 0; $i--) {
+    $date = date('Y-m-d', strtotime("-$i days"));
+    $daily_template[$date] = ['period' => $date, 'tongtien' => 0, 'tientra' => 0];
+}
+
+// 1. Tiền thuê theo ngày
+$daily_rent = $conn->query("
+    SELECT DATE(NgayThue) AS period, SUM(TongTien) AS tongtien
+    FROM phieuthue
+    WHERE NgayThue >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+    GROUP BY period
+")->fetchAll(PDO::FETCH_ASSOC);
+
+foreach ($daily_rent as $row) {
+    $date = $row['period'];
+    if (isset($daily_template[$date])) {
+        $daily_template[$date]['tongtien'] = (int)$row['tongtien'];
+    }
+}
+
+// 2. Tiền trả theo ngày
+$daily_return = $conn->query("
+    SELECT DATE(NgayTraTT) AS period, SUM(TienTra) AS tientra
+    FROM phieutra
+    WHERE NgayTraTT >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+    GROUP BY period
+")->fetchAll(PDO::FETCH_ASSOC);
+
+foreach ($daily_return as $row) {
+    $date = $row['period'];
+    if (isset($daily_template[$date])) {
+        $daily_template[$date]['tientra'] = -(int)$row['tientra']; // Ghi số âm
+    }
+}
+
+// 3. Tính doanh thu
+foreach ($daily_template as &$row) {
+    $row['doanhthu'] = $row['tongtien'] + $row['tientra'];
+}
+unset($row);
+
+// 4. Gán kết quả
+$revenue_data['daily'] = array_values($daily_template);
+
+    // 2. MONTHLY: 12 tháng trong năm 2025
+    $monthly_template = [];
+    for ($i = 1; $i <= 12; $i++) {
+        $month = sprintf('2025-%02d', $i);
+        $monthly_template[$month] = ['period' => $month, 'tongtien' => 0, 'tientra' => 0];
+    }
+
+    $monthly_rent = $conn->query("
+        SELECT DATE_FORMAT(NgayThue, '%Y-%m') AS period, SUM(TongTien) AS tongtien
+        FROM phieuthue
+        WHERE YEAR(NgayThue) = 2025
+        GROUP BY period
     ")->fetchAll(PDO::FETCH_ASSOC);
 
-    // Tạo mảng 30 ngày gần nhất
-    $daily_template = [];
-    for ($i = 29; $i >= 0; $i--) {
-        $date = date('Y-m-d', strtotime("-$i days"));
-        $daily_template[$date] = ['period' => $date, 'tongtien' => 0, 'tientra' => 0, 'doanhthu' => 0];
-    }
-    foreach ($daily_data as $row) {
-        $daily_template[$row['period']] = $row;
-    }
-    $revenue_data['daily'] = array_values($daily_template);
-    // Monthly: 12 tháng trong năm 2025
-
-$monthly_template = [];
-for ($i = 1; $i <= 12; $i++) {
-    $month = sprintf('2025-%02d', $i);
-    $monthly_template[$month] = ['period' => $month, 'tongtien' => 0, 'tientra' => 0, 'doanhthu' => 0];
-}
-
-
-// Tổng tiền thuê theo tháng
-$monthly_rent = $conn->query("
-    SELECT 
-        DATE_FORMAT(NgayThue, '%Y-%m') AS period,
-        SUM(TongTien) AS tongtien
-    FROM phieuthue
-    WHERE YEAR(NgayThue) = 2025
-    GROUP BY period
-")->fetchAll(PDO::FETCH_ASSOC);
-
-foreach ($monthly_rent as $row) {
-    $monthly_template[$row['period']]['tongtien'] = (int)$row['tongtien'];
-}
-
-// Tổng tiền trả theo tháng (âm)
-$monthly_return = $conn->query("
-    SELECT 
-        DATE_FORMAT(NgayTraTT, '%Y-%m') AS period,
-        SUM(TienTra) AS tientra
-    FROM phieutra
-    WHERE YEAR(NgayTraTT) = 2025
-    GROUP BY period
-")->fetchAll(PDO::FETCH_ASSOC);
-
-foreach ($monthly_return as $row) {
-    $monthly_template[$row['period']]['tientra'] = -(int)$row['tientra'];
-}
-
-// Tính doanh thu
-// Sắp xếp theo key (tháng)
-ksort($monthly_template);
-
-// Tính doanh thu
-foreach ($monthly_template as &$row) {
-    $row['doanhthu'] = $row['tongtien'] + $row['tientra'];
-}
-
-// Không dùng array_values (giữ key dạng "2025-01", "2025-02", ...)
-$revenue_data['monthly'] = array_values($monthly_template); // Chỉ dùng nếu chắc chắn giữ thứ tự
-
-
-
-    // Yearly: 5 năm gần nhất (2021-2025)
-    // Yearly: 2023 - 2025
-$yearly_template = [];
-for ($i = 2023; $i <= 2025; $i++) {
-    $yearly_template[$i] = ['period' => (string)$i, 'tongtien' => 0, 'tientra' => 0, 'doanhthu' => 0];
-}
-
-// Tổng tiền thuê theo năm
-$yearly_rent = $conn->query("
-    SELECT 
-        YEAR(NgayThue) AS period,
-        SUM(TongTien) AS tongtien
-    FROM phieuthue
-    WHERE YEAR(NgayThue) BETWEEN 2023 AND 2025
-    GROUP BY period
-")->fetchAll(PDO::FETCH_ASSOC);
-
-foreach ($yearly_rent as $row) {
-    $year = (int)$row['period'];
-    $yearly_template[$year]['tongtien'] = (int)$row['tongtien'];
-}
-
-// Tổng tiền trả theo năm (âm)
-$yearly_return = $conn->query("
-    SELECT 
-        YEAR(NgayTraTT) AS period,
-        SUM(TienTra) AS tientra
-    FROM phieutra
-    WHERE YEAR(NgayTraTT) BETWEEN 2023 AND 2025
-    GROUP BY period
-")->fetchAll(PDO::FETCH_ASSOC);
-
-foreach ($yearly_return as $row) {
-    $year = (int)$row['period'];
-    $yearly_template[$year]['tientra'] = -(int)$row['tientra'];
-}
-
-// Tính doanh thu
-foreach ($yearly_template as &$row) {
-    $row['doanhthu'] = $row['tongtien'] + $row['tientra'];
-}
-$revenue_data['yearly'] = array_values($yearly_template);
-
-
-    // Tính doanh thu
-    foreach (['daily', 'monthly', 'yearly'] as $period) {
-        foreach ($revenue_data[$period] as &$row) {
-            $row['doanhthu'] = $row['tongtien'] + $row['tientra'];
+    foreach ($monthly_rent as $row) {
+        if (isset($monthly_template[$row['period']])) {
+            $monthly_template[$row['period']]['tongtien'] = (int)$row['tongtien'];
         }
-        unset($row);
     }
+
+    $monthly_return = $conn->query("
+        SELECT DATE_FORMAT(NgayTraTT, '%Y-%m') AS period, SUM(TienTra) AS tientra
+        FROM phieutra
+        WHERE YEAR(NgayTraTT) = 2025
+        GROUP BY period
+    ")->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($monthly_return as $row) {
+        if (isset($monthly_template[$row['period']])) {
+            $monthly_template[$row['period']]['tientra'] = -(int)$row['tientra'];
+        }
+    }
+
+    foreach ($monthly_template as &$row) {
+        $row['doanhthu'] = $row['tongtien'] + $row['tientra'];
+    }
+    unset($row);
+    ksort($monthly_template);
+    $revenue_data['monthly'] = array_values($monthly_template);
+
+    // 3. YEARLY: 2023–2025
+    $yearly_template = [];
+    for ($i = 2023; $i <= 2025; $i++) {
+        $yearly_template[$i] = ['period' => (string)$i, 'tongtien' => 0, 'tientra' => 0];
+    }
+
+    $yearly_rent = $conn->query("
+        SELECT YEAR(NgayThue) AS period, SUM(TongTien) AS tongtien
+        FROM phieuthue
+        WHERE YEAR(NgayThue) BETWEEN 2023 AND 2025
+        GROUP BY period
+    ")->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($yearly_rent as $row) {
+        $year = (int)$row['period'];
+        if (isset($yearly_template[$year])) {
+            $yearly_template[$year]['tongtien'] = (int)$row['tongtien'];
+        }
+    }
+
+    $yearly_return = $conn->query("
+        SELECT YEAR(NgayTraTT) AS period, SUM(TienTra) AS tientra
+        FROM phieutra
+        WHERE YEAR(NgayTraTT) BETWEEN 2023 AND 2025
+        GROUP BY period
+    ")->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($yearly_return as $row) {
+        $year = (int)$row['period'];
+        if (isset($yearly_template[$year])) {
+            $yearly_template[$year]['tientra'] = -(int)$row['tientra'];
+        }
+    }
+
+    foreach ($yearly_template as &$row) {
+        $row['doanhthu'] = $row['tongtien'] + $row['tientra'];
+    }
+    unset($row);
+    $revenue_data['yearly'] = array_values($yearly_template);
+
 } catch (PDOException $e) {
-    echo "Error fetching revenue data: " . $e->getMessage();
+    echo "Error: " . $e->getMessage();
+    // fallback
     $revenue_data = [
         'daily' => array_fill(0, 30, ['period' => date('Y-m-d'), 'tongtien' => 0, 'tientra' => 0, 'doanhthu' => 0]),
         'monthly' => array_fill(0, 12, ['period' => '2025-01', 'tongtien' => 0, 'tientra' => 0, 'doanhthu' => 0]),
         'yearly' => array_fill(0, 3, ['period' => '2023', 'tongtien' => 0, 'tientra' => 0, 'doanhthu' => 0])
     ];
 }
+
 
 // Product Status Data
 try {
